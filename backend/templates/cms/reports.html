@@ -1,0 +1,75 @@
+{% extends 'cms/base.html' %}
+
+{% block title %}举报管理{% endblock %}
+
+{% block head %}
+  <script src="{{ url_for('static',filename='cms/js/cms-bundle.js') }}"></script>
+{% endblock %}
+
+{% block page_title %}
+  {{ self.title() }}
+{% endblock %}
+
+{% block main_content %}
+  <div class="content-card">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>举报原因</th>
+        <th>举报时间</th>
+        <th>内容类型</th>
+        <th>内容标题</th>
+        <th>举报人</th>
+        <th>处理状态</th>
+        <th>操作</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for report in reports %}
+        <tr>
+          <td>{{ report.reason }}</td>
+          <td>{{ report.create_time }}</td>
+          <td>
+            {% if report.post_id %}
+              帖子
+            {% elif report.comment_id %}
+              评论
+            {% endif %}
+          </td>
+          <td>
+            {% if report.post_id %}
+              <a target="_blank" href="{{ url_for('post.post_detail',post_id=report.post_id) }}">{{ report.post.title }}</a>
+            {% elif report.comment_id %}
+              <a target="_blank" href="{{ url_for('post.post_detail',post_id=report.comment.post.id) }}">评论: {{ report.comment.content|remove_html_tags|truncate(50) }}</a>
+            {% endif %}
+          </td>
+          <td>{{ report.user.username }}</td>
+          <td>
+            {% if report.is_handled %}
+              <span class="badge badge-success">已处理</span>
+            {% else %}
+              <span class="badge badge-warning">未处理</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if report.is_handled %}
+              <button class="btn btn-secondary btn-sm handle-btn" data-report-id="{{ report.id }}">标记为未处理</button>
+            {% else %}
+              <button class="btn btn-primary btn-sm handle-btn" data-report-id="{{ report.id }}">标记为已处理</button>
+            {% endif %}
+            {% if report.post_id %}
+              {% if report.post.is_active %}
+                <button class="btn btn-warning btn-sm hide-post-btn" data-post-id="{{ report.post_id }}" data-report-id="{{ report.id }}">隐藏帖子</button>
+              {% else %}
+                <button class="btn btn-info btn-sm hide-post-btn" data-post-id="{{ report.post_id }}" data-report-id="{{ report.id }}">取消隐藏</button>
+              {% endif %}
+            {% endif %}
+            <button class="btn btn-danger btn-sm delete-btn" data-report-id="{{ report.id }}">删除</button>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {{ pagination.links }}
+{% endblock %}

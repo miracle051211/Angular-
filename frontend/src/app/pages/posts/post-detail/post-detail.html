@@ -1,0 +1,8 @@
+<article class="detail">
+  <a routerLink="/posts">返回列表</a>
+  <h1>帖子详情 #{{ postId }}</h1>
+  <p>
+    这里将展示后端返回的帖子正文、作者、板块、评论、点赞和举报等信息。
+  </p>
+  <a class="edit-link" [routerLink]="['/posts', postId, 'edit']">编辑帖子</a>
+</article>

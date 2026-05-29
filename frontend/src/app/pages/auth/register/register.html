@@ -1,0 +1,25 @@
+<section class="auth-card">
+  <h1>注册</h1>
+  <p>创建账号后即可参与学习社区讨论。</p>
+
+  <form [formGroup]="form">
+    <label>
+      用户名
+      <input formControlName="username" autocomplete="nickname" />
+    </label>
+
+    <label>
+      邮箱
+      <input formControlName="email" type="email" autocomplete="email" />
+    </label>
+
+    <label>
+      密码
+      <input formControlName="password" type="password" autocomplete="new-password" />
+    </label>
+
+    <button type="button" [disabled]="form.invalid">注册</button>
+  </form>
+
+  <a routerLink="/login">已有账号？去登录</a>
+</section>

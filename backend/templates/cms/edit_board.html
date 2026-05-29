@@ -1,0 +1,30 @@
+{% extends "cms/base.html" %}
+
+{% block title -%}
+  编辑板块
+{%- endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block page_title -%}
+  {{ self.title() }}
+{%- endblock %}
+
+{% block main_content %}
+  <form action="{{ url_for('cms.edit_board', board_id = board.id) }}" method="post">
+    <input type="hidden" name = "csrf_token" value = "{{ csrf_token() }}">
+
+    <div class="form-container">
+      <div class="form-group form-inline">
+        <label for="name">板块名称：</label>
+        <input id="boardname" type="text" class="form-control" name="boardname" placeholder="{{ board.name }}">
+      </div>
+
+      <div class="form-group">
+        <button class="btn btn-primary" id="submit">立即修改</button>
+      </div>
+    </div>
+  </form>
+
+{% endblock %}

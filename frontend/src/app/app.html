@@ -1,0 +1,32 @@
+<div
+  class="app-shell"
+  [class.auth-shell]="isAuthPage()"
+  [class.home-shell]="isHomePage()"
+>
+  @if (!isAuthPage()) {
+  <header class="topbar">
+    <a class="brand" routerLink="/home" aria-label="学习小洞天首页">
+      <span class="brand-mark">洞</span>
+      <span class="brand-text">学习小洞天</span>
+    </a>
+
+    <nav class="nav-links" aria-label="主导航">
+      @for (item of navItems(); track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.exact }"
+        >
+          {{ item.label }}
+        </a>
+      }
+    </nav>
+
+    <a class="login-link" routerLink="/login">登录</a>
+  </header>
+  }
+
+  <main class="page-frame">
+    <router-outlet />
+  </main>
+</div>

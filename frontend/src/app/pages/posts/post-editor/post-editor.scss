@@ -1,0 +1,50 @@
+.editor {
+  padding: 32px;
+  border: 1px solid #dfe7f4;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+h1 {
+  margin: 0 0 24px;
+}
+
+form {
+  display: grid;
+  gap: 18px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+  color: #334155;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  width: fit-content;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #1d4ed8;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+button:disabled {
+  background: #94a3b8;
+}

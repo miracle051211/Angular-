@@ -1,0 +1,1044 @@
+a, abbr, acronym, address, applet, article, aside, audio, b, big, blockquote, body, canvas, caption, center, cite, code, dd, del, details, dfn, div, dl, dt, em, embed, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, html, i, iframe, img, ins, kbd, label, legend, li, mark, menu, nav, object, ol, output, p, pre, q, ruby, s, samp, section, small, span, strike, strong, sub, summary, sup, table, tbody, td, tfoot, th, thead, time, tr, tt, u, ul, var, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    vertical-align: baseline;
+    list-style: none;
+
+}
+a{
+  color:#339966;
+}
+
+/* 现代化导航条样式 */
+.modern-navbar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  height: auto;
+  min-height: 70px;
+}
+
+/* 导航栏切换按钮样式 */
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: white !important;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  margin-right: 10px;
+}
+
+.navbar-nav .nav-item {
+  margin: 0 5px;
+}
+
+.navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  padding: 0.75rem 1rem !important;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.navbar-nav .nav-link:hover {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.navbar-nav .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white !important;
+}
+
+/* 通知图标样式 */
+.notification-menu {
+  position: relative;
+}
+
+.notification-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem !important;
+}
+
+.notification-link i {
+  margin: 0;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #dc3545;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 搜索框样式 */
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  transform: translateY(2px);
+}
+
+.modern-search-input {
+  border: none;
+  outline: none;
+  height: 36px;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  border-radius: 20px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 250px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.modern-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.modern-search-input:focus {
+  background-color: rgba(255, 255, 255, 0.3);
+  width: 250px;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  pointer-events: none;
+}
+
+/* 用户菜单样式 */
+.user-menu {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow: visible;
+}
+
+.user-menu:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.avatar-container {
+  display: flex;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.avatar-container:hover .user-avatar {
+  border-color: white;
+  transform: scale(1.05);
+}
+
+.username-text {
+  color: white;
+  margin-left: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  padding-right: 5px;
+}
+
+.dropdown-menu {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 0;
+  margin-top: 10px;
+  background-color: white;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s ease;
+  color: #333;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #667eea;
+}
+
+.dropdown-divider {
+  margin: 0.5rem 0;
+}
+
+.logout-item {
+  color: #dc3545 !important;
+}
+
+.logout-item:hover {
+  background-color: #fff5f5;
+}
+
+/* 管理系统链接样式 */
+.admin-link {
+  border-radius: 8px;
+  margin-right: 10px;
+}
+
+.admin-link:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* 登录/注册链接样式 */
+.login-link, .register-link {
+  border-radius: 8px;
+  margin: 0 5px;
+}
+
+.login-link:hover, .register-link:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 992px) {
+  .navbar-nav {
+    padding: 10px 0;
+  }
+  
+  .navbar-nav .nav-item {
+    margin: 5px 0;
+  }
+  
+  .search-container {
+    margin: 10px 0;
+  }
+  
+  .modern-search-input {
+    width: 100%;
+  }
+  
+  .modern-search-input:focus {
+    width: 100%;
+  }
+  
+  .user-menu {
+    padding: 0.5rem 0 !important;
+  }
+  
+  .username-text {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-logo {
+    height: 35px;
+  }
+  
+  .navbar-nav .nav-link {
+    padding: 0.5rem 0.75rem !important;
+  }
+}
+
+button{
+    outline: none;
+    border: none;
+}
+
+/* 响应式容器布局 */
+.main-container{
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: hidden;
+    padding: 0 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.lg-container{
+    max-width: 800px;
+    width: calc(100% - 300px);
+    float: left;
+    box-sizing: border-box;
+}
+
+.sm-container{
+    margin-top: 20px;
+    max-width: 280px;
+    width: 280px;
+    float: right;
+    box-sizing: border-box;
+}
+
+/* 针对不同屏幕尺寸的响应式调整 */
+@media (max-width: 992px) {
+  .main-container {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+  
+  .lg-container {
+    max-width: 100%;
+    width: 100%;
+    float: none;
+  }
+  
+  .sm-container {
+    max-width: 100%;
+    width: 100%;
+    float: none;
+    margin-top: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    padding: 0 10px;
+    max-width: 100%;
+  }
+  
+  .lg-container {
+    max-width: 100%;
+    width: 100%;
+    float: none;
+  }
+  
+  .sm-container {
+    max-width: 100%;
+    width: 100%;
+    float: none;
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  .main-container {
+    padding: 0 8px;
+    max-width: 100%;
+  }
+  
+  .lg-container {
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .sm-container {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+/* 添加对所有元素的 box-sizing 统一设置，确保响应式布局正确 */
+* {
+  box-sizing: border-box;
+}
+
+/* 确保图片不会超出容器宽度 */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 确保表格在小屏幕上正常显示 */
+table {
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+
+/* 确保文本在小屏幕上不会溢出 */
+p, h1, h2, h3, h4, h5, h6 {
+  word-wrap: break-word;
+}
+
+/* 确保按钮在小屏幕上自适应宽度 */
+button {
+  max-width: 100%;
+}
+
+/* 确保输入框在小屏幕上全宽显示 */
+input, textarea, select {
+  max-width: 100%;
+}
+
+/* 确保列表项在小屏幕上正常显示 */
+ul, ol {
+  padding-left: 20px;
+}
+
+/* 确保块级元素不超出容器 */
+div {
+  max-width: 100%;
+}
+
+/* 导航栏分隔线样式 */
+.navbar-divider {
+    width: 1px;
+    height: 30px;
+    background-color: white;
+    margin: 0 15px;
+    display: flex;
+    align-self: center;
+}
+
+/* 彩虹按钮*/
+button.btn0 {
+  --width: 200px;
+  --timing: 2s;
+  border: 0;
+  width: var(--width);
+  padding-block: 1em;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1em;
+  background: rgb(64, 192, 87);
+  transition: all 0.2s;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+button.btn0:hover {
+  background-image: linear-gradient(
+    to right,
+    rgb(250, 82, 82),
+    rgb(250, 82, 82) 16.65%,
+    rgb(190, 75, 219) 16.65%,
+    rgb(190, 75, 219) 33.3%,
+    rgb(76, 110, 245) 33.3%,
+    rgb(76, 110, 245) 49.95%,
+    rgb(64, 192, 87) 49.95%,
+    rgb(64, 192, 87) 66.6%,
+    rgb(250, 176, 5) 66.6%,
+    rgb(250, 176, 5) 83.25%,
+    rgb(253, 126, 20) 83.25%,
+    rgb(253, 126, 20) 100%,
+    rgb(250, 82, 82) 100%
+  );
+  animation: var(--timing) linear dance6123 infinite;
+  transform: scale(1.1) translateY(-1px);
+}
+
+@keyframes dance6123 {
+  to {
+    background-position: var(--width);
+  }
+}
+/* 彩虹按钮*/
+
+/* 登出按钮*/
+
+.Btn {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition-duration: .3s;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.199);
+  background-color: rgb(82, 79, 79);
+}
+
+/* plus sign */
+.sign {
+  width: 100%;
+  transition-duration: .3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sign svg {
+  width: 17px;
+}
+
+.sign svg path {
+  fill: white;
+}
+/* text */
+.text1 {
+  position: absolute;
+  right: 0%;
+  width: 0%;
+  opacity: 0;
+  color: white;
+  font-size: 1.2em;
+  font-weight: 600;
+  transition-duration: .3s;
+}
+/* hover effect on button width */
+.Btn:hover {
+  width: 125px;
+  border-radius: 40px;
+  transition-duration: .3s;
+}
+
+.Btn:hover .sign {
+  width: 30%;
+  transition-duration: .3s;
+  padding-left: 20px;
+}
+/* hover effect button's text */
+.Btn:hover .text1 {
+  opacity: 1;
+  width: 60%;
+  transition-duration: .3s;
+  padding-right: 10px;
+}
+/* button click effect*/
+.Btn:active {
+  transform: translate(2px ,2px);
+}
+
+/* 登出按钮*/
+
+
+/*登录样式*/
+.subscribe {
+  position: relative;
+  width: 80%;
+
+  margin:0 auto;
+  max-width: 400px;
+  padding: 40px;
+  background-color: #FFF;
+  border-radius: 4px;
+  color: #333;
+  box-shadow: 0px 10px 10px 10px rgba(0, 0, 0, 0.15);
+}
+
+.subscribe:after {
+  position: absolute;
+  content: "";
+  right: -10px;
+  bottom: 60px;
+  width: 0;
+  height: 0;
+  border-left: 0px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #1a044e;
+}
+
+.subscribe p {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  line-height: 28px;
+  margin-bottom: 30px;
+}
+
+.subscribe input {
+  border: none;
+  border-bottom:1px solid #d4d4d4;
+  padding: 10px;
+  width: 100%;
+  background: transparent;
+  transition: all .25s ease;
+}
+
+.subscribe input:focus {
+  outline: none;
+  border-bottom: 1px solid #0d095e;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', 'sans-serif';
+}
+
+.subscribe .submit-btn {
+  position: absolute;
+  border-radius: 30px;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  background-color: #0f0092;
+  color: #FFF;
+  padding: 12px 25px;
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 5px;
+  right: -10px;
+  bottom: -30px;
+  cursor: pointer;
+  transition: all .25s ease;
+  box-shadow: -5px 0px 10px 0px rgba(26, 26, 26, 0.4);
+}
+
+.subscribe .submit-btn:hover {
+  background-color: #07013d;
+  box-shadow: -5px 6px 20px 0px rgba(88, 88, 88, 0.569);
+}
+/*登录样式*/
+
+/*链接动态效果*/
+
+/*链接动态效果*/
+
+.book {
+  position: relative;
+  margin: 0 auto;
+  border-radius: 10px;
+  width: 220px;
+  height: 300px;
+  background-color: whitesmoke;
+  -webkit-box-shadow: 1px 1px 12px #000;
+  box-shadow: 1px 1px 12px #000;
+  -webkit-transform: preserve-3d;
+  -ms-transform: preserve-3d;
+  transform: preserve-3d;
+  -webkit-perspective: 2000px;
+  perspective: 2000px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  color: #000;
+}
+
+.cover {
+  top: 0;
+  position: absolute;
+  background-color: lightgray;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  cursor: pointer;
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+  -webkit-transform-origin: 0;
+  -ms-transform-origin: 0;
+  transform-origin: 0;
+  -webkit-box-shadow: 1px 1px 12px #000;
+  box-shadow: 1px 1px 12px #000;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.book:hover .cover {
+  -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+  -webkit-transform: rotatey(-80deg);
+  -ms-transform: rotatey(-80deg);
+  transform: rotatey(-80deg);
+}
+
+.p0 {
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+/* 富文本编辑器样式 */
+#editor {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    min-height: 300px;
+}
+
+/* AI辅助创作工具栏样式 */
+.ai-toolbar {
+    margin-bottom: 20px;
+}
+
+.ai-toolbar h5 {
+    color: #333;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.ai-toolbar .btn-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ai-toolbar .btn {
+    position: relative;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.ai-toolbar .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.ai-toolbar .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.ai-toolbar .btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.4);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .ai-toolbar .btn-group {
+        flex-direction: column;
+    }
+    
+    .ai-toolbar .btn {
+        width: 100%;
+    }
+}
+
+/* 顶部搜索栏 */
+.baseinput {
+  border: none;
+  outline: none;
+  height: 20px;
+  margin: auto;
+  border-radius: 15px;
+  padding: 1em;
+  background-color: #ccc;
+  box-shadow: inset 2px 5px 10px rgba(0,0,0,0.3);
+  transition: 300ms ease-in-out;
+}
+
+.baseinput:focus {
+  background-color: white;
+  transform: scale(1.05);
+  box-shadow: 13px 13px 100px #969696,
+             -13px -13px 100px #ffffff;
+}
+
+/* 浮动提示信息样式 */
+.flash-messages-container {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 10000;
+  max-width: 350px;
+  animation: fadeInRight 0.5s ease-in-out;
+}
+
+.flash-message {
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.flash-message:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+/* 顶部搜索栏 */
+
+/* WangEditor 弹窗美化样式 - 修复宽度和显示问题 */
+.w-e-modal {
+    border-radius: 8px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+    border: none !important;
+    max-width: 90vw !important;
+    width: 90vw !important;
+    min-width: 600px !important;
+    height: auto !important;
+    margin: auto !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 9999 !important;
+    display: block !important;
+}
+
+/* WangEditor 下拉面板样式 */
+.w-e-panel-container {
+    position: absolute !important;
+    width: auto !important;
+    min-width: 200px !important;
+    max-width: 90vw !important;
+    z-index: 9999 !important;
+    transform: none !important;
+    background-color: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid #ddd !important;
+}
+
+/* 针对唯一类名的深度样式覆盖 */
+.my-wang-editor .w-e-panel-container {
+    position: absolute !important;
+    z-index: 9999 !important;
+    transform: none !important;
+    width: auto !important;
+    min-width: 250px !important;
+}
+
+.my-wang-editor .w-e-popup {
+    position: absolute !important;
+    z-index: 9999 !important;
+    transform: none !important;
+    width: auto !important;
+    min-width: 200px !important;
+}
+
+/* WangEditor 弹窗样式 */
+.w-e-popup {
+    position: absolute !important;
+    z-index: 9999 !important;
+    transform: none !important;
+    width: auto !important;
+    min-width: 200px !important;
+    max-width: 90vw !important;
+    background-color: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid #ddd !important;
+}
+
+/* 确保所有子元素的样式都正确应用 */
+.w-e-modal *, .w-e-panel-container *, .w-e-popup * {
+    box-sizing: border-box !important;
+}
+
+.w-e-modal-header {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    padding: 1rem 1.5rem !important;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.w-e-modal-header-title {
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+    color: #495057 !important;
+}
+
+.w-e-modal-close {
+    color: #6c757d !important;
+    font-size: 1.5rem !important;
+    opacity: 0.7 !important;
+    transition: opacity 0.2s ease !important;
+}
+
+.w-e-modal-close:hover {
+    opacity: 1 !important;
+    color: #495057 !important;
+}
+
+.w-e-modal-content {
+    padding: 1.5rem !important;
+    background-color: white !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+}
+
+.w-e-modal-content .form-group {
+    margin-bottom: 1.5rem !important;
+}
+
+.w-e-modal-content .form-group:last-child {
+    margin-bottom: 0 !important;
+}
+
+.w-e-modal-content label {
+    font-weight: 500 !important;
+    color: #495057 !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+}
+
+.w-e-modal-content input.form-control,
+.w-e-modal-content textarea.form-control,
+.w-e-modal-content select.form-control {
+    border: 1px solid #ced4da !important;
+    border-radius: 0.25rem !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+
+.w-e-modal-content input.form-control:focus,
+.w-e-modal-content textarea.form-control:focus,
+.w-e-modal-content select.form-control:focus {
+    border-color: #80bdff !important;
+    outline: 0 !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+}
+
+.w-e-modal-content textarea.form-control {
+    resize: vertical !important;
+}
+
+.w-e-modal-content .btn {
+    padding: 0.5rem 1rem !important;
+    font-size: 1rem !important;
+    border-radius: 0.25rem !important;
+    font-weight: 400 !important;
+    transition: all 0.2s ease !important;
+}
+
+.w-e-modal-content .btn-primary {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
+
+.w-e-modal-content .btn-primary:hover {
+    background-color: #0069d9 !important;
+    border-color: #0062cc !important;
+}
+
+.w-e-modal-content .btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+.w-e-modal-content .btn-secondary:hover {
+    background-color: #545b62 !important;
+    border-color: #4e555b !important;
+}
+
+.w-e-modal-content .form-text.text-muted {
+    color: #6c757d !important;
+    margin-top: 0.25rem !important;
+    font-size: 0.875rem !important;
+}
+
+/* WangEditor 弹窗遮罩层美化 */
+.w-e-modal-mask {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    z-index: 9998 !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+}
+
+/* WangEditor 工具栏按钮美化 */
+.w-e-toolbar {
+    border-radius: 8px 8px 0 0 !important;
+    border: 1px solid #ddd !important;
+    background-color: #f8f9fa !important;
+    padding: 0.5rem !important;
+    z-index: 2 !important;
+}
+
+.w-e-menu {
+    z-index: 2 !important;
+}
+
+.w-e-text-container {
+    border-radius: 0 0 8px 8px !important;
+    border: 1px solid #ddd !important;
+    border-top: none !important;
+    background-color: white !important;
+    z-index: 1 !important;
+}
+
+.w-e-toolbar-item {
+    margin: 0 0.25rem !important;
+}
+
+.w-e-toolbar-item button {
+    border-radius: 4px !important;
+    padding: 0.25rem 0.5rem !important;
+    transition: all 0.2s ease !important;
+}
+
+.w-e-toolbar-item button:hover {
+    background-color: #e9ecef !important;
+    border-color: #dee2e6 !important;
+}
+
+/* WangEditor 编辑器内容区域样式 */
+.w-e-text-container {
+    border-radius: 0 0 8px 8px !important;
+    border: 1px solid #ddd !important;
+    border-top: none !important;
+    background-color: white !important;
+}
+
+/* WangEditor 代码块样式 */
+.w-e-text-container pre {
+    background-color: #f8f9fa !important;
+    border-radius: 4px !important;
+    padding: 1rem !important;
+    border: 1px solid #e9ecef !important;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace !important;
+    font-size: 0.875rem !important;
+    line-height: 1.5 !important;
+}

@@ -1,0 +1,30 @@
+{% extends "cms/base.html" %}
+
+{% block title -%}
+  添加新板块
+{%- endblock %}
+
+{% block head %}
+{% endblock %}
+
+{% block page_title -%}
+  {{ self.title() }}
+{%- endblock %}
+
+{% block main_content %}
+  <form action="{{ url_for('cms.add_board') }}" method="post">
+    <input type="hidden" name = "csrf_token" value = "{{ csrf_token() }}">
+
+    <div class="form-container">
+      <div class="form-group form-inline">
+        <label for="email">板块名称：</label>
+        <input id="boardname" type="text" class="form-control" name="boardname" placeholder="boardname">
+      </div>
+
+      <div class="form-group">
+        <button class="btn btn-primary" id="submit">立即添加</button>
+      </div>
+    </div>
+  </form>
+
+{% endblock %}

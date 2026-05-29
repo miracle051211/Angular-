@@ -1,0 +1,23 @@
+<section class="page-heading">
+  <div>
+    <h1>帖子列表</h1>
+    <p>后续这里会通过 HttpClient 调用 Flask `/api/posts`。</p>
+  </div>
+  <a routerLink="/posts/new">发布帖子</a>
+</section>
+
+<section class="post-list">
+  @for (post of posts(); track post.id) {
+    <article>
+      <div>
+        <span>{{ post.board }}</span>
+        <h2>
+          <a [routerLink]="['/posts', post.id]">{{ post.title }}</a>
+        </h2>
+      </div>
+      <strong>{{ post.comments }} 条评论</strong>
+    </article>
+  } @empty {
+    <p class="empty">暂无帖子</p>
+  }
+</section>

@@ -1,0 +1,13 @@
+<section class="page-heading">
+  <h1>板块</h1>
+  <p>板块数据后续会对接 Flask `/api/boards`，并用于帖子筛选。</p>
+</section>
+
+<section class="board-grid">
+  @for (board of boards(); track board.id) {
+    <article>
+      <h2>{{ board.name }}</h2>
+      <p>{{ board.description }}</p>
+    </article>
+  }
+</section>

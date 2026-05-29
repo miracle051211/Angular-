@@ -1,0 +1,285 @@
+/* 全局样式重置 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 确保内容区域完全居中 */
+.lg-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* 确保父容器也支持居中 */
+.container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* 修改main-container样式，确保内容居中 - 使用更具体的选择器覆盖base.css中的样式 */
+body .main-container {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    overflow: visible !important;
+    max-width: 100% !important;
+}
+
+/* 修改lg-container样式，确保内容居中 - 使用更具体的选择器覆盖base.css中的样式 */
+body .lg-container {
+    width: 100% !important;
+    float: none !important;
+    max-width: 700px !important;
+    margin: 40px auto !important;
+    padding: 0 !important;
+}
+
+/* 清除任何可能影响布局的浮动 */
+.comment-item::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.post-container{
+    border: 1px solid #e6e6e6;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.post-container:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    background-color: #fafafa;
+}
+
+.post-info-group{
+    font-size: 12px;
+    color: #8c8c8c;
+    border-bottom: 1px solid #e6e6e6;
+    margin-top: 20px;
+    padding-bottom: 10px;
+}
+
+.post-info-group span{
+    margin-right: 20px;
+}
+
+.post-content{
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.post-content img{
+    max-width: 100%;
+    display: block;
+    margin: 15px auto;
+}
+
+.sm-container {
+    display: none; /* 隐藏空的侧边栏，使页面更加集中 */
+}
+
+.comment-group{
+    margin-top: 20px;
+    border: 1px solid #e8e8e8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.comment-group:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+    background-color: #fafafa;
+}
+
+.comment-list-group{
+    margin-top: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+.add-comment-group{
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.add-comment-group:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.add-comment-group textarea.form-control{
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    resize: vertical;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.add-comment-group textarea.form-control:focus{
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    background-color: #f8f9fa;
+}
+
+.add-comment-group h3{
+    margin-bottom: 10px;
+}
+
+.comment-btn-group{
+    margin-top: 15px;
+    text-align:right;
+}
+
+.btn-primary{
+    transition: all 0.3s ease;
+    padding: 8px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.btn-primary:hover{
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.comment-list-group li{
+    overflow: hidden;
+    padding: 15px 0;
+    border-bottom: 1px solid #e8e8e8;
+    transition: all 0.3s ease;
+    transform-origin: center;
+    cursor: pointer;
+}
+
+.comment-list-group li:hover{
+    transform: translateX(10px) translateY(-3px);
+    box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 15px 20px;
+    margin-bottom: 5px;
+}
+
+.avatar-group{
+    float: left;
+}
+
+.avatar-group img{
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.comment-content{
+    float: left;
+    margin-left:10px;
+}
+
+.comment-content .author-info{
+    font-size: 12px;
+    color: #8c8c8c;
+}
+
+.author-info span{
+    margin-right: 10px;
+}
+
+.comment-content .comment-txt{
+    margin-top: 10px;
+}
+
+/* 点赞按钮样式 */
+.like-btn {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.like-btn:hover {
+    transform: scale(1.1);
+}
+
+.like-btn .fa-heart {
+    transition: all 0.3s ease;
+    margin-right: 5px;
+}
+
+/* 已点赞状态 */
+.like-btn.btn-primary .fa-heart {
+    color: #dc3545;
+    animation: heartBeat 0.6s ease-in-out;
+}
+
+/* 未点赞状态 */
+.like-btn.btn-light .fa-heart {
+    color: #6c757d;
+}
+
+.like-btn.btn-light:hover .fa-heart {
+    color: #dc3545;
+    transform: scale(1.2);
+}
+
+/* 点赞数量 */
+.like-count {
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+/* 心形跳动动画 */
+@keyframes heartBeat {
+    0% {
+        transform: scale(1);
+    }
+    14% {
+        transform: scale(1.3);
+    }
+    28% {
+        transform: scale(1);
+    }
+    42% {
+        transform: scale(1.3);
+    }
+    70% {
+        transform: scale(1);
+    }
+}
+
+/* 评论点赞按钮 */
+.comment-action-group .like-btn {
+    margin-right: 5px;
+}
+
+.reply-action-group .like-btn {
+    margin-right: 5px;
+}
+

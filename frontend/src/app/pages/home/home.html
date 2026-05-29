@@ -1,0 +1,53 @@
+<section class="home-content">
+  <app-hero-visual />
+
+  <section class="portal-grid">
+    <div class="section-heading">
+      <h2>社区动态</h2>
+      <p>把高校门户的信息组织方式，转化成学习社区里的帖子、板块和公告。</p>
+    </div>
+
+    <div class="highlight-list">
+      @for (item of highlights(); track item.title) {
+        <a routerLink="/posts">
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.meta }}</span>
+        </a>
+      }
+    </div>
+
+    <aside class="stats-panel" aria-label="社区概览">
+      @for (stat of stats(); track stat.label) {
+        <div>
+          <strong>{{ stat.value }}</strong>
+          <span>{{ stat.label }}</span>
+        </div>
+      }
+    </aside>
+  </section>
+
+  <section class="feature-section">
+    @for (feature of features(); track feature.title) {
+      <article>
+        <h2>{{ feature.title }}</h2>
+        <p>{{ feature.description }}</p>
+      </article>
+    }
+  </section>
+
+  <section class="workflow-section">
+    <div>
+      <h2>完整业务流程，一条线跑通</h2>
+      <p>课程作业要求的注册、登录、列表、详情、新增、编辑、删除和权限提示，都可以围绕这条主流程展开。</p>
+    </div>
+
+    <ol>
+      @for (item of workflow(); track item; let index = $index) {
+        <li>
+          <span>{{ index + 1 }}</span>
+          {{ item }}
+        </li>
+      }
+    </ol>
+  </section>
+</section>

@@ -1,0 +1,26 @@
+<section class="editor">
+  <h1>{{ postId ? '编辑帖子' : '发布帖子' }}</h1>
+
+  <form [formGroup]="form">
+    <label>
+      标题
+      <input formControlName="title" />
+    </label>
+
+    <label>
+      板块
+      <select formControlName="boardId">
+        <option [value]="1">洞天日常</option>
+        <option [value]="2">有问有答</option>
+        <option [value]="3">项目分享</option>
+      </select>
+    </label>
+
+    <label>
+      内容
+      <textarea formControlName="content" rows="8"></textarea>
+    </label>
+
+    <button type="button" [disabled]="form.invalid">保存</button>
+  </form>
+</section>

@@ -1,0 +1,62 @@
+{% extends 'front/base.html' %}
+
+{% block title %}
+  私信中心
+{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static',filename='front/css/notifications.css') }}">
+{% endblock %}
+
+{% block body %}
+  <div class="lg-container">
+    <div class="notification-card">
+      <div class="notification-header">
+        <h2 class="page-title">私信中心</h2>
+        {% if unread_count > 0 %}
+          <a href="{{ url_for('user.mark_all_messages_read') }}" class="btn btn-sm btn-primary">标记全部已读</a>
+        {% endif %}
+        {% if messages %}
+          <a href="{{ url_for('user.clear_all_messages') }}" class="btn btn-sm btn-danger" onclick="return confirm('确定要清除所有私信吗？');">清除所有私信</a>
+        {% endif %}
+        <a href="{{ url_for('user.send_message') }}" class="btn btn-sm btn-primary">发送新消息</a>
+      </div>
+      
+      {% if messages %}
+        <div class="notification-list">
+          {% for message in messages %}
+            <div class="notification-item {% if not message.is_read %}unread{% endif %}">
+              <div class="notification-content">
+                <div class="notification-type badge badge-primary">
+                  新消息
+                </div>
+                <div class="notification-text">
+                  <strong>{{ message.sender.username }}</strong>: {{ message.content[:50] }}{% if message.content|length > 50 %}...{% endif %}
+                </div>
+                <div class="notification-meta">
+                  <span class="notification-time">{{ message.create_time.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                  <span class="notification-sender">来自: {{ message.sender.username }}</span>
+                </div>
+              </div>
+              <div class="notification-actions">
+                {% if not message.is_read %}
+                  <a href="{{ url_for('user.mark_message_read', message_id=message.id) }}" class="btn btn-sm btn-primary">标记已读</a>
+                {% else %}
+                  <span class="text-muted">已读</span>
+                {% endif %}
+                <a href="{{ url_for('user.view_message', message_id=message.id) }}" class="btn btn-sm btn-light">查看详情</a>
+                <a href="{{ url_for('user.send_message', receiver_id=message.sender.id) }}" class="btn btn-sm btn-light">回复</a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-notifications">
+          <i class="fas fa-comment-dots"></i>
+          <p>暂无私信</p>
+          <a href="{{ url_for('user.send_message') }}" class="btn btn-primary">发送第一条私信</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
