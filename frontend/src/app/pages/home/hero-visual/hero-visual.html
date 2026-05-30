@@ -1,13 +1,193 @@
-<section class="hero-visual">
-  <div class="hero-content">
-    <p class="eyebrow">学习社区 · Angular 前端</p>
-    <h1>学习小洞天</h1>
-    <p class="hero-lede">
-      面向课程学习与项目交流的校园社区，支持帖子、板块、评论和用户权限等基础流程。
-    </p>
-    <div class="hero-actions">
-      <a routerLink="/posts">进入社区</a>
-      <a routerLink="/boards" class="secondary">浏览板块</a>
+<section class="hero-visual" aria-labelledby="hero-title">
+  <div class="hero-stage" #stage>
+    <div class="hero-word">
+      <div class="miracle-plant plant-m" aria-hidden="true">
+        <div class="letter letter-m">
+          <svg class="letter-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="letter-piece piece-m-left" d="M0 0 L33 17 L33 100 L0 100 Z" fill="#ff4b16"></path>
+            <path class="letter-piece piece-m-right" d="M67 17 L100 0 L100 100 L67 100 Z" fill="#ff9ead"></path>
+            <path class="letter-piece piece-m-v" d="M16 24 L50 58 L84 24 L84 79 L16 79 Z" fill="#325bdc"></path>
+            <path class="letter-piece piece-m-sun" d="M16 100 A24 17 0 0 1 64 100 Z" fill="#ffc84f"></path>
+          </svg>
+        </div>
+        <svg class="plant-stem stem-long" viewBox="0 0 90 260" preserveAspectRatio="none">
+          <circle cx="45" cy="16" r="8"></circle>
+          <path d="M45 24 C45 92 45 170 45 258"></path>
+        </svg>
+      </div>
+
+      <div class="miracle-plant plant-i" aria-hidden="true">
+        <div class="letter letter-i">
+          <svg class="letter-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="letter-piece piece-i-body" d="M28 0 H72 V100 H28 Z" fill="#68c3a9"></path>
+            <path class="letter-piece piece-i-cap" d="M28 0 H72 V18 H28 Z" fill="#69bfef"></path>
+            <path class="letter-piece piece-i-glass" d="M28 18 H72 V31 H28 Z" fill="rgba(255,255,255,.28)"></path>
+          </svg>
+        </div>
+        <svg class="plant-stem stem-long" viewBox="0 0 90 260" preserveAspectRatio="none">
+          <circle cx="45" cy="16" r="8"></circle>
+          <path d="M45 24 C45 92 45 170 45 258"></path>
+        </svg>
+      </div>
+
+      <div class="miracle-plant plant-r" aria-hidden="true">
+        <div class="letter letter-r">
+          <svg class="letter-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="letter-piece piece-r-stem" d="M8 50 H40 V100 H8 Z" fill="#3159d8"></path>
+            <path class="letter-piece piece-r-bowl" d="M8 0 H56 C78 0 92 10 92 25 C92 40 78 50 56 50 H8 Z" fill="#ffd06b"></path>
+            <path class="letter-piece piece-r-leg" d="M56 50 H70 L88 100 H70 Z" fill="#ff8b9b"></path>
+          </svg>
+        </div>
+        <svg class="plant-stem stem-mid" viewBox="0 0 90 230" preserveAspectRatio="none">
+          <circle cx="45" cy="16" r="8"></circle>
+          <path d="M45 24 C45 82 45 152 45 228"></path>
+        </svg>
+      </div>
+
+      <div class="miracle-plant plant-a" aria-hidden="true">
+        <div class="letter letter-a">
+          <svg class="letter-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="letter-piece piece-a-triangle" d="M50 0 L96 100 H4 Z" fill="#ff4b16"></path>
+            <path class="letter-piece piece-a-cut" d="M50 58 L66 100 H34 Z" fill="#66c4ad"></path>
+          </svg>
+        </div>
+        <svg class="plant-stem stem-short" viewBox="0 0 90 178" preserveAspectRatio="none">
+          <circle cx="45" cy="16" r="8"></circle>
+          <path d="M45 24 C45 64 45 116 45 176"></path>
+        </svg>
+      </div>
+
+      <div class="miracle-plant plant-c" aria-hidden="true">
+        <div class="letter letter-c">
+          <svg class="letter-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path
+              class="letter-piece piece-c-ring"
+              fill="#325bdc"
+              fill-rule="evenodd"
+              d="M83 12 A45 45 0 1 0 83 88 L69 72 A26 26 0 1 1 69 28 Z"
+            ></path>
+            <circle class="letter-piece piece-c-core" cx="57" cy="50" r="18" fill="#66c4ad"></circle>
+          </svg>
+        </div>
+        <svg class="plant-stem stem-short" viewBox="0 0 90 178" preserveAspectRatio="none">
+          <circle cx="45" cy="16" r="8"></circle>
+          <path d="M45 24 C45 64 45 116 45 176"></path>
+        </svg>
+      </div>
+
+      <div class="miracle-plant plant-l" aria-hidden="true">
+        <div class="letter letter-l">
+          <svg class="letter-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="letter-piece piece-l-stem" d="M12 0 H48 V72 H12 Z" fill="#ff6974"></path>
+            <path class="letter-piece piece-l-foot" d="M12 72 H94 V100 H12 Z" fill="#ffc84f"></path>
+          </svg>
+        </div>
+        <svg class="plant-stem stem-mid" viewBox="0 0 90 230" preserveAspectRatio="none">
+          <circle cx="45" cy="16" r="8"></circle>
+          <path d="M45 24 C45 82 45 152 45 228"></path>
+        </svg>
+      </div>
+
+      <div class="miracle-plant plant-e" aria-hidden="true">
+        <div class="letter letter-e">
+          <svg class="letter-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="letter-piece piece-e-curve" d="M54 0 A50 50 0 0 0 54 100 H54 V78 H48 V62 H54 V38 H48 V22 H54 Z" fill="#66c4ad"></path>
+            <path class="letter-piece piece-e-top" d="M54 0 H100 V22 H54 Z" fill="#ff5f6c"></path>
+            <path class="letter-piece piece-e-mid" d="M54 38 H96 V62 H54 Z" fill="#ffc84f"></path>
+            <path class="letter-piece piece-e-bottom" d="M54 78 H100 V100 H54 Z" fill="#56afea"></path>
+          </svg>
+        </div>
+        <svg class="plant-stem stem-long" viewBox="0 0 90 260" preserveAspectRatio="none">
+          <circle cx="45" cy="16" r="8"></circle>
+          <path d="M45 24 C45 92 45 170 45 258"></path>
+        </svg>
+      </div>
+
+      <svg
+        class="hero-render"
+        viewBox="0 0 1920 1080"
+        fill="none"
+        overflow="visible"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <path
+          class="hero-render-edge"
+          d="M0 1080 C 420 1080 720 1080 960 1080 C 1200 1080 1500 1080 1920 1080"
+        >
+          <animate
+            attributeName="d"
+            dur="2.72s"
+            begin="0s"
+            fill="freeze"
+            calcMode="spline"
+            keyTimes="0;0.2;0.46;0.7;0.84;0.93;1"
+            keySplines="
+              0.22 0.86 0.3 1;
+              0.22 0.74 0.28 1;
+              0.22 0 0.2 1;
+              0.24 0 0.18 1;
+              0.18 0 0.2 1;
+              0.2 0.72 0.28 1
+            "
+            values="
+              M0 0 C 480 0 720 0 960 0 C 1200 0 1440 0 1920 0;
+              M0 0 C 480 0 720 0 960 0 C 1200 0 1440 0 1920 0;
+              M0 888 C 210 888 610 446 960 446 C 1310 446 1710 888 1920 888;
+              M0 1102 C 330 1102 690 1012 960 1012 C 1230 1012 1590 1102 1920 1102;
+              M0 1060 C 360 1060 706 1096 960 1096 C 1214 1096 1560 1060 1920 1060;
+              M0 1084 C 390 1084 726 1072 960 1072 C 1194 1072 1530 1084 1920 1084;
+              M0 1080 C 420 1080 720 1080 960 1080 C 1200 1080 1500 1080 1920 1080
+            "
+          />
+          <animate
+            attributeName="opacity"
+            dur="2.95s"
+            begin="0s"
+            fill="freeze"
+            calcMode="spline"
+            keyTimes="0;0.2;0.46;0.76;0.9;1"
+            keySplines="
+              0.22 0.86 0.3 1;
+              0.18 0.7 0.22 1;
+              0.22 0.1 0.22 1;
+              0.3 0 0.24 1;
+              0.2 0.7 0.28 1
+            "
+            values="0;0;0.84;0.58;0.34;0.44"
+          />
+        </path>
+        <path
+          class="hero-render-path"
+          d="M0 1080 C 420 1080 720 1080 960 1080 C 1200 1080 1500 1080 1920 1080 L1920 1080 L0 1080 Z"
+        >
+          <animate
+            attributeName="d"
+            dur="2.72s"
+            begin="0s"
+            fill="freeze"
+            calcMode="spline"
+            keyTimes="0;0.2;0.46;0.7;0.84;0.93;1"
+            keySplines="
+              0.22 0.86 0.3 1;
+              0.22 0.74 0.28 1;
+              0.22 0 0.2 1;
+              0.24 0 0.18 1;
+              0.18 0 0.2 1;
+              0.2 0.72 0.28 1
+            "
+            values="
+              M0 0 C 480 0 720 0 960 0 C 1200 0 1440 0 1920 0 L1920 1080 L0 1080 Z;
+              M0 0 C 480 0 720 0 960 0 C 1200 0 1440 0 1920 0 L1920 1080 L0 1080 Z;
+              M0 888 C 210 888 610 446 960 446 C 1310 446 1710 888 1920 888 L1920 1080 L0 1080 Z;
+              M0 1102 C 330 1102 690 1012 960 1012 C 1230 1012 1590 1102 1920 1102 L1920 1080 L0 1080 Z;
+              M0 1060 C 360 1060 706 1096 960 1096 C 1214 1096 1560 1060 1920 1060 L1920 1080 L0 1080 Z;
+              M0 1084 C 390 1084 726 1072 960 1072 C 1194 1072 1530 1084 1920 1084 L1920 1080 L0 1080 Z;
+              M0 1080 C 420 1080 720 1080 960 1080 C 1200 1080 1500 1080 1920 1080 L1920 1080 L0 1080 Z
+            "
+          />
+        </path>
+      </svg>
     </div>
   </div>
 </section>

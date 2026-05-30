@@ -4,16 +4,20 @@
 
 .home-content {
   display: grid;
-  width: min(1180px, calc(100% - 40px));
   gap: 28px;
+  width: 100%;
   margin: 0 auto 64px;
-  padding-top: 32px;
+  padding-top: 0;
+  background: #ffffff;
 }
 
 .portal-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.25fr) 260px;
   gap: 16px;
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding-top: 34px;
 }
 
 .section-heading,
@@ -117,6 +121,8 @@ p {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
 }
 
 .feature-section article {
@@ -129,6 +135,8 @@ p {
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
   gap: 28px;
   align-items: center;
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
   padding: 32px;
 }
 
@@ -175,7 +183,12 @@ li span {
 
 @media (max-width: 640px) {
   .home-content {
+    padding-top: 0;
+  }
+
+  .portal-grid,
+  .feature-section,
+  .workflow-section {
     width: min(100% - 28px, 1180px);
-    padding-top: 24px;
   }
 }

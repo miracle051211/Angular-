@@ -4,6 +4,7 @@
 
 html {
   min-height: 100%;
+  scroll-behavior: auto;
   color-scheme: light;
   font-family:
     Inter, "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
@@ -12,6 +13,7 @@ html {
 body {
   min-height: 100%;
   margin: 0;
+  overscroll-behavior-y: none;
 }
 
 button,

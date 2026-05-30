@@ -2,27 +2,72 @@
   class="app-shell"
   [class.auth-shell]="isAuthPage()"
   [class.home-shell]="isHomePage()"
+  [class.is-nav-solid]="hasScrolled()"
+  [class.is-nav-hidden]="shouldHideNav()"
 >
   @if (!isAuthPage()) {
-  <header class="topbar">
-    <a class="brand" routerLink="/home" aria-label="学习小洞天首页">
-      <span class="brand-mark">洞</span>
-      <span class="brand-text">学习小洞天</span>
-    </a>
+  <header class="site-head">
+    <div class="site-head__inner">
+      <div class="site-head__background" aria-hidden="true"></div>
 
-    <nav class="nav-links" aria-label="主导航">
-      @for (item of navItems(); track item.path) {
-        <a
-          [routerLink]="item.path"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{ exact: item.exact }"
+      <a class="brand" routerLink="/home" aria-label="学习小洞天首页">
+        <span class="brand-mark">洞</span>
+        <span class="brand-text">学习小洞天</span>
+      </a>
+
+      <nav class="nav-links" aria-label="主导航">
+        @for (item of navItems(); track item.path) {
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: item.exact }"
+            (mouseenter)="playNavRope($event)"
+            (click)="popNavText($event)"
+          >
+            <span class="nav-text">{{ item.label }}</span>
+            <svg
+              class="nav-line"
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="none"
+              overflow="visible"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <path d="M 0 7 Q 5 7 10 7"></path>
+              <path d="M 0 7 Q 5 7 10 7"></path>
+            </svg>
+          </a>
+        }
+      </nav>
+
+      <a class="login-link" routerLink="/login">
+        <svg
+          class="login-background"
+          viewBox="0 0 120 56"
+          fill="none"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+          focusable="false"
         >
-          {{ item.label }}
-        </a>
-      }
-    </nav>
-
-    <a class="login-link" routerLink="/login">登录</a>
+          <path d="M28 1H92C106.912 1 119 13.0883 119 28C119 42.9117 106.912 55 92 55H28C13.0883 55 1 42.9117 1 28C1 13.0883 13.0883 1 28 1Z"></path>
+        </svg>
+        <span class="login-label">登录</span>
+        <span class="login-arrow-shell">
+          <svg
+            class="login-arrow"
+            viewBox="0 0 18 18"
+            fill="none"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path d="M4 9H13"></path>
+            <path d="M9.5 5L13.5 9L9.5 13"></path>
+          </svg>
+        </span>
+      </a>
+    </div>
   </header>
   }
 
