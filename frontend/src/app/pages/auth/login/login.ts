@@ -14,6 +14,10 @@ interface PointerOffset {
   readonly y: number;
 }
 
+interface ConfettiPiece {
+  readonly style: string;
+}
+
 @Component({
   selector: 'app-login-page',
   imports: [ReactiveFormsModule, RouterLink],
@@ -23,6 +27,7 @@ interface PointerOffset {
 })
 export class LoginPage {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly timers: number[] = [];
 
   protected readonly form = new FormGroup({
     email: new FormControl('', {
@@ -44,12 +49,30 @@ export class LoginPage {
   protected readonly isLookingAtEachOther = signal(false);
   protected readonly isPurpleBlinking = signal(false);
   protected readonly isBlackBlinking = signal(false);
+  protected readonly isOrangeBlinking = signal(false);
+  protected readonly isYellowBlinking = signal(false);
   protected readonly isPurplePeeking = signal(false);
   protected readonly isSubmitting = signal(false);
+  protected readonly isLoginFailed = signal(false);
+  protected readonly isLoginSuccess = signal(false);
   protected readonly notice = signal<string | null>(null);
   protected readonly modalMessage = signal<string | null>(null);
-
   protected readonly passwordLength = signal(0);
+
+  protected readonly confettiPieces: ConfettiPiece[] = Array.from({ length: 72 }, (_, index) => {
+    const colors = ['#ec5212', '#ffd37d', '#3658d3', '#77c6b3', '#ff8fa3', '#70a2e1'];
+    const left = (index * 37) % 100;
+    const delay = ((index * 13) % 80) / 100;
+    const duration = 4.2 + ((index * 7) % 22) / 10;
+    const width = 5 + (index % 4);
+    const height = 9 + (index % 5);
+    const rotate = (index * 31) % 360;
+
+    return {
+      style: `left:${left}%;background:${colors[index % colors.length]};width:${width}px;height:${height}px;animation-delay:${delay}s;animation-duration:${duration}s;transform:rotate(${rotate}deg);`,
+    };
+  });
+
   protected readonly hasPassword = computed(() => this.passwordLength() > 0);
   protected readonly isPasswordVisible = computed(() => this.hasPassword() && this.showPassword());
   protected readonly isTypingOrPasswordHidden = computed(
@@ -61,9 +84,17 @@ export class LoginPage {
       this.passwordLength.set(value.length);
     });
 
-    this.destroyRef.onDestroy(() => passwordSubscription.unsubscribe());
+    this.destroyRef.onDestroy(() => {
+      passwordSubscription.unsubscribe();
+      for (const timer of this.timers) {
+        window.clearTimeout(timer);
+      }
+    });
+
     this.scheduleBlink(this.isPurpleBlinking, 3000, 7000);
     this.scheduleBlink(this.isBlackBlinking, 3200, 7600);
+    this.scheduleBlink(this.isOrangeBlinking, 3600, 8200);
+    this.scheduleBlink(this.isYellowBlinking, 3300, 7900);
 
     const peekingTimer = window.setInterval(() => {
       if (!this.isPasswordVisible()) {
@@ -71,7 +102,7 @@ export class LoginPage {
       }
 
       this.isPurplePeeking.set(true);
-      window.setTimeout(() => this.isPurplePeeking.set(false), 800);
+      this.addTimer(window.setTimeout(() => this.isPurplePeeking.set(false), 800));
     }, 3500);
 
     this.destroyRef.onDestroy(() => window.clearInterval(peekingTimer));
@@ -94,7 +125,7 @@ export class LoginPage {
   protected focusEmail(): void {
     this.isEmailFocused.set(true);
     this.isLookingAtEachOther.set(true);
-    window.setTimeout(() => this.isLookingAtEachOther.set(false), 800);
+    this.addTimer(window.setTimeout(() => this.isLookingAtEachOther.set(false), 900));
   }
 
   protected blurEmail(): void {
@@ -106,7 +137,9 @@ export class LoginPage {
   }
 
   protected openFeatureModal(): void {
-    this.modalMessage.set('学习小洞天会在这里放置登录提示、课程项目说明或测试账号信息。');
+    this.modalMessage.set(
+      '学习小洞天保留课程作业所需的用户登录入口，后续可接入 Flask 后端完成真实身份校验、发帖权限和个人内容管理。',
+    );
   }
 
   protected closeFeatureModal(): void {
@@ -114,17 +147,26 @@ export class LoginPage {
   }
 
   protected submit(): void {
+    this.notice.set(null);
+    this.isLoginFailed.set(false);
+    this.isLoginSuccess.set(false);
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.notice.set('请先填写正确的邮箱和密码。');
+      this.notice.set('请先填写正确的邮箱和不少于 6 位的密码。');
+      this.flashFailure();
       return;
     }
 
     this.isSubmitting.set(true);
-    window.setTimeout(() => {
-      this.isSubmitting.set(false);
-      this.notice.set('登录接口稍后会接入 Flask 后端 API。');
-    }, 450);
+    this.addTimer(
+      window.setTimeout(() => {
+        this.isSubmitting.set(false);
+        this.isLoginSuccess.set(true);
+        this.notice.set('表单校验已通过，后续可在这里接入后端登录 API。');
+        this.addTimer(window.setTimeout(() => this.isLoginSuccess.set(false), 5200));
+      }, 650),
+    );
   }
 
   protected purpleHeight(): number {
@@ -132,7 +174,7 @@ export class LoginPage {
   }
 
   protected purpleTransform(): string {
-    if (this.isPasswordVisible()) {
+    if (this.isPasswordVisible() || this.isLoginSuccess()) {
       return 'skewX(0deg)';
     }
 
@@ -145,30 +187,60 @@ export class LoginPage {
 
   protected purpleFaceLeft(): number {
     if (this.isPasswordVisible()) {
-      return 20;
+      return 50;
     }
 
     if (this.isLookingAtEachOther()) {
-      return 55;
+      return 85;
     }
 
-    return 45 + this.pointer().x * 15;
+    return 75 + this.pointer().x * 15;
   }
 
   protected purpleFaceTop(): number {
     if (this.isPasswordVisible()) {
-      return 35;
+      return 20;
     }
 
     if (this.isLookingAtEachOther()) {
-      return 65;
+      return 50;
     }
 
-    return 40 + this.pointer().y * 10;
+    return 25 + this.pointer().y * 10;
+  }
+
+  protected purpleMouthLeft(): number {
+    if (this.isPasswordVisible()) {
+      return 72;
+    }
+
+    if (this.isLookingAtEachOther()) {
+      return 106;
+    }
+
+    return 97 + this.pointer().x * 15;
+  }
+
+  protected purpleMouthTop(): number {
+    if (this.isPasswordVisible()) {
+      return 57;
+    }
+
+    if (this.isLookingAtEachOther()) {
+      return 82;
+    }
+
+    return 57 + this.pointer().y * 10;
+  }
+
+  protected purpleMouthCounterSkew(): string {
+    return this.isTypingOrPasswordHidden()
+      ? `skewX(${-1 * (this.bodySkew() - 12)}deg)`
+      : 'skewX(0deg)';
   }
 
   protected blackTransform(): string {
-    if (this.isPasswordVisible()) {
+    if (this.isPasswordVisible() || this.isLoginSuccess()) {
       return 'skewX(0deg)';
     }
 
@@ -204,15 +276,25 @@ export class LoginPage {
   }
 
   protected simpleBodyTransform(): string {
-    return this.isPasswordVisible() ? 'skewX(0deg)' : `skewX(${this.bodySkew()}deg)`;
+    return this.isPasswordVisible() || this.isLoginSuccess()
+      ? 'skewX(0deg)'
+      : `skewX(${this.bodySkew()}deg)`;
   }
 
   protected orangeFaceLeft(): number {
-    return this.isPasswordVisible() ? 50 : 82 + this.pointer().x * 15;
+    return this.isPasswordVisible() ? 80 : 112 + this.pointer().x * 15;
   }
 
   protected orangeFaceTop(): number {
-    return this.isPasswordVisible() ? 85 : 90 + this.pointer().y * 10;
+    return this.isPasswordVisible() ? 55 : 60 + this.pointer().y * 10;
+  }
+
+  protected orangeMouthLeft(): number {
+    return this.isPasswordVisible() ? 94 : 126 + this.pointer().x * 15;
+  }
+
+  protected orangeMouthTop(): number {
+    return this.isPasswordVisible() ? 87 : 92 + this.pointer().y * 10;
   }
 
   protected yellowFaceLeft(): number {
@@ -232,6 +314,10 @@ export class LoginPage {
   }
 
   protected purplePupilTransform(): string {
+    if (this.isLoginSuccess()) {
+      return 'translate(0, 4px)';
+    }
+
     if (this.isPasswordVisible()) {
       return this.isPurplePeeking() ? 'translate(4px, 5px)' : 'translate(-4px, -4px)';
     }
@@ -244,6 +330,10 @@ export class LoginPage {
   }
 
   protected blackPupilTransform(): string {
+    if (this.isLoginSuccess()) {
+      return 'translate(0, 4px)';
+    }
+
     if (this.isPasswordVisible()) {
       return 'translate(-4px, -4px)';
     }
@@ -256,19 +346,34 @@ export class LoginPage {
   }
 
   protected frontPupilTransform(): string {
+    if (this.isLoginSuccess()) {
+      return 'translate(0, 4px)';
+    }
+
     return this.isPasswordVisible() ? 'translate(-5px, -4px)' : this.pupilTransform(5);
+  }
+
+  private flashFailure(): void {
+    this.isLoginFailed.set(true);
+    this.addTimer(window.setTimeout(() => this.isLoginFailed.set(false), 1800));
   }
 
   private scheduleBlink(target: { set(value: boolean): void }, minMs: number, maxMs: number): void {
     const timer = window.setTimeout(() => {
       target.set(true);
-      window.setTimeout(() => {
-        target.set(false);
-        this.scheduleBlink(target, minMs, maxMs);
-      }, 150);
+      this.addTimer(
+        window.setTimeout(() => {
+          target.set(false);
+          this.scheduleBlink(target, minMs, maxMs);
+        }, 150),
+      );
     }, Math.random() * (maxMs - minMs) + minMs);
 
-    this.destroyRef.onDestroy(() => window.clearTimeout(timer));
+    this.addTimer(timer);
+  }
+
+  private addTimer(timer: number): void {
+    this.timers.push(timer);
   }
 
   private bodySkew(multiplier = 1): number {

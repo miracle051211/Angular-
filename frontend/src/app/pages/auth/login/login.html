@@ -1,116 +1,137 @@
 <section class="creative-login" (mousemove)="trackPointer($event)">
   <aside class="illustration-panel" aria-label="互动登录插画">
     <div class="panel-brand">
-      <div class="brand-icon" aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" />
-        </svg>
-      </div>
-      <span>学习小洞天</span>
+      <a class="brand-mark" routerLink="/home" aria-label="返回首页">
+        <span class="brand-icon" aria-hidden="true">洞</span>
+        <span>学习小洞天</span>
+      </a>
+      <button type="button" class="about-button" (click)="openFeatureModal()">课程说明</button>
     </div>
 
-    <div class="characters">
+    <div class="characters" aria-hidden="true">
+      @if (isLoginSuccess()) {
+        <div class="confetti-container">
+          @for (piece of confettiPieces; track piece.style) {
+            <span class="confetti-piece" [style]="piece.style"></span>
+          }
+        </div>
+      }
+
       <div
-        class="character purple-character"
+        class="character purple-character entrance-ready"
+        [class.character--success]="isLoginSuccess()"
+        [class.character--failed]="isLoginFailed()"
         [style.height.px]="purpleHeight()"
         [style.transform]="purpleTransform()"
       >
-        <div
-          class="face purple-face"
-          [style.left.px]="purpleFaceLeft()"
-          [style.top.px]="purpleFaceTop()"
-        >
+        <div class="face purple-face" [style.left.px]="purpleFaceLeft()" [style.top.px]="purpleFaceTop()">
           @for (eye of [1, 2]; track eye) {
             <span class="eye white-eye purple-eye" [class.blinking]="isPurpleBlinking()">
               <span class="pupil purple-pupil" [style.transform]="purplePupilTransform()"></span>
             </span>
           }
         </div>
+        <span
+          class="mouth purple-mouth"
+          [class.mouth--typing]="isTypingOrPasswordHidden() && !isLoginFailed() && !isLoginSuccess()"
+          [class.mouth--sad]="isLoginFailed()"
+          [class.mouth--happy]="isLoginSuccess()"
+          [style.left.px]="purpleMouthLeft()"
+          [style.top.px]="purpleMouthTop()"
+          [style.--counter-skew]="purpleMouthCounterSkew()"
+        ></span>
       </div>
 
-      <div class="character black-character" [style.transform]="blackTransform()">
-        <div
-          class="face black-face"
-          [style.left.px]="blackFaceLeft()"
-          [style.top.px]="blackFaceTop()"
-        >
+      <div
+        class="character black-character entrance-ready"
+        [class.character--success]="isLoginSuccess()"
+        [class.character--failed]="isLoginFailed()"
+        [style.transform]="blackTransform()"
+      >
+        <div class="face black-face" [style.left.px]="blackFaceLeft()" [style.top.px]="blackFaceTop()">
           @for (eye of [1, 2]; track eye) {
-            <span class="eye white-eye black-eye" [class.blinking]="isBlackBlinking()">
+            <span class="eye white-eye black-eye" [class.blinking]="isBlackBlinking()" [class.eye--sad]="isLoginFailed()">
               <span class="pupil black-pupil" [style.transform]="blackPupilTransform()"></span>
             </span>
           }
         </div>
       </div>
 
-      <div class="character orange-character" [style.transform]="simpleBodyTransform()">
-        <div
-          class="face orange-face"
-          [style.left.px]="orangeFaceLeft()"
-          [style.top.px]="orangeFaceTop()"
-        >
+      <div class="character orange-character entrance-ready" [style.transform]="simpleBodyTransform()">
+        <div class="face orange-face" [style.left.px]="orangeFaceLeft()" [style.top.px]="orangeFaceTop()">
           @for (eye of [1, 2]; track eye) {
-            <span class="dot-eye">
-              <span class="pupil dot-pupil" [style.transform]="frontPupilTransform()"></span>
-            </span>
-          }
-        </div>
-      </div>
-
-      <div class="character yellow-character" [style.transform]="simpleBodyTransform()">
-        <div
-          class="face yellow-face"
-          [style.left.px]="yellowFaceLeft()"
-          [style.top.px]="yellowFaceTop()"
-        >
-          @for (eye of [1, 2]; track eye) {
-            <span class="dot-eye">
+            <span class="dot-eye" [class.blinking]="isOrangeBlinking()">
               <span class="pupil dot-pupil" [style.transform]="frontPupilTransform()"></span>
             </span>
           }
         </div>
         <span
-          class="mouth"
+          class="mouth orange-mouth"
+          [class.mouth--typing]="isTypingOrPasswordHidden() && !isLoginFailed() && !isLoginSuccess()"
+          [class.mouth--sad]="isLoginFailed()"
+          [class.mouth--happy]="isLoginSuccess()"
+          [style.left.px]="orangeMouthLeft()"
+          [style.top.px]="orangeMouthTop()"
+        ></span>
+      </div>
+
+      <div class="character yellow-character entrance-ready" [style.transform]="simpleBodyTransform()">
+        <div class="face yellow-face" [style.left.px]="yellowFaceLeft()" [style.top.px]="yellowFaceTop()">
+          @for (eye of [1, 2]; track eye) {
+            <span class="dot-eye" [class.blinking]="isYellowBlinking()">
+              <span class="pupil dot-pupil" [style.transform]="frontPupilTransform()"></span>
+            </span>
+          }
+        </div>
+        <span
+          class="yellow-mouth"
+          [class.yellow-mouth--sad]="isLoginFailed()"
+          [class.yellow-mouth--happy]="isLoginSuccess()"
           [style.left.px]="yellowMouthLeft()"
           [style.top.px]="yellowMouthTop()"
-        ></span>
+        >
+          <svg viewBox="0 0 80 20" aria-hidden="true">
+            <path d="M0 10 Q10 10 20 10 Q30 10 40 10 Q50 10 60 10 Q70 10 80 10"></path>
+          </svg>
+        </span>
       </div>
     </div>
 
     <div class="panel-links" aria-label="辅助链接">
       <a href="#">隐私政策</a>
       <a href="#">服务条款</a>
-      <a href="#">联系我们</a>
+      <a href="#">联系老师</a>
     </div>
   </aside>
 
   <section class="form-panel">
     <div class="mobile-brand">
-      <div class="brand-icon" aria-hidden="true">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" />
-        </svg>
-      </div>
-      <span>学习小洞天</span>
+      <a class="brand-mark" routerLink="/home" aria-label="返回首页">
+        <span class="brand-icon" aria-hidden="true">洞</span>
+        <span>学习小洞天</span>
+      </a>
     </div>
 
     <div class="login-copy">
-      <button type="button" class="feature-heading" (click)="openFeatureModal()">
-        欢迎回来
-      </button>
-      <p>登录后继续发布帖子、参与评论和管理个人内容。</p>
+      <p class="eyebrow">Miracle Study Community</p>
+      <button type="button" class="feature-heading" (click)="openFeatureModal()">欢迎回来</button>
+      <p>登录后继续发帖、浏览板块、参与评论，并管理你的课程学习记录。</p>
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()">
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <label>
         邮箱
         <input
           formControlName="email"
           type="email"
           autocomplete="email"
-          placeholder="zhangsan@163.com"
+          placeholder="student@example.com"
           (focus)="focusEmail()"
           (blur)="blurEmail()"
         />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <span class="field-error">请输入有效邮箱。</span>
+        }
       </label>
 
       <label>
@@ -120,7 +141,7 @@
             formControlName="password"
             [type]="showPassword() ? 'text' : 'password'"
             autocomplete="current-password"
-            placeholder="请输入密码"
+            placeholder="请输入至少 6 位密码"
           />
           <button
             type="button"
@@ -129,20 +150,23 @@
             [attr.aria-label]="showPassword() ? '隐藏密码' : '显示密码'"
           >
             @if (showPassword()) {
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            } @else {
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                 <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
                 <path d="M10.7 5.1A10.4 10.4 0 0 1 12 5c7 0 10 7 10 7a13 13 0 0 1-1.7 2.7" />
                 <path d="M6.6 6.6A13.5 13.5 0 0 0 2 12s3 7 10 7a9.7 9.7 0 0 0 5.4-1.6" />
                 <path d="M2 2l20 20" />
               </svg>
-            } @else {
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
             }
           </button>
         </span>
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <span class="field-error">密码至少需要 6 位。</span>
+        }
       </label>
 
       <div class="form-row">
@@ -154,16 +178,20 @@
       </div>
 
       @if (notice()) {
-        <p class="message">{{ notice() }}</p>
+        <p class="message" [class.message--success]="isLoginSuccess()">{{ notice() }}</p>
       }
 
-      <button class="submit-button" type="submit" [disabled]="form.invalid || isSubmitting()">
-        {{ isSubmitting() ? '登录中...' : '登录' }}
+      <button class="submit-button" type="submit" [disabled]="isSubmitting()">
+        <span>{{ isSubmitting() ? '登录中...' : '登录' }}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+          <path d="M5 12h14" />
+          <path d="m12 5 7 7-7 7" />
+        </svg>
       </button>
     </form>
 
     <button type="button" class="mail-login">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
         <rect width="20" height="16" x="2" y="4" rx="2" />
         <path d="m22 7-9 5.7a1.9 1.9 0 0 1-2 0L2 7" />
       </svg>
@@ -181,9 +209,9 @@
   <div class="modal-backdrop" (click)="closeFeatureModal()">
     <section class="modal-content" (click)="$event.stopPropagation()">
       <header>
-        <h2>提示</h2>
+        <h2>课程作业说明</h2>
         <button type="button" (click)="closeFeatureModal()" aria-label="关闭提示">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
             <path d="M18 6 6 18" />
             <path d="m6 6 12 12" />
           </svg>
@@ -191,7 +219,7 @@
       </header>
       <p>{{ modalMessage() }}</p>
       <footer>
-        <button type="button" (click)="closeFeatureModal()">关闭</button>
+        <button type="button" (click)="closeFeatureModal()">知道了</button>
       </footer>
     </section>
   </div>

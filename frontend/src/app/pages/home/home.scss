@@ -4,11 +4,23 @@
 
 .home-content {
   display: grid;
-  gap: 28px;
+  gap: 0;
   width: 100%;
   margin: 0 auto 64px;
   padding-top: 0;
   background: #ffffff;
+}
+
+.revealed-content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 28px;
+  margin-top: clamp(-250px, -22svh, -172px);
+  opacity: 0;
+  transform: translate3d(0, 42px, 0);
+  animation: reveal-content 0.9s cubic-bezier(0.22, 1, 0.36, 1) 2.62s forwards;
+  will-change: opacity, transform;
 }
 
 .portal-grid {
@@ -17,7 +29,19 @@
   gap: 16px;
   width: min(1180px, calc(100% - 40px));
   margin: 0 auto;
-  padding-top: 34px;
+  padding-top: clamp(70px, 10svh, 118px);
+}
+
+@keyframes reveal-content {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 42px, 0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .section-heading,
@@ -190,5 +214,13 @@ li span {
   .feature-section,
   .workflow-section {
     width: min(100% - 28px, 1180px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .revealed-content {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
 }
