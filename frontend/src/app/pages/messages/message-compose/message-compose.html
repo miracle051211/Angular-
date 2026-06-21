@@ -1,25 +1,29 @@
 <section class="feature-page">
-  <header class="feature-hero">
+  <a class="ghost-button back-link" routerLink="/messages">返回私信</a>
+
+  <header class="feature-hero compose-hero">
     <div>
-      <span class="feature-kicker">写站内信</span>
-      <h1>给社区里的某个人递一张纸条。</h1>
-      <p>这里是原项目 send_message 的前端壳，表单校验已就位，提交动作后续接 API。</p>
+      <span class="feature-kicker">QUICK NOTE</span>
+      <h1>把消息投进同学的信箱</h1>
+      <p>适合从个人主页、课程讨论之外，快速发一封不打扰的小纸条。</p>
     </div>
   </header>
 
-  <form class="ink-panel form-grid compose-form" [formGroup]="form">
+  <form class="ink-panel form-grid compose-form" [formGroup]="form" (ngSubmit)="send()">
     <label>
       收件人
-      <input formControlName="receiver" placeholder="输入用户名或邮箱" />
-    </label>
-    <label>
-      主题
-      <input formControlName="subject" placeholder="例如：关于接口拆分的想法" />
+      <input formControlName="receiver" placeholder="输入对方昵称或邮箱" />
+      @if (form.controls.receiver.touched && form.controls.receiver.invalid) {
+        <small>请填写收件人</small>
+      }
     </label>
     <label>
       内容
-      <textarea formControlName="body" placeholder="写下你想说的话"></textarea>
+      <textarea formControlName="body" maxlength="1200" placeholder="写下想发送的私信内容"></textarea>
+      <small>{{ form.controls.body.value.length }}/1200</small>
     </label>
-    <button class="ink-button" type="button" [disabled]="form.invalid">发送预览</button>
+    <button class="ink-button" type="submit" [disabled]="form.invalid || isSubmitting()">
+      {{ isSubmitting() ? '发送中...' : '发送私信' }}
+    </button>
   </form>
 </section>

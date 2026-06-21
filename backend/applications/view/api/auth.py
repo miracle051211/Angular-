@@ -5,6 +5,7 @@ from flask import Blueprint, current_app, request
 from flask_mail import Message
 from flask_login import current_user, login_user, logout_user
 
+from applications.common.utils.jwt import create_access_token
 from applications.extentions.init_mail import mail
 from applications.extentions.init_sqlalchemy import db
 from applications.models.captcha import CaptchaModel
@@ -37,6 +38,13 @@ def _verify_captcha(email, captcha_type, captcha):
         return False
     db.session.delete(item)
     return True
+
+
+def _serialize_auth_payload(user):
+    return {
+        "user": serialize_user(user, include_private=True),
+        "token": create_access_token(user.id),
+    }
 
 
 def _send_captcha_email(email, captcha, captcha_type):
@@ -110,7 +118,7 @@ def register():
     db.session.commit()
     login_user(user)
 
-    return api_success(serialize_user(user, include_private=True), "注册成功", 201)
+    return api_success(_serialize_auth_payload(user), "注册成功", 201)
 
 
 @bp.post("/reset-password")
@@ -149,7 +157,7 @@ def login():
     login_user(user, remember=remember)
     user.grant_daily_login_experience()
     db.session.commit()
-    return api_success(serialize_user(user, include_private=True), "登录成功")
+    return api_success(_serialize_auth_payload(user), "登录成功")
 
 
 @bp.post("/logout")

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NotificationKind, UserNotification } from '../../core/models/notification.model';
 import { NotificationService } from '../../core/services/notification.service';
 import { ToastService } from '../../core/services/toast.service';
+import { MessageListPage } from '../messages/message-list/message-list';
 
 interface NoticeTab {
   readonly id: NotificationKind;
@@ -13,7 +14,7 @@ interface NoticeTab {
 
 @Component({
   selector: 'app-notifications-page',
-  imports: [RouterLink],
+  imports: [RouterLink, MessageListPage],
   templateUrl: './notifications.html',
   styleUrl: './notifications.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,19 +26,17 @@ export class NotificationsPage {
   private readonly toastService = inject(ToastService);
 
   protected readonly tabs: readonly NoticeTab[] = [
+    { id: 'message', label: '我的消息', empty: '私信和评论回复会在这里提示。' },
     { id: 'mention', label: '@我的', empty: '还没有人提到你。' },
     { id: 'like', label: '收到的赞', empty: '暂时还没有新的点赞。' },
     { id: 'system', label: '系统通知', empty: '系统通知很安静。' },
-    { id: 'message', label: '我的消息', empty: '私信和评论回复会在这里提示。' },
   ];
   protected readonly notifications = signal<readonly UserNotification[]>([]);
-  protected readonly activeTab = signal<NotificationKind>('mention');
+  protected readonly activeTab = signal<NotificationKind>('message');
   protected readonly isLoading = signal(true);
   protected readonly isClearing = signal(false);
   protected readonly deletingIds = signal<Record<number, boolean>>({});
-  protected readonly unreadCount = computed(
-    () => this.notifications().filter((item) => !item.isRead).length,
-  );
+  protected readonly unreadCount = computed(() => this.notifications().filter((item) => !item.isRead).length);
   protected readonly filteredNotifications = computed(() =>
     this.notifications().filter((item) => item.kind === this.activeTab()),
   );
@@ -54,11 +53,18 @@ export class NotificationsPage {
 
   protected selectTab(tab: NotificationKind): void {
     this.activeTab.set(tab);
-    void this.router.navigate(['/notifications'], { queryParams: { tab } });
+    const userId = this.route.snapshot.queryParamMap.get('userId');
+    void this.router.navigate(['/notifications'], {
+      queryParams: tab === 'message' && userId ? { tab, userId } : { tab },
+    });
   }
 
   protected tabCount(tab: NotificationKind): number {
     return this.notifications().filter((item) => item.kind === tab && !item.isRead).length;
+  }
+
+  protected activeTabLabel(): string {
+    return this.tabs.find((tab) => tab.id === this.activeTab())?.label ?? '消息中心';
   }
 
   protected activeEmptyText(): string {

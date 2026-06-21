@@ -1,7 +1,0 @@
-[1m[33m[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: SignatureWritingComponent is not used within the template of HomePage[0m [1m[35m[plugin angular-compiler][0m
-
-    src/app/pages/home/home.ts:9:45:
-[37m      9 │ ...orts: [HeroVisualComponent, RouterLink, [32mSignatureWritingComponent[37m],
-        ╵                                            [32m~~~~~~~~~~~~~~~~~~~~~~~~~[0m
-
-[39m[22m

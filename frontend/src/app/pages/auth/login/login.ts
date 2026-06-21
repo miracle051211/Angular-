@@ -324,19 +324,16 @@ export class LoginPage {
   }
 
   protected purpleHeight(): number {
-    return this.isTypingOrPasswordHidden() ? 440 : 400;
+    return 400;
   }
 
   protected purpleTransform(): string {
     if (this.isPasswordVisible() || this.isLoginSuccess()) {
-      return 'skewX(0deg)';
+      return 'skewX(0deg) translateX(0)';
     }
 
-    if (this.isTypingOrPasswordHidden()) {
-      return `skewX(${this.bodySkew() - 7}deg) translateX(24px)`;
-    }
-
-    return `skewX(${this.bodySkew()}deg)`;
+    const skew = this.isTypingOrPasswordHidden() ? this.bodySkew(0.35) : this.bodySkew();
+    return `skewX(${skew}deg) translateX(0)`;
   }
 
   protected purpleFaceLeft(): number {
@@ -389,7 +386,7 @@ export class LoginPage {
 
   protected purpleMouthCounterSkew(): string {
     return this.isTypingOrPasswordHidden()
-      ? `skewX(${-1 * (this.bodySkew() - 7)}deg)`
+      ? `skewX(${-1 * this.bodySkew(0.35)}deg)`
       : 'skewX(0deg)';
   }
 

@@ -10,16 +10,17 @@ from applications.extentions.init_sqlalchemy import db
 from applications.view import init_bps
 
 
-def create_app():
+def create_app(config_object=DevelopmentConfig, ensure_schema=True):
     app = Flask(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    app.config.from_object(DevelopmentConfig)
+    app.config.from_object(config_object)
 
     init_plugs(app)
     init_bps(app)
     init_script(app)
 
-    with app.app_context():
-        ensure_light_schema()
+    if ensure_schema:
+        with app.app_context():
+            ensure_light_schema()
 
     return app
 

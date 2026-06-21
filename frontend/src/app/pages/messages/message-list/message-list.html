@@ -1,38 +1,140 @@
-<section class="feature-page">
-  <header class="feature-hero">
-    <div>
-      <span class="feature-kicker">我的消息</span>
-      <h1>{{ unreadCount() }} 条未读消息</h1>
-    </div>
-    <div class="message-actions">
-      <a class="ink-link-button" routerLink="/messages/send">写新消息</a>
-      <button class="ghost-button" type="button" (click)="markAllRead()">全部已读</button>
-    </div>
-  </header>
+<section class="chat-page" [class.chat-page--embedded]="embedded()">
+  @if (!embedded()) {
+    <header class="chat-hero">
+      <div>
+        <span class="feature-kicker">DIRECT MESSAGE</span>
+        <h1>私信</h1>
+        <p>像一张摊开的便签桌：左边找人，右边聊天，学习搭子随时接上话。</p>
+      </div>
+      <button class="ghost-button" type="button" (click)="markAllRead()">全部已读 · {{ unreadCount() }}</button>
+    </header>
+  }
 
-  <section class="ink-list">
-    @if (isLoading()) {
-      <article class="ink-panel muted">正在取出洞天里的消息...</article>
-    } @else {
-      @for (item of feedItems(); track item.id) {
-        <article
-          class="ink-list-item message-item"
-          [class.is-unread]="!item.isRead"
-          [class.is-comment-message]="item.source === 'notification'"
-        >
-          <a [routerLink]="item.targetUrl" (click)="openItem($event, item)">
-            <span class="feature-kicker">
-              {{ item.senderName }}
-              <small>{{ item.source === 'notification' ? '评论区消息' : '私信' }}</small>
-            </span>
-            <h2>{{ item.title }}</h2>
-            <p>{{ item.body }}</p>
-          </a>
-          <time>{{ item.createdAt }}</time>
-        </article>
-      } @empty {
-        <article class="ink-panel muted">还没有收到消息。</article>
+  <section class="chat-shell" aria-label="私信聊天">
+    <aside class="chat-sidebar">
+      <label class="chat-search">
+        <span>找同学</span>
+        <input [formControl]="search" placeholder="输入昵称 / 邮箱" />
+      </label>
+
+      @if (search.value.trim()) {
+        <div class="search-popover">
+          @if (isSearching()) {
+            <p>正在翻同学录...</p>
+          } @else {
+            @for (user of searchResults(); track user.id) {
+              <button type="button" (click)="startConversation(user)">
+                <img [src]="avatarSrc(user.avatar, user.username)" [alt]="user.username" />
+                <span>
+                  <strong>{{ user.username }}</strong>
+                  <small>{{ user.email || user.signature || '还没有签名' }}</small>
+                </span>
+              </button>
+            } @empty {
+              <p>没有找到这个人</p>
+            }
+          }
+        </div>
       }
-    }
+
+      <div class="sidebar-title">
+        <strong>最近会话</strong>
+        <small>{{ conversations().length }} 个会话</small>
+      </div>
+
+      <div class="conversation-list">
+        @if (isLoading()) {
+          <article class="conversation-skeleton">正在收信...</article>
+        } @else {
+          @for (conversation of conversations(); track trackConversation($index, conversation)) {
+            <button
+              class="conversation-card"
+              type="button"
+              [class.is-active]="activePartnerId() === conversation.partner.id"
+              [class.is-unread]="conversation.unreadCount > 0"
+              (click)="selectConversation(conversation)"
+            >
+              <img [src]="avatarSrc(conversation.partner.avatar, conversation.partner.username)" [alt]="conversation.partner.username" />
+              <span class="conversation-main">
+                <strong>{{ conversation.partner.username }}</strong>
+                <small>{{ messageBody(conversation.latestMessage) }}</small>
+              </span>
+              <span class="conversation-meta">
+                <time>{{ conversation.latestMessage.sentAt | slice:0:10 }}</time>
+                @if (conversation.unreadCount > 0) {
+                  <b>{{ conversation.unreadCount }}</b>
+                }
+              </span>
+            </button>
+          } @empty {
+            <article class="conversation-empty">还没有私信，先搜索一个同学开始聊天。</article>
+          }
+        }
+      </div>
+
+      @if (notices().length > 0) {
+        <div class="notice-dock">
+          <div class="sidebar-title sidebar-title--compact">
+            <strong>系统提醒</strong>
+            <a routerLink="/notifications">全部</a>
+          </div>
+          @for (notice of notices(); track notice.id) {
+            <a class="notice-card" [class.is-unread]="!notice.isRead" [routerLink]="notice.targetUrl" (click)="openNotice($event, notice)">
+              <strong>{{ notice.title }}</strong>
+              <small>{{ notice.senderName }} · {{ notice.createdAt | slice:0:10 }}</small>
+            </a>
+          }
+        </div>
+      }
+    </aside>
+
+    <main class="chat-thread">
+      @if (activePartner(); as partner) {
+        <header class="thread-head">
+          <img [src]="avatarSrc(partner.avatar, partner.username)" [alt]="partner.username" />
+          <div>
+            <span>正在私聊</span>
+            <h2>{{ partner.username }}</h2>
+          </div>
+          <a [routerLink]="['/profile', partner.id]">主页</a>
+        </header>
+
+        <section class="bubble-field" aria-live="polite">
+          @if (isThreadLoading()) {
+            <p class="thread-muted">正在展开纸条...</p>
+          } @else {
+            @for (message of activeMessages(); track trackMessage($index, message)) {
+              <article class="bubble-row" [class.is-mine]="message.isMine">
+                @if (!message.isMine) {
+                  <img [src]="avatarSrc(message.sender.avatar, message.sender.username)" [alt]="message.sender.username" />
+                }
+                <div class="bubble">
+                  <p>{{ messageBody(message) }}</p>
+                  <time>{{ message.sentAt | slice:0:16 }}</time>
+                </div>
+              </article>
+            } @empty {
+              <p class="thread-muted">这里还没有聊天记录，给 TA 发第一张小纸条吧。</p>
+            }
+          }
+        </section>
+
+        <footer class="composer-bar">
+          <textarea [formControl]="composer" rows="3" maxlength="1200" placeholder="请输入消息内容"></textarea>
+          <div class="composer-actions">
+            <span>{{ composer.value.length }}/1200</span>
+            <button class="ink-button" type="button" [disabled]="isSending() || !composer.value.trim()" (click)="sendMessage()">
+              {{ isSending() ? '发送中...' : '发送' }}
+            </button>
+          </div>
+        </footer>
+      } @else {
+        <section class="thread-empty">
+          <span aria-hidden="true">✉</span>
+          <h2>选一个人开始聊天</h2>
+          <p>搜索同学、查看最近会话，或从系统提醒里回到相关内容。</p>
+        </section>
+      }
+    </main>
   </section>
 </section>

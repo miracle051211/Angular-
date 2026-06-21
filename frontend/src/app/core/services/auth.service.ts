@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
 import { ApiResponse } from '../models/api-response.model';
 import { User } from '../models/user.model';
 import { API_BASE_URL, API_HTTP_OPTIONS } from './api.config';
+import { AuthTokenService } from './auth-token.service';
 
 export interface LoginPayload {
   readonly email: string;
@@ -30,11 +31,17 @@ export interface ResetPasswordPayload {
   readonly password: string;
 }
 
+interface AuthPayload {
+  readonly user: User;
+  readonly token: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly authTokenService = inject(AuthTokenService);
   private readonly currentUserState = signal<User | null>(null);
 
   readonly currentUser = this.currentUserState.asReadonly();
@@ -49,14 +56,14 @@ export class AuthService {
 
   login(payload: LoginPayload): Observable<ApiResponse<User>> {
     return this.http
-      .post<ApiResponse<User>>(`${API_BASE_URL}/auth/login`, payload, API_HTTP_OPTIONS)
-      .pipe(tap((response) => this.currentUserState.set(response.data)));
+      .post<ApiResponse<AuthPayload>>(`${API_BASE_URL}/auth/login`, payload, API_HTTP_OPTIONS)
+      .pipe(map((response) => this.handleAuthResponse(response)));
   }
 
   register(payload: RegisterPayload): Observable<ApiResponse<User>> {
     return this.http
-      .post<ApiResponse<User>>(`${API_BASE_URL}/auth/register`, payload, API_HTTP_OPTIONS)
-      .pipe(tap((response) => this.currentUserState.set(response.data)));
+      .post<ApiResponse<AuthPayload>>(`${API_BASE_URL}/auth/register`, payload, API_HTTP_OPTIONS)
+      .pipe(map((response) => this.handleAuthResponse(response)));
   }
 
   sendCaptcha(payload: SendCaptchaPayload): Observable<ApiResponse<null>> {
@@ -78,7 +85,7 @@ export class AuthService {
   logout(): Observable<ApiResponse<null>> {
     return this.http
       .post<ApiResponse<null>>(`${API_BASE_URL}/auth/logout`, {}, API_HTTP_OPTIONS)
-      .pipe(tap(() => this.currentUserState.set(null)));
+      .pipe(tap(() => this.clearSession()));
   }
 
   me(): Observable<ApiResponse<User>> {
@@ -87,5 +94,19 @@ export class AuthService {
 
   setCurrentUser(user: User | null): void {
     this.currentUserState.set(user);
+  }
+
+  clearSession(): void {
+    this.authTokenService.clearToken();
+    this.currentUserState.set(null);
+  }
+
+  private handleAuthResponse(response: ApiResponse<AuthPayload>): ApiResponse<User> {
+    this.authTokenService.setToken(response.data.token);
+    this.currentUserState.set(response.data.user);
+    return {
+      ...response,
+      data: response.data.user,
+    };
   }
 }

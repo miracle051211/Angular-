@@ -1,5 +1,23 @@
+.back-link {
+  justify-self: start;
+}
+
+.compose-hero h1 {
+  max-width: 760px;
+}
+
 .compose-form {
   max-width: 760px;
+}
+
+.compose-form textarea {
+  min-height: 180px;
+}
+
+.compose-form small {
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 760;
 }
 
 .ink-button:disabled {

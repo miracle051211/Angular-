@@ -219,27 +219,6 @@
                   </span>
                   帖子管理
                 </a>
-                <div class="avatar-theme-item" role="menuitem" tabindex="0">
-                  <button type="button">
-                    <span aria-hidden="true">
-                      <svg viewBox="0 0 24 24"><path d="M12 3.8a7.8 7.8 0 1 0 7.8 7.8A6.1 6.1 0 0 1 12 3.8Z"></path></svg>
-                    </span>
-                    主题设置
-                  </button>
-                  <div class="avatar-theme-panel" role="menu" aria-label="选择主题">
-                    <button type="button" class="is-active" aria-label="浅色主题" title="浅色">
-                      <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="12" cy="12" r="4.2"></circle>
-                        <path d="M12 2.8v2.1M12 19.1v2.1M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2.8 12h2.1M19.1 12h2.1M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"></path>
-                      </svg>
-                    </button>
-                    <button type="button" aria-label="深色主题" title="深色">
-                      <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M12 3.6a8.1 8.1 0 1 0 8.1 8.1A6.2 6.2 0 0 1 12 3.6Z"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
                 <a routerLink="/settings" role="menuitem">
                   <span aria-hidden="true">
                     <svg viewBox="0 0 24 24"><path d="M6 5.4h12a1.6 1.6 0 0 1 1.6 1.6v10A1.6 1.6 0 0 1 18 18.6H6A1.6 1.6 0 0 1 4.4 17V7A1.6 1.6 0 0 1 6 5.4Z"></path><path d="M8 9.2h5"></path><path d="M8 13h8"></path></svg>
@@ -564,27 +543,6 @@
                   </span>
                   帖子管理
                 </a>
-                <div class="avatar-theme-item" role="menuitem" tabindex="0">
-                  <button type="button">
-                    <span aria-hidden="true">
-                      <svg viewBox="0 0 24 24"><path d="M12 3.8a7.8 7.8 0 1 0 7.8 7.8A6.1 6.1 0 0 1 12 3.8Z"></path></svg>
-                    </span>
-                    主题设置
-                  </button>
-                  <div class="avatar-theme-panel" role="menu" aria-label="选择主题">
-                    <button type="button" class="is-active" aria-label="浅色主题" title="浅色">
-                      <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="12" cy="12" r="4.2"></circle>
-                        <path d="M12 2.8v2.1M12 19.1v2.1M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2.8 12h2.1M19.1 12h2.1M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"></path>
-                      </svg>
-                    </button>
-                    <button type="button" aria-label="深色主题" title="深色">
-                      <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M12 3.6a8.1 8.1 0 1 0 8.1 8.1A6.2 6.2 0 0 1 12 3.6Z"></path>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
                 <a routerLink="/settings" role="menuitem">
                   <span aria-hidden="true">
                     <svg viewBox="0 0 24 24"><path d="M6 5.4h12a1.6 1.6 0 0 1 1.6 1.6v10A1.6 1.6 0 0 1 18 18.6H6A1.6 1.6 0 0 1 4.4 17V7A1.6 1.6 0 0 1 6 5.4Z"></path><path d="M8 9.2h5"></path><path d="M8 13h8"></path></svg>
@@ -798,32 +756,61 @@
           </span>
         </div>
 
-        <div class="site-footer__placeholder" aria-label="预留展示区域">
-          <span aria-hidden="true"></span>
+        <div
+          class="site-footer__box-carousel"
+          aria-label="校园印象轮播"
+          (pointermove)="tiltFooterBox($event)"
+          (pointerleave)="resetFooterBoxTilt($event)"
+        >
+          <button
+            class="site-footer__box-control site-footer__box-control--prev"
+            type="button"
+            aria-label="上一张校园印象"
+            (click)="turnFooterBox(-1, $event)"
+          >
+            ‹
+          </button>
+          <div class="site-footer__box-stage" [style.--footer-spin]="footerBoxRotation() + 'deg'">
+            <figure class="site-footer__box-face site-footer__box-face--front">
+              <img src="/footer-carousel/lun1.webp" alt="雪中的校园亭子" loading="lazy" />
+            </figure>
+            <figure class="site-footer__box-face site-footer__box-face--right">
+              <img src="/footer-carousel/lun2.webp" alt="雪后校园道路" loading="lazy" />
+            </figure>
+            <figure class="site-footer__box-face site-footer__box-face--back">
+              <img src="/footer-carousel/lun4.webp" alt="冬日校园楼前树影" loading="lazy" />
+            </figure>
+            <figure class="site-footer__box-face site-footer__box-face--left">
+              <img src="/footer-carousel/snow-walk.webp" alt="雪地树林前的行人" loading="lazy" />
+            </figure>
+          </div>
+          <button
+            class="site-footer__box-control site-footer__box-control--next"
+            type="button"
+            aria-label="下一张校园印象"
+            (click)="turnFooterBox(1, $event)"
+          >
+            ›
+          </button>
         </div>
 
         <nav class="site-footer__links" aria-label="项目链接">
-          <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="https://gitee.com/" target="_blank" rel="noreferrer">Gitee</a>
+          <a href="https://github.com/miracle051211/Angular-" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://gitee.com/glymiracle/new-miracle" target="_blank" rel="noreferrer">Gitee</a>
         </nav>
       </section>
 
       <div class="site-footer__rule" aria-hidden="true"></div>
 
       <div class="site-footer__bottom">
-        <div class="site-footer__social" aria-label="社交链接">
-          <a href="https://www.linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-            in
-          </a>
-          <a href="https://www.youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube">
-            ?          </a>
-        </div>
-
-        <span aria-hidden="true">·</span>
-        <a href="/rules" (click)="openInfoPanel('rules', $event)">洞天须知</a>
-        <a href="/tech-stack" (click)="openInfoPanel('stack', $event)">技术栈</a>
-        <p>2026 ? 学习小洞天</p>
-        <strong>miracle.</strong>
+        <p class="site-footer__credit">
+          <span>2026</span>
+          <span aria-hidden="true">©</span>
+          <span>BY MIRACLE</span>
+        </p>
+        <button class="site-footer__contact" type="button" (click)="openInfoPanel('contact')">
+          联系我们
+        </button>
         <button class="site-footer__top" type="button" (click)="scrollToTop()" aria-label="返回顶部">
           <span aria-hidden="true"></span>
           返回顶部
@@ -834,7 +821,7 @@
 
   @if (activeInfoPanel(); as panel) {
     <div class="info-panel-layer" role="presentation" (click)="closeInfoPanel()">
-      <section class="info-panel" role="dialog" aria-modal="true" [attr.aria-label]="panel === 'rules' ? '洞天须知' : '技术栈'" (click)="$event.stopPropagation()">
+      <section class="info-panel" role="dialog" aria-modal="true" [attr.aria-label]="panel === 'rules' ? '洞天须知' : panel === 'stack' ? '技术栈' : '联系方式'" (click)="$event.stopPropagation()">
         <button class="info-panel__close" type="button" aria-label="关闭" (click)="closeInfoPanel()">×</button>
         @if (panel === 'rules') {
           <span class="feature-kicker">洞天须知</span>
@@ -850,7 +837,7 @@
             <li>清明雨上：10 级满级，从 9 级升到 10 级需要 1000 经验。</li>
           </ul>
           <p>请认真发帖、友善回复、谨慎举报。洞天会记录贡献，也会保留一点安静。</p>
-        } @else {
+        } @else if (panel === 'stack') {
           <span class="feature-kicker">技术栈</span>
           <h2>学习小洞天的实现骨架</h2>
           <ul>
@@ -860,6 +847,10 @@
             <li>媒体：后端静态资源上传，头像与帖子图片分目录保存。</li>
             <li>交互：自定义平滑滚动、头像 hover 卡片、通知汇总轮询、前后端 JSON API 通信。</li>
           </ul>
+        } @else {
+          <span class="feature-kicker">联系我们</span>
+          <h2>有事直接敲门。</h2>
+          <p>QQ：1975191950</p>
         }
       </section>
     </div>

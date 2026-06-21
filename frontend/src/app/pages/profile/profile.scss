@@ -120,7 +120,8 @@
 }
 
 .profile-edit-button,
-.profile-follow-button {
+.profile-follow-button,
+.profile-message-button {
   min-height: 40px;
   padding: 0 22px;
   border-radius: 999px;
@@ -145,6 +146,23 @@
 .profile-edit-button:hover,
 .profile-edit-button:focus-visible {
   box-shadow: 1px 1px 0 color-mix(in srgb, var(--color-ink) 82%, transparent);
+  transform: translate(2px, 2px);
+}
+
+
+.profile-message-button {
+  display: inline-grid;
+  place-items: center;
+  border: 1.5px solid var(--color-ink);
+  background: var(--color-ink);
+  color: #fff8ec;
+  text-decoration: none;
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-red) 58%, var(--color-ink));
+}
+
+.profile-message-button:hover,
+.profile-message-button:focus-visible {
+  box-shadow: 1px 1px 0 color-mix(in srgb, var(--color-red) 58%, var(--color-ink));
   transform: translate(2px, 2px);
 }
 

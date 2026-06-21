@@ -73,7 +73,8 @@ export class App {
   private readonly homeFooterVisible = signal(false);
   private readonly footerRevealVisible = signal(false);
   protected readonly isMobileMenuOpen = signal(false);
-  protected readonly activeInfoPanel = signal<'rules' | 'stack' | null>(null);
+  protected readonly activeInfoPanel = signal<'rules' | 'stack' | 'contact' | null>(null);
+  protected readonly footerBoxRotation = signal(0);
 
   protected readonly navItems = signal<readonly NavItem[]>([
     { label: '首页', path: '/home', exact: true },
@@ -487,13 +488,35 @@ export class App {
     return `当前 ${title.experience}，距离 Lv.${title.level + 1} 还需 ${need} 经验`;
   }
 
-  protected openInfoPanel(panel: 'rules' | 'stack', event?: Event): void {
+  protected openInfoPanel(panel: 'rules' | 'stack' | 'contact', event?: Event): void {
     event?.preventDefault();
     this.activeInfoPanel.set(panel);
   }
 
   protected closeInfoPanel(): void {
     this.activeInfoPanel.set(null);
+  }
+
+  protected turnFooterBox(direction: -1 | 1, event?: Event): void {
+    event?.stopPropagation();
+    this.footerBoxRotation.update((rotation) => rotation + direction * 90);
+  }
+
+  protected tiltFooterBox(event: PointerEvent): void {
+    const carousel = event.currentTarget as HTMLElement;
+    const rect = carousel.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+    carousel.style.setProperty('--footer-tilt-x', `${(-y * 8).toFixed(2)}deg`);
+    carousel.style.setProperty('--footer-tilt-y', `${(x * 10).toFixed(2)}deg`);
+  }
+
+  protected resetFooterBoxTilt(event: PointerEvent): void {
+    const carousel = event.currentTarget as HTMLElement;
+
+    carousel.style.setProperty('--footer-tilt-x', '0deg');
+    carousel.style.setProperty('--footer-tilt-y', '0deg');
   }
 
   protected suggestionTail(value: string): string {
@@ -1120,6 +1143,10 @@ export class App {
   }
 
   protected scrollToTop(): void {
+    window.cancelAnimationFrame(this.smoothScrollFrame);
+    this.smoothScrollFrame = 0;
+    this.smoothScrollTarget = 0;
+    document.documentElement.classList.remove('is-wheel-smoothing');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
