@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "vercel-build": "ng build",
     "download:nod-assets": "node scripts/download-nodcoding-assets.mjs https://nodcoding.com/ downloads/nodcoding-application-assets",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
