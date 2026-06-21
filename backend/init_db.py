@@ -289,7 +289,7 @@ def run_migrations(venv_path=None):
         
         # 直接在 Python 代码中执行迁移，避免使用 flask cli 命令
         from app import create_app
-        app = create_app()
+        app = create_app(ensure_schema=False)
         
         with app.app_context():
             from flask_migrate import upgrade

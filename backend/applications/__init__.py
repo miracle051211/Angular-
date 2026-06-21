@@ -27,6 +27,8 @@ def create_app(config_object=DevelopmentConfig, ensure_schema=True):
 
 def ensure_light_schema():
     inspector = inspect(db.engine)
+    if not inspector.has_table("user"):
+        return
     user_columns = {column["name"] for column in inspector.get_columns("user")}
     if "gender" not in user_columns:
         with db.engine.begin() as connection:
