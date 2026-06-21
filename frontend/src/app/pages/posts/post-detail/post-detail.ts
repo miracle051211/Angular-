@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommentReply, CommentThread } from '../../../core/models/comment.model';
 import { PostDetail, PostSummary } from '../../../core/models/post.model';
 import { User } from '../../../core/models/user.model';
+import { API_ORIGIN } from '../../../core/services/api.config';
 import { AuthService } from '../../../core/services/auth.service';
 import { PostService } from '../../../core/services/post.service';
 import { ToastService } from '../../../core/services/toast.service';
@@ -28,7 +29,7 @@ export class PostDetailPage {
   private readonly postService = inject(PostService);
   private readonly toastService = inject(ToastService);
   private readonly userService = inject(UserService);
-  private readonly apiOrigin = 'http://localhost:5000';
+  private readonly apiOrigin = API_ORIGIN;
   protected readonly postIdNumber = Number(this.route.snapshot.paramMap.get('id') ?? 1);
 
   protected readonly currentUser = this.authService.currentUser;

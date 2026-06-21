@@ -18,6 +18,7 @@ import { NotificationSummary } from './core/models/notification.model';
 import { PostSummary } from './core/models/post.model';
 import { User } from './core/models/user.model';
 import { AuthService } from './core/services/auth.service';
+import { API_ORIGIN } from './core/services/api.config';
 import { MessageService } from './core/services/message.service';
 import { NotificationService } from './core/services/notification.service';
 import { PostAiAssistMode, PostService } from './core/services/post.service';
@@ -50,7 +51,7 @@ interface HotSearch {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  private readonly apiOrigin = 'http://localhost:5000';
+  private readonly apiOrigin = API_ORIGIN;
   private readonly maxPostImageBytes = 5 * 1024 * 1024;
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);

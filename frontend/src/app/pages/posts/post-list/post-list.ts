@@ -3,6 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Board } from '../../../core/models/board.model';
 import { PostSummary } from '../../../core/models/post.model';
+import { API_ORIGIN } from '../../../core/services/api.config';
 import { PaginatedPosts, PostService } from '../../../core/services/post.service';
 
 @Component({
@@ -13,7 +14,7 @@ import { PaginatedPosts, PostService } from '../../../core/services/post.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostListPage {
-  private readonly apiOrigin = 'http://localhost:5000';
+  private readonly apiOrigin = API_ORIGIN;
   private readonly postService = inject(PostService);
   private readonly route = inject(ActivatedRoute);
   private readonly perPage = 18;

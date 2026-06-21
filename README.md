@@ -264,3 +264,24 @@ backend/static/images
 ```
 
 请确保该目录存在并可写。
+
+### 6. 新复制项目打开后仍然是登录状态
+
+这是浏览器缓存导致的，不是数据库初始化错误。前端运行地址固定是：
+
+```text
+http://localhost:4200
+```
+
+浏览器会按这个地址保存登录 token，所以同一台电脑之前登录过旧项目时，新复制的项目也可能看起来已经登录。
+
+处理方式：
+
+- 点击页面里的退出登录
+- 或打开浏览器无痕窗口访问
+- 或在浏览器开发者工具 Console 执行：
+
+```javascript
+localStorage.removeItem('new_miracle_access_token');
+localStorage.removeItem('miracle_access_token');
+```

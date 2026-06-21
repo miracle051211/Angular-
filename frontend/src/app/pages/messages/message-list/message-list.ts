@@ -7,6 +7,7 @@ import { catchError, debounceTime, distinctUntilChanged, forkJoin, map, of, swit
 import { Message, MessageConversation } from '../../../core/models/message.model';
 import { UserNotification } from '../../../core/models/notification.model';
 import { User } from '../../../core/models/user.model';
+import { API_ORIGIN } from '../../../core/services/api.config';
 import { AuthService } from '../../../core/services/auth.service';
 import { MessageService } from '../../../core/services/message.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -32,7 +33,7 @@ interface NoticeFeedItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageListPage {
-  private readonly apiOrigin = 'http://localhost:5000';
+  private readonly apiOrigin = API_ORIGIN;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);

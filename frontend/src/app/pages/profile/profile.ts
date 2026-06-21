@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { PostSummary } from '../../core/models/post.model';
 import { User } from '../../core/models/user.model';
+import { API_ORIGIN } from '../../core/services/api.config';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { UserProfileStats, UserService } from '../../core/services/user.service';
@@ -16,7 +17,7 @@ import { UserProfileStats, UserService } from '../../core/services/user.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilePage {
-  private readonly apiOrigin = 'http://localhost:5000';
+  private readonly apiOrigin = API_ORIGIN;
   private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);

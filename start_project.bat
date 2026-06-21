@@ -60,6 +60,15 @@ if not %errorlevel%==0 (
     exit /b 1
 )
 
+echo Checking and cleaning occupied ports 4200 and 5000...
+for %%P in (4200 5000) do (
+    for /f "tokens=5" %%A in ('netstat -ano ^| findstr ":%%P .*LISTENING"') do (
+        echo Port %%P is occupied by process %%A. Stopping it...
+        taskkill /F /PID %%A >nul 2>nul
+    )
+)
+echo.
+
 echo Starting backend and frontend...
 echo Backend:  http://localhost:5000
 echo Frontend: http://localhost:4200

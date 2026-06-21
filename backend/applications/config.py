@@ -2,18 +2,36 @@ import re
 import os
 
 
+def _normalize_database_url(database_url: str | None) -> str | None:
+    if not database_url:
+        return None
+    if database_url.startswith("mysql://"):
+        return database_url.replace("mysql://", "mysql+pymysql://", 1)
+    return database_url
+
+
+def _cors_origins():
+    origins = os.getenv("CORS_ORIGINS")
+    if origins:
+        return [origin.strip() for origin in origins.split(",") if origin.strip()]
+    return re.compile(r"^http://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+):\d+$")
+
+
 
 # 数据库配置信息
 class BaseConfig:
     SECRET_KEY = os.getenv("MIRACLE_SECRET_KEY", "123456")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    CORS_ORIGINS = re.compile(r"^http://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+):\d+$")
+    CORS_ORIGINS = _cors_origins()
     # 上传文件配置
     UPLOAD_IMAGE_PATH = "static/images"
     
 
 class DevelopmentConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/dongtian_test?charset=utf8mb4'
+    SQLALCHEMY_DATABASE_URI = (
+        _normalize_database_url(os.getenv("DATABASE_URL") or os.getenv("MYSQL_URL"))
+        or "mysql+pymysql://root:123456@localhost:3306/dongtian_test?charset=utf8mb4"
+    )
 
     # 邮箱配置
     MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.qq.com")

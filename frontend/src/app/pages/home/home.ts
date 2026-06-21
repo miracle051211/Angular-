@@ -11,6 +11,7 @@ import { RouterLink } from '@angular/router';
 
 import { Board } from '../../core/models/board.model';
 import { PostSummary } from '../../core/models/post.model';
+import { API_ORIGIN } from '../../core/services/api.config';
 import { NotificationService } from '../../core/services/notification.service';
 import { PostService } from '../../core/services/post.service';
 import { HeroVisualComponent } from './hero-visual/hero-visual';
@@ -73,7 +74,7 @@ export class HomePage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly notificationService = inject(NotificationService);
   private readonly postService = inject(PostService);
-  private readonly apiOrigin = 'http://localhost:5000';
+  private readonly apiOrigin = API_ORIGIN;
   private readonly newsAccents = [
     'var(--color-mint)',
     'var(--color-yellow)',
