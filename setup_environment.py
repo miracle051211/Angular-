@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 import sys
@@ -25,8 +26,14 @@ def run(command: list[str], cwd: Path) -> int:
     return subprocess.call(command, cwd=str(cwd))
 
 
+def command_name(command: str) -> str:
+    if os.name == "nt" and command in {"npm", "npx"}:
+        return f"{command}.cmd"
+    return command
+
+
 def require_command(command: str, message: str) -> None:
-    if shutil.which(command):
+    if shutil.which(command_name(command)) or shutil.which(command):
         return
     print(f"\n[错误] 未找到命令：{command}")
     print(message)
@@ -41,13 +48,14 @@ def install_frontend_dependencies() -> None:
     require_command("npm", "请先安装 Node.js 20 或更高版本。安装 Node.js 后会自带 npm。")
 
     package_lock = FRONTEND / "package-lock.json"
+    npm_cmd = command_name("npm")
     if package_lock.exists():
-        code = run(["npm", "ci"], FRONTEND)
+        code = run([npm_cmd, "ci"], FRONTEND)
         if code != 0:
             print("\nnpm ci 失败，自动改用 npm install 重试。")
-            code = run(["npm", "install"], FRONTEND)
+            code = run([npm_cmd, "install"], FRONTEND)
     else:
-        code = run(["npm", "install"], FRONTEND)
+        code = run([npm_cmd, "install"], FRONTEND)
 
     if code != 0:
         raise SystemExit("\n[错误] 前端依赖安装失败，请检查 Node.js、npm 或网络环境。")
