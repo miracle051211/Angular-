@@ -38,8 +38,9 @@ class DevelopmentConfig(BaseConfig):
     MAIL_USE_SSL = os.getenv("MAIL_USE_SSL", "true").lower() == "true"
     MAIL_PORT = int(os.getenv("MAIL_PORT", "465"))
     MAIL_USERNAME = os.getenv("MAIL_USERNAME", "1975191950@qq.com")
-    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", "qjgrcpgputghfdef")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", "wxgpvjzvnctfdggb")
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER", MAIL_USERNAME)
+    MAIL_TIMEOUT = int(os.getenv("MAIL_TIMEOUT", "10"))
 
     # 分页设置
     PER_PAGE_COUNT = 10
