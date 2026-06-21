@@ -1,0 +1,15 @@
+{
+  "experimentalServices": {
+    "frontend": {
+      "root": "frontend",
+      "entrypoint": "frontend",
+      "routePrefix": "/",
+      "framework": "angular"
+    },
+    "backend": {
+      "root": "backend",
+      "entrypoint": "backend/app.py",
+      "routePrefix": "/_/backend"
+    }
+  }
+}
