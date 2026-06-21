@@ -5,7 +5,7 @@ import os
 
 # 数据库配置信息
 class BaseConfig:
-    SECRET_KEY = os.getenv("MIRACLE_SECRET_KEY", "change-me-in-production")
+    SECRET_KEY = os.getenv("MIRACLE_SECRET_KEY", "123456")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CORS_ORIGINS = re.compile(r"^http://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+):\d+$")
     # 上传文件配置
@@ -19,8 +19,8 @@ class DevelopmentConfig(BaseConfig):
     MAIL_SERVER = os.getenv("MAIL_SERVER", "smtp.qq.com")
     MAIL_USE_SSL = os.getenv("MAIL_USE_SSL", "true").lower() == "true"
     MAIL_PORT = int(os.getenv("MAIL_PORT", "465"))
-    MAIL_USERNAME = os.getenv("MAIL_USERNAME", "")
-    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", "")
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME", "1975191950@qq.com")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD", "qjgrcpgputghfdef")
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER", MAIL_USERNAME)
 
     # 分页设置

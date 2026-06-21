@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Start backend and frontend development servers."""
+"""学习小洞天一键启动脚本。"""
 
 from __future__ import annotations
 
@@ -29,32 +29,33 @@ def backend_python() -> Path:
 
 
 def start_process(name: str, command: list[str], cwd: Path) -> subprocess.Popen:
-    print(f"[START] {name}: {' '.join(command)}")
+    print(f"启动{name}：{' '.join(command)}")
     return subprocess.Popen(command, cwd=str(cwd))
 
 
 def main() -> None:
     if not (BACKEND / "app.py").exists():
-        raise SystemExit("[ERROR] 未找到 backend/app.py")
+        raise SystemExit("[错误] 未找到 backend/app.py")
     if not (FRONTEND / "package.json").exists():
-        raise SystemExit("[ERROR] 未找到 frontend/package.json")
+        raise SystemExit("[错误] 未找到 frontend/package.json")
     if not (FRONTEND / "node_modules").exists():
-        raise SystemExit("[ERROR] 未找到 frontend/node_modules，请先运行 python setup_environment.py")
+        raise SystemExit("[错误] 未找到 frontend/node_modules，请先运行：python setup_environment.py")
 
     python_cmd = str(backend_python())
     npm_cmd = "npm.cmd" if os.name == "nt" else "npm"
 
     print("=" * 60)
-    print("学习小洞天 - 启动前后端")
+    print("学习小洞天 - 一键启动")
     print("=" * 60)
     print("后端地址：http://localhost:5000")
     print("前端地址：http://localhost:4200")
-    print("按 Ctrl+C 可同时停止前后端。")
+    print("启动后请在浏览器访问：http://localhost:4200")
+    print("按 Ctrl+C 可以停止前后端服务。")
     print()
 
     processes = [
-        start_process("backend", [python_cmd, "app.py"], BACKEND),
-        start_process("frontend", [npm_cmd, "start"], FRONTEND),
+        start_process("后端", [python_cmd, "app.py"], BACKEND),
+        start_process("前端", [npm_cmd, "start"], FRONTEND),
     ]
 
     try:
