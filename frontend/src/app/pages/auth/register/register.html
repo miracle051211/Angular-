@@ -1,25 +1,84 @@
-<section class="auth-card">
-  <h1>注册</h1>
-  <p>创建账号后即可参与学习社区讨论。</p>
+<section class="register-page" [class.is-open]="isRegisterOpen()">
+  <div class="register-story">
+    <a class="brand-mark" routerLink="/home" aria-label="返回首页">
+      <span aria-hidden="true">学</span>
+      <strong>学习小洞天</strong>
+    </a>
 
-  <form [formGroup]="form">
-    <label>
-      用户名
-      <input formControlName="username" autocomplete="nickname" />
-    </label>
+    <div class="story-copy">
+      <small>NEW STUDENT</small>
+      <h1>先领一张洞天通行纸。</h1>
+      <p>注册后可以发帖、评论、收藏讨论，也能收到与你有关的消息。</p>
+    </div>
 
-    <label>
-      邮箱
-      <input formControlName="email" type="email" autocomplete="email" />
-    </label>
+    <div class="paper-stack" aria-hidden="true">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
 
-    <label>
-      密码
-      <input formControlName="password" type="password" autocomplete="new-password" />
-    </label>
+  <section class="register-panel" aria-labelledby="register-title">
+    <button
+      class="register-toggle"
+      type="button"
+      (click)="toggleRegister()"
+      [attr.aria-expanded]="isRegisterOpen()"
+      aria-controls="register-form"
+    >
+      {{ isRegisterOpen() ? '收' : '写' }}
+    </button>
 
-    <button type="button" [disabled]="form.invalid">注册</button>
-  </form>
+    <div class="register-card">
+      <div class="register-card__head">
+        <span>JOIN</span>
+        <h2 id="register-title">创建账号</h2>
+      </div>
 
-  <a routerLink="/login">已有账号？去登录</a>
+      <form id="register-form" [formGroup]="form" (ngSubmit)="submit()">
+        <label class="field-control">
+          用户名
+          <input formControlName="username" autocomplete="nickname" placeholder="给自己取个名字" />
+          @if (form.controls.username.touched && form.controls.username.invalid) {
+            <span class="field-error">用户名至少 2 个字符。</span>
+          }
+        </label>
+
+        <label class="field-control">
+          邮箱
+          <input formControlName="email" type="email" autocomplete="email" placeholder="student@example.com" />
+          @if (form.controls.email.touched && form.controls.email.invalid) {
+            <span class="field-error">请输入有效邮箱。</span>
+          }
+        </label>
+
+        <label class="field-control">
+          邮箱验证码
+          <span class="captcha-field">
+            <input formControlName="captcha" inputmode="numeric" autocomplete="one-time-code" placeholder="6 位验证码" />
+            <button type="button" (click)="sendCaptcha()" [disabled]="isSendingCaptcha()">
+              {{ isSendingCaptcha() ? '发送中...' : '发送验证码' }}
+            </button>
+          </span>
+          @if (form.controls.captcha.touched && form.controls.captcha.invalid) {
+            <span class="field-error">请输入 6 位验证码。</span>
+          }
+        </label>
+
+        <label class="field-control">
+          密码
+          <input formControlName="password" type="password" autocomplete="new-password" placeholder="至少 6 位密码" />
+          @if (form.controls.password.touched && form.controls.password.invalid) {
+            <span class="field-error">密码至少需要 6 位。</span>
+          }
+        </label>
+
+        <button class="submit-button" type="submit" [disabled]="form.invalid || isSubmitting()">
+          {{ isSubmitting() ? '注册中...' : '注册' }}
+        </button>
+      </form>
+
+      <a class="login-link" routerLink="/login">已有账号？去登录</a>
+    </div>
+  </section>
 </section>

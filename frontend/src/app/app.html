@@ -1,77 +1,898 @@
-<div
+﻿<div
   class="app-shell"
   [class.auth-shell]="isAuthPage()"
   [class.home-shell]="isHomePage()"
+  [class.admin-shell]="isAdminPage()"
   [class.is-nav-solid]="hasScrolled()"
   [class.is-nav-hidden]="shouldHideNav()"
+  [class.is-home-footer-visible]="isHomeFooterVisible()"
+  [class.is-footer-reveal-visible]="isFooterRevealVisible()"
+  [class.is-mobile-menu-open]="isMobileMenuOpen()"
 >
-  @if (!isAuthPage()) {
-  <header class="site-head">
-    <div class="site-head__inner">
-      <div class="site-head__background" aria-hidden="true"></div>
+  @if (!isAuthPage() && !isAdminPage()) {
+    <header class="site-head site-head--legacy">
+      <div class="site-head__inner">
+        <div class="site-head__background" aria-hidden="true"></div>
 
-      <a class="brand" routerLink="/home" aria-label="学习小洞天首页">
-        <span class="brand-mark">洞</span>
-        <span class="brand-text">学习小洞天</span>
-      </a>
+        <a class="brand" routerLink="/home" aria-label="学习小洞天首页" (click)="closeMobileMenu()">
+          <span class="brand-mark" aria-hidden="true">学</span>
+        </a>
 
-      <nav class="nav-links" aria-label="主导航">
-        @for (item of navItems(); track item.path) {
-          <a
-            [routerLink]="item.path"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: item.exact }"
-            (mouseenter)="playNavRope($event)"
-            (click)="popNavText($event)"
-          >
-            <span class="nav-text">{{ item.label }}</span>
-            <svg
-              class="nav-line"
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              fill="none"
-              overflow="visible"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path d="M 0 7 Q 5 7 10 7"></path>
-              <path d="M 0 7 Q 5 7 10 7"></path>
-            </svg>
-          </a>
-        }
-      </nav>
-
-      <a class="login-link" routerLink="/login">
-        <svg
-          class="login-background"
-          viewBox="0 0 120 56"
-          fill="none"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-          focusable="false"
+        <button
+          class="mobile-menu-button"
+          type="button"
+          aria-label="打开导航菜单"
+          [attr.aria-expanded]="isMobileMenuOpen()"
+          (click)="toggleMobileMenu()"
         >
-          <path d="M28 1H92C106.912 1 119 13.0883 119 28C119 42.9117 106.912 55 92 55H28C13.0883 55 1 42.9117 1 28C1 13.0883 13.0883 1 28 1Z"></path>
-        </svg>
-        <span class="login-label">登录</span>
-        <span class="login-arrow-shell">
-          <svg
-            class="login-arrow"
-            viewBox="0 0 18 18"
-            fill="none"
-            aria-hidden="true"
-            focusable="false"
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </button>
+        <nav class="nav-links" aria-label="主导航">
+          @for (item of navItems(); track item.label + item.path) {
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: item.exact }"
+              (mouseenter)="playNavRope($event)"
+              (click)="popNavText($event)"
+            >
+              <span class="nav-text">{{ item.label }}</span>
+              <svg
+                class="nav-line"
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                overflow="visible"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M 0 7 Q 5 7 10 7"></path>
+                <path d="M 0 7 Q 5 7 10 7"></path>
+              </svg>
+            </a>
+          }
+        </nav>
+
+        <div class="nav-tools" aria-label="用户工具">
+          <form
+            class="head-search-form"
+            role="search"
+            (submit)="submitHeaderSearch($event, headerSearch.value)"
           >
-            <path d="M4 9H13"></path>
-            <path d="M9.5 5L13.5 9L9.5 13"></path>
-          </svg>
-        </span>
-      </a>
-    </div>
-  </header>
+            <input
+              #headerSearch
+              type="search"
+              placeholder="搜帖子 / 用户"
+              aria-label="搜索帖子或用户"
+              [value]="headerSearchDraft()"
+              (input)="updateHeaderSearch($event)"
+              (keydown.enter)="submitHeaderSearch($event, headerSearch.value)"
+            />
+            @if (headerSearchDraft()) {
+              <button class="head-search-clear" type="button" aria-label="清空搜索" (click)="clearHeaderSearch()">
+                <span aria-hidden="true">×</span>
+              </button>
+            }
+            <button class="head-search-submit" type="submit" aria-label="搜索">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="10.8" cy="10.8" r="5.8"></circle>
+                <path d="M15.1 15.1 20 20"></path>
+              </svg>
+            </button>
+
+            <div class="head-search-panel">
+              @if (headerSearchDraft()) {
+                <div class="search-results-stack">
+                  <section class="search-panel-section">
+                    <div class="search-panel-title search-panel-title--compact">
+                      <strong>用户</strong>
+                      @if (isSearchingUsers()) {
+                        <span>查找中</span>
+                      }
+                    </div>
+                    <div class="search-user-list" aria-label="搜索用户">
+                      @for (user of userSearchSuggestions(); track user.id) {
+                        <button
+                          type="button"
+                          (pointerdown)="$event.preventDefault(); openSuggestedUser(user)"
+                          (keydown.enter)="openSuggestedUser(user)"
+                        >
+                          <img [src]="avatarSrc(user.avatar, user.username)" [alt]="user.username" />
+                          <span class="search-user-body">
+                            <strong>
+                              {{ user.username }}
+                              <em class="user-title-badge title-level-{{ user.title?.level || 1 }}">{{ userLevel(user) }}</em>
+                            </strong>
+                            <small>{{ userSuggestionMeta(user) }}</small>
+                          </span>
+                        </button>
+                      } @empty {
+                        <p class="search-empty">{{ isSearchingUsers() ? '正在翻找用户。' : '没有匹配的用户。' }}</p>
+                      }
+                    </div>
+                  </section>
+
+                  <section class="search-panel-section">
+                    <div class="search-panel-title search-panel-title--compact">
+                      <strong>帖子</strong>
+                      <span>回车搜索全部帖子</span>
+                    </div>
+                    <div class="search-suggest-list" aria-label="搜索帖子">
+                      @for (item of searchSuggestions(); track item.id) {
+                        <button
+                          type="button"
+                          (pointerdown)="$event.preventDefault(); openSuggestedPost(item)"
+                          (keydown.enter)="openSuggestedPost(item)"
+                        >
+                          <span class="suggestion-prefix">{{ headerSearchDraft().trim() }}</span>{{ suggestionTail(item.title) }}
+                          <small>{{ item.board.name }} 路 {{ item.author.username }}</small>
+                        </button>
+                      } @empty {
+                        <p class="search-empty">没有匹配的帖子。</p>
+                      }
+                    </div>
+                  </section>
+                </div>
+              } @else {
+                <div class="search-panel-section search-panel-section--history">
+                  <div class="search-panel-title">
+                    <strong>搜索历史</strong>
+                    <button type="button" (click)="clearSearchHistory()">清空</button>
+                  </div>
+                  <div class="search-history-chips">
+                    @for (item of searchHistory(); track item) {
+                      <span class="search-history-chip">
+                        <button type="button" (click)="useHeaderSearch(item)">{{ item }}</button>
+                        <button type="button" aria-label="删除这条搜索历史" (click)="removeSearchHistoryItem($event, item)">×</button>
+                      </span>
+                    } @empty {
+                      <span>还没有搜索记录</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="search-panel-section">
+                  <div class="search-panel-title">
+                    <strong>洞天热搜</strong>
+                  </div>
+                  <ol class="search-hot-list">
+                    @for (item of hotSearches(); track item.title; let index = $index) {
+                      <li>
+                        <button type="button" (click)="openHotSearch(item)">
+                          <span>{{ index + 1 }}</span>
+                          <strong>{{ item.title }}</strong>
+                          @if (item.tag) {
+                            <em>{{ item.tag }}</em>
+                          }
+                          <small>{{ item.meta }}</small>
+                        </button>
+                      </li>
+                    } @empty {
+                      <li class="search-empty">热搜正在加载</li>
+                    }
+                  </ol>
+                </div>
+              }
+            </div>
+          </form>
+
+          <button class="quick-post-button" type="button" (click)="openPostComposer()">
+            <span aria-hidden="true">+</span>
+            发帖
+          </button>
+
+          @if (currentUser(); as user) {
+          <div class="avatar-popover">
+            <a class="head-avatar" [routerLink]="['/profile', user.id]" aria-haspopup="true" aria-label="进入个人中心">
+              <img [src]="avatarSrc(user.avatar, user.username)" [alt]="user.username" />
+            </a>
+
+            <div class="avatar-menu" role="menu">
+              <div class="avatar-menu__profile">
+                <strong>{{ user.username }}</strong>
+                <div class="user-badge-row">
+                  @if (user.isStaff) {
+                    <span class="staff-badge">{{ user.roleName ?? '管理成员' }}</span>
+                  }
+                  <span class="user-title-badge title-level-{{ user.title?.level || 1 }}">{{ userLevel(user) }}</span>
+                </div>
+                <div class="level-popover__meter" aria-hidden="true">
+                  <i [style.width.%]="userTitleProgress(user)"></i>
+                </div>
+                <span>{{ userTitleNeedText(user) }}</span>
+                <small>{{ user.email }}</small>
+              </div>
+
+              <nav class="avatar-menu__links" aria-label="个人菜单">
+                <a [routerLink]="['/profile', user.id]" role="menuitem">
+                  <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 12.2a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M4.8 20.2c1.2-3.4 3.6-5.1 7.2-5.1s6 1.7 7.2 5.1"></path></svg>
+                  </span>
+                  个人中心
+                </a>
+                <a routerLink="/posts/manage" role="menuitem">
+                  <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M5 5.8h14"></path><path d="M5 12h9"></path><path d="M5 18.2h7"></path><path d="M16.4 17.8 20 14.2"></path><path d="m18.6 12.8 2.6 2.6"></path></svg>
+                  </span>
+                  帖子管理
+                </a>
+                <div class="avatar-theme-item" role="menuitem" tabindex="0">
+                  <button type="button">
+                    <span aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M12 3.8a7.8 7.8 0 1 0 7.8 7.8A6.1 6.1 0 0 1 12 3.8Z"></path></svg>
+                    </span>
+                    主题设置
+                  </button>
+                  <div class="avatar-theme-panel" role="menu" aria-label="选择主题">
+                    <button type="button" class="is-active" aria-label="浅色主题" title="浅色">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4.2"></circle>
+                        <path d="M12 2.8v2.1M12 19.1v2.1M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2.8 12h2.1M19.1 12h2.1M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"></path>
+                      </svg>
+                    </button>
+                    <button type="button" aria-label="深色主题" title="深色">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3.6a8.1 8.1 0 1 0 8.1 8.1A6.2 6.2 0 0 1 12 3.6Z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <a routerLink="/settings" role="menuitem">
+                  <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M6 5.4h12a1.6 1.6 0 0 1 1.6 1.6v10A1.6 1.6 0 0 1 18 18.6H6A1.6 1.6 0 0 1 4.4 17V7A1.6 1.6 0 0 1 6 5.4Z"></path><path d="M8 9.2h5"></path><path d="M8 13h8"></path></svg>
+                  </span>
+                  账号设置
+                </a>
+              </nav>
+
+              <button class="avatar-menu__logout" type="button" (click)="logout()">
+                <span aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M10 5H6.8A1.8 1.8 0 0 0 5 6.8v10.4A1.8 1.8 0 0 0 6.8 19H10"></path><path d="M13 12h7"></path><path d="m17.4 8.6 3.4 3.4-3.4 3.4"></path></svg>
+                </span>
+                退出登录              </button>
+            </div>
+          </div>
+          } @else {
+            <a class="login-link" routerLink="/login">
+              <span class="login-label">登录</span>
+              <span class="login-arrow-shell" aria-hidden="true">
+                <svg class="login-arrow" viewBox="0 0 18 18" fill="none" focusable="false">
+                  <path d="M3 9H14"></path>
+                  <path d="M10 5L14 9L10 13"></path>
+                </svg>
+              </span>
+            </a>
+          }
+
+          @if (currentUser()) {
+            <div class="message-popover" (mouseenter)="refreshMessageSummary()" (focusin)="refreshMessageSummary()">
+            <button class="message-trigger" type="button" aria-haspopup="true" aria-label="消息菜单">
+              <svg class="message-trigger__icon" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">
+                <path d="M7.2 10.4C10.6 8.3 22.6 8.1 25.3 10.5C27.1 13.4 26.6 20.8 24.3 23.1C20.7 24.2 12.1 24.1 8.4 22.8C6.1 19.7 5.8 13.5 7.2 10.4Z" />
+                <path d="M8.6 11.8C11.7 14.5 14.2 16.1 16.4 16.9C18.7 15.8 21.2 14.2 24.1 11.7" />
+                <path d="M9.9 22.5C9.3 24.2 8.4 25.7 7.4 27.1C9.9 26.4 12 25.6 13.8 24.2" />
+              </svg>
+              @if (totalUnread() > 0) {
+                <b>{{ totalUnread() > 99 ? '99+' : totalUnread() }}</b>
+              }
+            </button>
+
+            <div class="message-menu" role="menu">
+              <a routerLink="/notifications" [queryParams]="{ tab: 'mention' }" role="menuitem">
+                <span>@我的</span>
+                @if (notificationSummary().mentions > 0) {
+                  <b>{{ notificationSummary().mentions > 99 ? '99+' : notificationSummary().mentions }}</b>
+                }
+              </a>
+              <a routerLink="/notifications" [queryParams]="{ tab: 'like' }" role="menuitem">
+                <span>收到的赞</span>
+                @if (notificationSummary().likes > 0) {
+                  <b>{{ notificationSummary().likes > 99 ? '99+' : notificationSummary().likes }}</b>
+                }
+              </a>
+              <a routerLink="/notifications" [queryParams]="{ tab: 'system' }" role="menuitem">
+                <span>系统通知</span>
+                @if (notificationSummary().system > 0) {
+                  <i aria-hidden="true"></i>
+                }
+              </a>
+              <a routerLink="/messages" role="menuitem">
+                <span>我的消息</span>
+                @if (notificationSummary().messages > 0) {
+                  <b>{{ notificationSummary().messages > 99 ? '99+' : notificationSummary().messages }}</b>
+                }
+              </a>
+            </div>
+          </div>
+          }
+
+          @if (canEnterAdmin()) {
+            <a class="admin-link" routerLink="/admin" aria-label="进入管理系统">
+              <span>管理系统</span>
+            </a>
+          }
+        </div>
+        <section class="mobile-menu-panel" aria-label="移动端导航菜单">
+          <form
+            class="mobile-menu-search"
+            role="search"
+            (submit)="submitHeaderSearch($event, mobileHeaderSearch.value)"
+          >
+            <input
+              #mobileHeaderSearch
+              type="search"
+              placeholder="搜帖子 / 用户"
+              aria-label="搜索帖子或用户"
+              [value]="headerSearchDraft()"
+              (input)="updateHeaderSearch($event)"
+            />
+            <button type="submit" aria-label="搜索">搜索</button>
+          </form>
+
+          <nav class="mobile-menu-links" aria-label="手机导航">
+            <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">
+              <span>首页</span>
+              <small>回到学习小洞天</small>
+            </a>
+            <a routerLink="/posts" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">
+              <span>帖子</span>
+              <small>浏览、筛选和查看讨论</small>
+            </a>
+            <button type="button" (click)="openPostComposer()">
+              <span>发帖</span>
+              <small>发布新的学习记录</small>
+            </button>
+            @if (currentUser(); as user) {
+              <a routerLink="/notifications" (click)="closeMobileMenu()">
+                <span>通知</span>
+                <small>{{ totalUnread() > 0 ? totalUnread() + ' 条未读' : '查看互动提醒' }}</small>
+              </a>
+              <a routerLink="/messages" (click)="closeMobileMenu()">
+                <span>消息</span>
+                <small>私信与站内消息</small>
+              </a>
+              <a [routerLink]="['/profile', user.id]" (click)="closeMobileMenu()">
+                <span>个人中心</span>
+                <small>{{ user.username }}</small>
+              </a>
+              <a routerLink="/settings" (click)="closeMobileMenu()">
+                <span>账号设置</span>
+                <small>密码、通知和隐私</small>
+              </a>
+              @if (canEnterAdmin()) {
+                <a routerLink="/admin" (click)="closeMobileMenu()">
+                  <span>管理系统</span>
+                  <small>数据看板与内容管理</small>
+                </a>
+              }
+              <button type="button" (click)="logout()">
+                <span>退出登录</span>
+                <small>{{ user.email }}</small>
+              </button>
+            } @else {
+              <a routerLink="/login" (click)="closeMobileMenu()">
+                <span>登录</span>
+                <small>进入个人空间</small>
+              </a>
+              <a routerLink="/register" (click)="closeMobileMenu()">
+                <span>注册</span>
+                <small>创建新账号</small>
+              </a>
+            }
+          </nav>
+        </section>
+      </div>
+    </header>
+
+    <header class="site-head site-head--stacked">
+      <div class="site-head__inner">
+        <div class="site-head__background" aria-hidden="true"></div>
+
+        <div class="head-topline">
+          <a class="brand brand--stacked" routerLink="/home" aria-label="学习小洞天首页">
+            <span class="brand-mark" aria-hidden="true">学</span>
+            <span class="brand-name">学习小洞天</span>
+          </a>
+
+          <nav class="audience-links" aria-label="快捷入口">
+            @for (item of utilityLinks(); track item.label) {
+              <a [routerLink]="item.path">{{ item.label }}</a>
+            }
+          </nav>
+
+          @if (canEnterAdmin()) {
+            <a class="mini-admin-link" routerLink="/admin">管理系统</a>
+          }
+
+          <form
+            class="head-search-form head-search-form--stacked"
+            role="search"
+            (submit)="submitHeaderSearch($event, stackedHeaderSearch.value)"
+          >
+            <input
+              #stackedHeaderSearch
+              type="search"
+              placeholder="搜帖子 / 用户"
+              aria-label="搜索帖子或用户"
+              [value]="headerSearchDraft()"
+              (input)="updateHeaderSearch($event)"
+              (keydown.enter)="submitHeaderSearch($event, stackedHeaderSearch.value)"
+            />
+            @if (headerSearchDraft()) {
+              <button class="head-search-clear" type="button" aria-label="清空搜索" (click)="clearHeaderSearch()">
+                <span aria-hidden="true">×</span>
+              </button>
+            }
+            <button class="head-search-submit" type="submit" aria-label="搜索">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="10.8" cy="10.8" r="5.8"></circle>
+                <path d="M15.1 15.1 20 20"></path>
+              </svg>
+            </button>
+
+            <div class="head-search-panel">
+              @if (headerSearchDraft()) {
+                <div class="search-results-stack">
+                  <section class="search-panel-section">
+                    <div class="search-panel-title search-panel-title--compact">
+                      <strong>用户</strong>
+                      @if (isSearchingUsers()) {
+                        <span>查找中</span>
+                      }
+                    </div>
+                    <div class="search-user-list" aria-label="搜索用户">
+                      @for (user of userSearchSuggestions(); track user.id) {
+                        <button
+                          type="button"
+                          (pointerdown)="$event.preventDefault(); openSuggestedUser(user)"
+                          (keydown.enter)="openSuggestedUser(user)"
+                        >
+                          <img [src]="avatarSrc(user.avatar, user.username)" [alt]="user.username" />
+                          <span class="search-user-body">
+                            <strong>
+                              {{ user.username }}
+                              <em class="user-title-badge title-level-{{ user.title?.level || 1 }}">{{ userLevel(user) }}</em>
+                            </strong>
+                            <small>{{ userSuggestionMeta(user) }}</small>
+                          </span>
+                        </button>
+                      } @empty {
+                        <p class="search-empty">{{ isSearchingUsers() ? '正在翻找用户。' : '没有匹配的用户。' }}</p>
+                      }
+                    </div>
+                  </section>
+
+                  <section class="search-panel-section">
+                    <div class="search-panel-title search-panel-title--compact">
+                      <strong>帖子</strong>
+                      <span>回车搜索全部帖子</span>
+                    </div>
+                    <div class="search-suggest-list" aria-label="搜索帖子">
+                      @for (item of searchSuggestions(); track item.id) {
+                        <button
+                          type="button"
+                          (pointerdown)="$event.preventDefault(); openSuggestedPost(item)"
+                          (keydown.enter)="openSuggestedPost(item)"
+                        >
+                          <span class="suggestion-prefix">{{ headerSearchDraft().trim() }}</span>{{ suggestionTail(item.title) }}
+                          <small>{{ item.board.name }} 路 {{ item.author.username }}</small>
+                        </button>
+                      } @empty {
+                        <p class="search-empty">没有匹配的帖子。</p>
+                      }
+                    </div>
+                  </section>
+                </div>
+              } @else {
+                <div class="search-panel-section search-panel-section--history">
+                  <div class="search-panel-title">
+                    <strong>搜索历史</strong>
+                    <button type="button" (click)="clearSearchHistory()">清空</button>
+                  </div>
+                  <div class="search-history-chips">
+                    @for (item of searchHistory(); track item) {
+                      <span class="search-history-chip">
+                        <button type="button" (click)="useHeaderSearch(item)">{{ item }}</button>
+                        <button type="button" aria-label="删除这条搜索历史" (click)="removeSearchHistoryItem($event, item)">×</button>
+                      </span>
+                    } @empty {
+                      <span>还没有搜索记录</span>
+                    }
+                  </div>
+                </div>
+
+                <div class="search-panel-section">
+                  <div class="search-panel-title">
+                    <strong>洞天热搜</strong>
+                  </div>
+                  <ol class="search-hot-list">
+                    @for (item of hotSearches(); track item.title; let index = $index) {
+                      <li>
+                        <button type="button" (click)="openHotSearch(item)">
+                          <span>{{ index + 1 }}</span>
+                          <strong>{{ item.title }}</strong>
+                          @if (item.tag) {
+                            <em>{{ item.tag }}</em>
+                          }
+                          <small>{{ item.meta }}</small>
+                        </button>
+                      </li>
+                    } @empty {
+                      <li class="search-empty">热搜正在加载</li>
+                    }
+                  </ol>
+                </div>
+              }
+            </div>
+          </form>
+
+          @if (currentUser(); as user) {
+          <div class="avatar-popover avatar-popover--stacked">
+            <a class="head-avatar" [routerLink]="['/profile', user.id]" aria-haspopup="true" aria-label="进入个人中心">
+              <img [src]="avatarSrc(user.avatar, user.username)" [alt]="user.username" />
+            </a>
+
+            <div class="avatar-menu" role="menu">
+              <div class="avatar-menu__profile">
+                <strong>{{ user.username }}</strong>
+                <div class="user-badge-row">
+                  @if (user.isStaff) {
+                    <span class="staff-badge">{{ user.roleName ?? '管理成员' }}</span>
+                  }
+                  <span class="user-title-badge title-level-{{ user.title?.level || 1 }}">{{ userLevel(user) }}</span>
+                </div>
+                <div class="level-popover__meter" aria-hidden="true">
+                  <i [style.width.%]="userTitleProgress(user)"></i>
+                </div>
+                <span>{{ userTitleNeedText(user) }}</span>
+                <small>{{ user.email }}</small>
+              </div>
+
+              <nav class="avatar-menu__links" aria-label="个人菜单">
+                <a [routerLink]="['/profile', user.id]" role="menuitem">
+                  <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M12 12.2a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path><path d="M4.8 20.2c1.2-3.4 3.6-5.1 7.2-5.1s6 1.7 7.2 5.1"></path></svg>
+                  </span>
+                  个人中心
+                </a>
+                <a routerLink="/posts/manage" role="menuitem">
+                  <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M5 5.8h14"></path><path d="M5 12h9"></path><path d="M5 18.2h7"></path><path d="M16.4 17.8 20 14.2"></path><path d="m18.6 12.8 2.6 2.6"></path></svg>
+                  </span>
+                  帖子管理
+                </a>
+                <div class="avatar-theme-item" role="menuitem" tabindex="0">
+                  <button type="button">
+                    <span aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><path d="M12 3.8a7.8 7.8 0 1 0 7.8 7.8A6.1 6.1 0 0 1 12 3.8Z"></path></svg>
+                    </span>
+                    主题设置
+                  </button>
+                  <div class="avatar-theme-panel" role="menu" aria-label="选择主题">
+                    <button type="button" class="is-active" aria-label="浅色主题" title="浅色">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4.2"></circle>
+                        <path d="M12 2.8v2.1M12 19.1v2.1M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2.8 12h2.1M19.1 12h2.1M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5"></path>
+                      </svg>
+                    </button>
+                    <button type="button" aria-label="深色主题" title="深色">
+                      <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3.6a8.1 8.1 0 1 0 8.1 8.1A6.2 6.2 0 0 1 12 3.6Z"></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <a routerLink="/settings" role="menuitem">
+                  <span aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><path d="M6 5.4h12a1.6 1.6 0 0 1 1.6 1.6v10A1.6 1.6 0 0 1 18 18.6H6A1.6 1.6 0 0 1 4.4 17V7A1.6 1.6 0 0 1 6 5.4Z"></path><path d="M8 9.2h5"></path><path d="M8 13h8"></path></svg>
+                  </span>
+                  账号设置
+                </a>
+              </nav>
+
+              <button class="avatar-menu__logout" type="button" (click)="logout()">
+                <span aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M10 5H6.8A1.8 1.8 0 0 0 5 6.8v10.4A1.8 1.8 0 0 0 6.8 19H10"></path><path d="M13 12h7"></path><path d="m17.4 8.6 3.4 3.4-3.4 3.4"></path></svg>
+                </span>
+                退出登录              </button>
+            </div>
+          </div>
+          } @else {
+            <a class="login-link" routerLink="/login">
+              <span class="login-label">登录</span>
+              <span class="login-arrow-shell" aria-hidden="true">
+                <svg class="login-arrow" viewBox="0 0 18 18" fill="none" focusable="false">
+                  <path d="M3 9H14"></path>
+                  <path d="M10 5L14 9L10 13"></path>
+                </svg>
+              </span>
+            </a>
+          }
+        </div>
+
+        <div class="head-mainline">
+          <nav class="nav-links nav-links--stacked" aria-label="主导航">
+            <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+              <span class="nav-text">首页</span>
+            </a>
+            <a routerLink="/posts" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+              <span class="nav-text">帖子</span>
+            </a>
+            <button class="quick-post-button quick-post-button--stacked" type="button" (click)="openPostComposer()">
+              <span aria-hidden="true">+</span>
+              发帖
+            </button>
+            @if (currentUser()) {
+            <div class="message-popover message-popover--stacked" (mouseenter)="refreshMessageSummary()" (focusin)="refreshMessageSummary()">
+              <button class="message-trigger" type="button" aria-haspopup="true" aria-label="消息菜单">
+                <svg class="message-trigger__icon" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M7.2 10.4C10.6 8.3 22.6 8.1 25.3 10.5C27.1 13.4 26.6 20.8 24.3 23.1C20.7 24.2 12.1 24.1 8.4 22.8C6.1 19.7 5.8 13.5 7.2 10.4Z" />
+                  <path d="M8.6 11.8C11.7 14.5 14.2 16.1 16.4 16.9C18.7 15.8 21.2 14.2 24.1 11.7" />
+                  <path d="M9.9 22.5C9.3 24.2 8.4 25.7 7.4 27.1C9.9 26.4 12 25.6 13.8 24.2" />
+                </svg>
+                @if (totalUnread() > 0) {
+                  <b>{{ totalUnread() > 99 ? '99+' : totalUnread() }}</b>
+                }
+              </button>
+
+              <div class="message-menu" role="menu">
+                <a routerLink="/notifications" [queryParams]="{ tab: 'mention' }" role="menuitem">
+                  <span>@我的</span>
+                </a>
+                <a routerLink="/notifications" [queryParams]="{ tab: 'like' }" role="menuitem">
+                  <span>收到的赞</span>
+                </a>
+                <a routerLink="/notifications" [queryParams]="{ tab: 'system' }" role="menuitem">
+                  <span>系统通知</span>
+                </a>
+                <a routerLink="/messages" role="menuitem">
+                  <span>我的消息</span>
+                </a>
+              </div>
+            </div>
+            }
+          </nav>
+        </div>
+      </div>
+    </header>
   }
 
   <main class="page-frame">
     <router-outlet />
   </main>
+
+  @if (isComposerOpen()) {
+    <div class="post-composer-layer" role="presentation" (click)="closePostComposer()">
+      <section class="post-composer-card" role="dialog" aria-modal="true" aria-label="发布帖子" (click)="$event.stopPropagation()">
+        <header class="post-composer-card__head">
+          <div>
+            <span>发帖</span>
+            <small>在小洞天留下一段认真想法</small>
+          </div>
+          <button type="button" aria-label="关闭发帖窗口" (click)="closePostComposer()">×</button>
+        </header>
+
+        <form class="post-composer-form" [formGroup]="postComposerForm" (ngSubmit)="submitPostComposer()">
+          <label class="post-composer-board">
+            <span>发布到</span>
+            <select formControlName="boardId">
+              @for (board of boards(); track board.id) {
+                <option [value]="board.id">{{ board.name }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="post-composer-field">
+            <input formControlName="title" maxlength="80" placeholder="请输入完整帖子标题" />
+          </label>
+
+          <label class="post-composer-field">
+            <textarea formControlName="content" rows="9" placeholder="请输入正文，写清楚一点会更容易被回应。"></textarea>
+            <small
+              class="composer-field-hint"
+              [class.is-warning]="postComposerForm.controls.content.touched && composerContentRemaining() > 0"
+            >
+              @if (composerContentRemaining() > 0) {
+                正文至少 {{ minimumPostContentLength }} 字，还差 {{ composerContentRemaining() }} 字
+              } @else {
+                正文已达到发布字数
+              }
+            </small>
+          </label>
+
+          <div class="post-composer-tools" aria-label="帖子工具">
+            <div class="composer-tool">
+              <button type="button" (click)="toggleEmojiPanel()">
+                <span aria-hidden="true">☺</span>
+                表情
+              </button>
+              @if (isEmojiPanelOpen()) {
+                <div class="composer-tool-panel composer-emoji-panel">
+                  @for (emoji of emojis; track emoji) {
+                    <button type="button" (click)="insertEmoji(emoji)">{{ emoji }}</button>
+                  }
+                </div>
+              }
+            </div>
+            <label class="composer-tool composer-image-tool">
+              <span>
+                <span aria-hidden="true">▧</span>
+                图片
+              </span>
+              <input type="file" accept="image/*" multiple (change)="handleComposerImages($event)" />
+            </label>
+            <div class="composer-tool">
+              <button type="button" (click)="toggleMentionPanel()">
+                <span aria-hidden="true">@</span>
+                好友
+              </button>
+              @if (isMentionPanelOpen()) {
+                <div class="composer-tool-panel composer-mention-panel">
+                  @for (user of followingUsers(); track user.id) {
+                    <button type="button" (click)="mentionUser(user)">
+                      <img [src]="avatarSrc(user.avatar, user.username)" [alt]="user.username" />
+                      <span>{{ user.username }}</span>
+                    </button>
+                  } @empty {
+                    <p>还没有关注的人，先去个人页关注成员。</p>
+                  }
+                </div>
+              }
+            </div>
+            <div class="composer-ai-tools" aria-label="AI 辅助">
+              <span>AI辅助</span>
+              <button type="button" [disabled]="activeAiMode() !== null" (click)="runComposerAi('inspiration')">
+                {{ activeAiMode() === 'inspiration' ? '生成中' : 'AI灵感' }}
+              </button>
+              <button type="button" [disabled]="activeAiMode() !== null" (click)="runComposerAi('continue')">
+                {{ activeAiMode() === 'continue' ? '续写中' : 'AI续写' }}
+              </button>
+              <button type="button" [disabled]="activeAiMode() !== null" (click)="runComposerAi('structure')">
+                {{ activeAiMode() === 'structure' ? '整理中' : 'AI结构' }}
+              </button>
+              <button type="button" [disabled]="activeAiMode() !== null" (click)="runComposerAi('polish')">
+                {{ activeAiMode() === 'polish' ? '润色中' : 'AI润色' }}
+              </button>
+            </div>
+          </div>
+
+          @if (selectedImages().length > 0) {
+            <div class="composer-image-list" aria-label="已选择图片">
+              @for (image of selectedImages(); track image.name; let index = $index) {
+                <button type="button" (click)="removeComposerImage(index)" [title]="'移除 ' + image.name">
+                  <span>{{ image.name }}</span>
+                  <b aria-hidden="true">×</b>
+                </button>
+              }
+            </div>
+          }
+
+          @if (composerNotice()) {
+            <p class="post-composer-notice">{{ composerNotice() }}</p>
+          }
+
+          <div class="post-composer-actions">
+            <small>{{ postComposerForm.controls.content.value.trim().length }} 字</small>
+            <button class="post-composer-submit" type="submit" [disabled]="postComposerForm.invalid || isPostSubmitting()">
+              {{ isPostSubmitting() ? '发布中...' : '发布' }}
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  }
+
+  @if (!isAuthPage() && !isAdminPage()) {
+    <footer class="site-footer" aria-label="站点页脚">
+      <section class="site-footer__prelude" aria-label="页脚信息区">
+        <div class="site-footer__brand-block">
+          <span class="site-footer__logo-write">
+            <object
+              class="site-footer__logo-object"
+              data="/未标题-1.svg"
+              type="image/svg+xml"
+              aria-label="学习小洞天"></object>
+          </span>
+        </div>
+
+        <div class="site-footer__placeholder" aria-label="预留展示区域">
+          <span aria-hidden="true"></span>
+        </div>
+
+        <nav class="site-footer__links" aria-label="项目链接">
+          <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="https://gitee.com/" target="_blank" rel="noreferrer">Gitee</a>
+        </nav>
+      </section>
+
+      <div class="site-footer__rule" aria-hidden="true"></div>
+
+      <div class="site-footer__bottom">
+        <div class="site-footer__social" aria-label="社交链接">
+          <a href="https://www.linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+            in
+          </a>
+          <a href="https://www.youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube">
+            ?          </a>
+        </div>
+
+        <span aria-hidden="true">·</span>
+        <a href="/rules" (click)="openInfoPanel('rules', $event)">洞天须知</a>
+        <a href="/tech-stack" (click)="openInfoPanel('stack', $event)">技术栈</a>
+        <p>2026 ? 学习小洞天</p>
+        <strong>miracle.</strong>
+        <button class="site-footer__top" type="button" (click)="scrollToTop()" aria-label="返回顶部">
+          <span aria-hidden="true"></span>
+          返回顶部
+        </button>
+      </div>
+    </footer>
+  }
+
+  @if (activeInfoPanel(); as panel) {
+    <div class="info-panel-layer" role="presentation" (click)="closeInfoPanel()">
+      <section class="info-panel" role="dialog" aria-modal="true" [attr.aria-label]="panel === 'rules' ? '洞天须知' : '技术栈'" (click)="$event.stopPropagation()">
+        <button class="info-panel__close" type="button" aria-label="关闭" (click)="closeInfoPanel()">×</button>
+        @if (panel === 'rules') {
+          <span class="feature-kicker">洞天须知</span>
+          <h2>成长不是刷数字，是把一次次参与留下痕迹。</h2>
+          <p>头衔由经验自动生成，显示在用户名旁边；如果成员是员工，会先显示职位徽章，再显示头衔徽章。</p>
+          <ul>
+            <li>每日首次登录 +1 经验。</li>
+            <li>每发布一篇帖子 +1 经验。</li>
+            <li>帖子或评论每获得一个来自他人的点赞 +1 经验。</li>
+            <li>山水之间：1-3 级，每级 20 经验。</li>
+            <li>半城烟沙：4-6 级，每级 50 经验。</li>
+            <li>断桥残雪：7-9 级，每级 100 经验。</li>
+            <li>清明雨上：10 级满级，从 9 级升到 10 级需要 1000 经验。</li>
+          </ul>
+          <p>请认真发帖、友善回复、谨慎举报。洞天会记录贡献，也会保留一点安静。</p>
+        } @else {
+          <span class="feature-kicker">技术栈</span>
+          <h2>学习小洞天的实现骨架</h2>
+          <ul>
+            <li>前端：Angular、TypeScript、SCSS、Angular Router、Reactive Forms。</li>
+            <li>后端：Flask、Flask-Login、SQLAlchemy、Alembic、Flask-CORS。</li>
+            <li>数据：关系型数据库模型，用户、帖子、评论、点赞、通知、私信、关注关系分表管理。</li>
+            <li>媒体：后端静态资源上传，头像与帖子图片分目录保存。</li>
+            <li>交互：自定义平滑滚动、头像 hover 卡片、通知汇总轮询、前后端 JSON API 通信。</li>
+          </ul>
+        }
+      </section>
+    </div>
+  }
+
+  <div class="site-scrollbar" aria-hidden="true">
+    <div class="site-scrollbar__track"></div>
+    <div class="site-scrollbar__thumb"></div>
+  </div>
+
+  <div class="toast-stack" aria-live="polite" aria-atomic="true">
+    @for (toast of toastService.messages(); track toast.id) {
+      <article
+        class="toast-message"
+        [class.toast-message--success]="toast.kind === 'success'"
+        [class.toast-message--error]="toast.kind === 'error'"
+        [class.toast-message--warning]="toast.kind === 'warning'"
+        [class.toast-message--info]="toast.kind === 'info'"
+        [style.--toast-duration]="toast.duration + 'ms'"
+      >
+        <span class="toast-message__dot" aria-hidden="true"></span>
+        <p>{{ toast.message }}</p>
+        <button class="toast-message__close" type="button" aria-label="关闭提示" (click)="toastService.dismiss(toast.id)">×</button>
+        <i class="toast-message__bar" aria-hidden="true"></i>
+      </article>}
+  </div>
 </div>
+
+
+
+
+
+
+
+
+

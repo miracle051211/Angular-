@@ -1,0 +1,98 @@
+.action-stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 10px;
+}
+
+.notice-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.notice-tabs button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+  padding: 0 18px;
+  border: 1.5px solid rgba(56, 48, 48, 0.22);
+  border-radius: 7px;
+  background: #fff8ec;
+  color: var(--color-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.notice-tabs button.is-active {
+  border-color: var(--color-ink);
+  background: var(--color-yellow);
+  box-shadow: 4px 4px 0 rgba(56, 48, 48, 0.18);
+}
+
+.notice-tabs b {
+  display: grid;
+  min-width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--color-orange);
+  color: var(--color-white);
+  font-size: 12px;
+}
+
+.notice-item {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.notice-item.is-unread {
+  border-color: var(--color-orange);
+  background: #fff8ef;
+}
+
+.notice-item h2,
+.notice-item p {
+  margin: 0;
+}
+
+.notice-item small {
+  grid-column: 1 / -1;
+  color: var(--color-muted);
+}
+
+.notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.notice-actions .ghost-button {
+  min-height: 36px;
+  padding: 0 13px;
+}
+
+.notice-delete {
+  color: var(--color-orange);
+}
+
+.action-stack button:disabled,
+.notice-actions button:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
+@media (max-width: 640px) {
+  .notice-item,
+  .notice-tabs,
+  .action-stack,
+  .notice-actions {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+}

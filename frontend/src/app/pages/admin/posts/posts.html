@@ -1,0 +1,68 @@
+﻿<section class="feature-page admin-list-page">
+  <div class="admin-table-shell">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>帖子</th>
+          <th>板块</th>
+          <th>作者</th>
+          <th>数据</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (post of posts(); track post.id) {
+          <tr>
+            <td><a [routerLink]="['/posts', post.id]">{{ post.title }}</a></td>
+            <td>{{ post.board.name }}</td>
+            <td>{{ post.author.username }}</td>
+            <td>{{ post.readCount }} 阅读 · {{ post.commentCount }} 评论</td>
+            <td>
+              <span class="status-dot" [class.is-warn]="!post.visible">
+                {{ post.visible ? '展示中' : '已隐藏' }}
+              </span>
+            </td>
+            <td>
+              <div class="admin-row-actions">
+                <button class="ghost-button" type="button" (click)="toggleVisible(post.id)">
+                  {{ post.visible ? '隐藏' : '恢复' }}
+                </button>
+                <button
+                  class="ghost-button danger-button"
+                  type="button"
+                  [disabled]="deletingId() === post.id"
+                  (click)="deletePost(post)"
+                >
+                  {{ deletingId() === post.id ? '删除中' : '删除' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (page(); as meta) {
+    <footer class="admin-pagination">
+      <span>共 {{ meta.total }} 条 · 第 {{ meta.page }} / {{ meta.pages || 1 }} 页</span>
+      <div>
+        <button class="ghost-button" type="button" [disabled]="meta.page <= 1" (click)="goPage(meta.page - 1)">上一页</button>
+        @for (item of pageNumbers(meta); track item) {
+          <button
+            class="ghost-button page-number"
+            type="button"
+            [class.is-active]="item === meta.page"
+            (click)="goPage(item)"
+          >
+            {{ item }}
+          </button>
+        }
+        <button class="ghost-button" type="button" [disabled]="meta.page >= meta.pages" (click)="goPage(meta.page + 1)">下一页</button>
+      </div>
+    </footer>
+  }
+</section>
+
+
+

@@ -1,0 +1,58 @@
+﻿<section class="feature-page admin-list-page">
+  <div class="admin-table-shell">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>评论</th>
+          <th>作者</th>
+          <th>时间</th>
+          <th>点赞</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (comment of comments(); track comment.id) {
+          <tr>
+            <td>{{ comment.content }}</td>
+            <td>{{ comment.author?.username ?? '未知用户' }}</td>
+            <td>{{ formatDate(comment.createdAt) }}</td>
+            <td>{{ comment.likeCount }}</td>
+            <td>
+              <span class="status-dot" [class.is-warn]="!comment.visible">
+                {{ comment.visible ? '可见' : '已屏蔽' }}
+              </span>
+            </td>
+            <td>
+              <button class="ghost-button" type="button" (click)="toggleVisible(comment.id)">
+                {{ comment.visible ? '屏蔽' : '恢复' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (page(); as meta) {
+    <footer class="admin-pagination">
+      <span>共 {{ meta.total }} 条 · 第 {{ meta.page }} / {{ meta.pages || 1 }} 页</span>
+      <div>
+        <button class="ghost-button" type="button" [disabled]="meta.page <= 1" (click)="goPage(meta.page - 1)">上一页</button>
+        @for (item of pageNumbers(meta); track item) {
+          <button
+            class="ghost-button page-number"
+            type="button"
+            [class.is-active]="item === meta.page"
+            (click)="goPage(item)"
+          >
+            {{ item }}
+          </button>
+        }
+        <button class="ghost-button" type="button" [disabled]="meta.page >= meta.pages" (click)="goPage(meta.page + 1)">下一页</button>
+      </div>
+    </footer>
+  }
+</section>
+
+
+

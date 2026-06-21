@@ -1,0 +1,44 @@
+﻿<section class="board-admin feature-page admin-list-page">
+  <form class="board-create-row" [formGroup]="form" (ngSubmit)="createBoard()">
+    <div>
+      <strong>板块</strong>
+      <span>{{ boards().length }} 个</span>
+    </div>
+    <label>
+      <span>板块名称</span>
+      <input formControlName="name" placeholder="输入新板块名称" />
+    </label>
+    <button class="ink-button" type="submit" [disabled]="form.invalid">保存板块</button>
+  </form>
+
+  <div class="admin-table-shell">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>名称</th>
+          <th>帖子数</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (board of boards(); track board.id) {
+          <tr>
+            <td>{{ board.name }}</td>
+            <td>{{ board.postCount }}</td>
+            <td>
+              <span class="status-dot" [class.is-muted]="!board.active">
+                {{ board.active ? '启用' : '停用' }}
+              </span>
+            </td>
+            <td>
+              <button class="ghost-button" type="button" (click)="toggleBoard(board.id)">
+                {{ board.active ? '停用' : '启用' }}
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

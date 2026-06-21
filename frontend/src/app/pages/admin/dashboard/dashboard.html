@@ -1,0 +1,122 @@
+<div class="data-screen">
+  <header class="screen-toolbar">
+    <div>
+      <strong>洞天数据驾驶舱</strong>
+      <span>内容 / 互动 / 风险 / 板块分布</span>
+    </div>
+    <div class="screen-actions" aria-label="导出操作">
+      <button type="button" (click)="exportExcel()">导出 Excel</button>
+      <button type="button" (click)="exportPdf()">导出 PDF</button>
+    </div>
+  </header>
+
+  <section class="kpi-strip" aria-label="后台数据概览">
+    @for (stat of stats(); track stat.label) {
+      <button
+        class="kpi-card"
+        type="button"
+        [class.is-active]="activeMetric() === stat.label"
+        [style.--metric-accent]="stat.accent"
+        (click)="selectMetric(stat.label)"
+      >
+        <span>{{ stat.note }}</span>
+        <strong>{{ stat.value }}</strong>
+        <small>{{ stat.label }}</small>
+        <i [style.width.%]="metricWidth(stat.value)"></i>
+      </button>
+    }
+  </section>
+
+  <section class="screen-grid" aria-label="洞天可视化看板">
+    <article class="viz-panel panel-wide">
+      <div class="panel-head">
+        <span>交互式内容趋势</span>
+        @if (activeStat(); as stat) {
+          <b [style.color]="stat.accent">{{ stat.label }} {{ stat.value }}</b>
+        }
+      </div>
+      <div #trendChart class="chart-host chart-host--large" aria-label="帖子评论阅读组合图"></div>
+    </article>
+
+    <article class="viz-panel">
+      <div class="panel-head">
+        <span>板块内容玫瑰图</span>
+        <b>{{ boardSlices().length }} 类</b>
+      </div>
+      <div #pieChart class="chart-host" aria-label="板块内容占比图"></div>
+    </article>
+
+    <article class="viz-panel">
+      <div class="panel-head">
+        <span>风险压力仪表盘</span>
+        <b>{{ reportRatio() }}%</b>
+      </div>
+      <div #gaugeChart class="chart-host" aria-label="举报压力仪表盘"></div>
+    </article>
+
+    <article class="viz-panel">
+      <div class="panel-head">
+        <span>内容活跃热力图</span>
+        <b>42 点</b>
+      </div>
+      <div #heatChart class="chart-host" aria-label="内容活跃热力图"></div>
+    </article>
+
+    <article class="viz-panel metric-bars">
+      <div class="panel-head">
+        <span>指标横向对比</span>
+        <b>{{ engagementRate() }}% 互动</b>
+      </div>
+      <div class="metric-list">
+        @for (stat of stats(); track stat.label) {
+          <button type="button" (click)="selectMetric(stat.label)" [class.is-active]="activeMetric() === stat.label">
+            <span>{{ stat.label }}</span>
+            <i [style.width.%]="metricWidth(stat.value)" [style.background]="stat.accent"></i>
+            <b>{{ stat.value }}</b>
+          </button>
+        }
+      </div>
+    </article>
+
+    <article class="viz-panel panel-rank">
+      <div class="panel-head">
+        <span>热门内容 Top 8</span>
+        <b>热度排行</b>
+      </div>
+      <div class="rank-list">
+        @for (item of topPosts(); track item.label; let index = $index) {
+          <div class="rank-row">
+            <em>No.{{ index + 1 }}</em>
+            <div>
+              <strong>{{ item.label }}</strong>
+              <span>{{ item.meta }}</span>
+              <i [style.width.%]="rankWidth(item.value)"></i>
+            </div>
+            <b>{{ item.value }}</b>
+          </div>
+        } @empty {
+          <p class="empty-note">暂无热门内容数据。</p>
+        }
+      </div>
+    </article>
+
+    <article class="viz-panel panel-table">
+      <div class="panel-head">
+        <span>最近内容明细</span>
+        <b>实时</b>
+      </div>
+      <div class="data-table">
+        @for (post of recentPosts().slice(0, 6); track post.id) {
+          <div>
+            <span>{{ post.board.name }}</span>
+            <strong>{{ displayTitle(post.title) }}</strong>
+            <em>{{ post.readCount }} 阅读</em>
+            <b>{{ post.commentCount }} 评</b>
+          </div>
+        } @empty {
+          <p class="empty-note">暂时没有新的帖子动态。</p>
+        }
+      </div>
+    </article>
+  </section>
+</div>

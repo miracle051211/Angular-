@@ -1,0 +1,38 @@
+<section
+  class="signature-writing"
+  [class.is-swapped]="isSwapped()"
+  aria-label="学习小洞天介绍"
+  (pointerleave)="setSwapState(false)"
+>
+  <div class="signature-heading">
+    <span class="signature-kicker">ABOUT</span>
+    <h2
+      class="swap-title"
+      tabindex="0"
+      aria-label="学习小洞天，悬停后显示悟知小灵境"
+      (pointerenter)="setSwapState(true)"
+      (focusin)="setSwapState(true)"
+      (focusout)="setSwapState(false)"
+    >
+      @for (letter of titleLetters(); track $index) {
+        <span class="swap-letter" [style.--letter-delay]="letter.delay" aria-hidden="true">
+          <span class="swap-face swap-face--front">{{ letter.front }}</span>
+          <span class="swap-face swap-face--back">{{ letter.back }}</span>
+        </span>
+      }
+    </h2>
+  </div>
+
+  <div class="signature-text">
+    @for (line of textLines(); track $index) {
+      <p [attr.aria-label]="isSwapped() ? line.backLabel : line.frontLabel">
+        @for (character of line.characters; track $index) {
+          <span class="copy-letter" [style.--letter-delay]="character.delay" aria-hidden="true">
+            <span class="copy-face copy-face--front">{{ character.front }}</span>
+            <span class="copy-face copy-face--back">{{ character.back }}</span>
+          </span>
+        }
+      </p>
+    }
+  </div>
+</section>

@@ -1,4 +1,4 @@
-from flask import g, render_template
+﻿from flask import g
 from flask_login import current_user
 from sqlalchemy.orm import joinedload
 
@@ -19,11 +19,3 @@ def dongtian_before_request():
             g.user = user
         else:
             g.user = None
-def bbs_404_error(error):
-    return render_template("errors/404.html")
-def bbs_401_error(error):
-    return render_template("errors/401.html")
-def bbs_500_error(error):
-    return render_template("errors/500.html")
-
-

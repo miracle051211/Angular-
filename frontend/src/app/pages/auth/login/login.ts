@@ -7,7 +7,11 @@ import {
   signal,
 } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+
+import { AuthService } from '../../../core/services/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 interface PointerOffset {
   readonly x: number;
@@ -26,6 +30,9 @@ interface ConfettiPiece {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginPage {
+  private readonly authService = inject(AuthService);
+  private readonly toastService = inject(ToastService);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   private readonly timers: number[] = [];
 
@@ -42,6 +49,38 @@ export class LoginPage {
       nonNullable: true,
     }),
   });
+  protected readonly registerForm = new FormGroup({
+    username: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(2)],
+    }),
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email],
+    }),
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(6)],
+    }),
+    captcha: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.pattern(/^\d{6}$/)],
+    }),
+  });
+  protected readonly resetForm = new FormGroup({
+    email: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.email],
+    }),
+    captcha: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.pattern(/^\d{6}$/)],
+    }),
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(6)],
+    }),
+  });
 
   protected readonly pointer = signal<PointerOffset>({ x: 0, y: 0 });
   protected readonly showPassword = signal(false);
@@ -53,10 +92,14 @@ export class LoginPage {
   protected readonly isYellowBlinking = signal(false);
   protected readonly isPurplePeeking = signal(false);
   protected readonly isSubmitting = signal(false);
+  protected readonly isRegisterSubmitting = signal(false);
+  protected readonly isSendingRegisterCaptcha = signal(false);
+  protected readonly isResetSubmitting = signal(false);
+  protected readonly isSendingResetCaptcha = signal(false);
   protected readonly isLoginFailed = signal(false);
   protected readonly isLoginSuccess = signal(false);
-  protected readonly notice = signal<string | null>(null);
-  protected readonly modalMessage = signal<string | null>(null);
+  protected readonly isRegisterOpen = signal(false);
+  protected readonly isResetOpen = signal(false);
   protected readonly passwordLength = signal(0);
 
   protected readonly confettiPieces: ConfettiPiece[] = Array.from({ length: 72 }, (_, index) => {
@@ -136,37 +179,148 @@ export class LoginPage {
     this.showPassword.update((value) => !value);
   }
 
-  protected openFeatureModal(): void {
-    this.modalMessage.set(
-      '学习小洞天保留课程作业所需的用户登录入口，后续可接入 Flask 后端完成真实身份校验、发帖权限和个人内容管理。',
-    );
+  protected openRegister(): void {
+    this.isRegisterOpen.set(true);
+    this.isResetOpen.set(false);
+    this.isLoginFailed.set(false);
   }
 
-  protected closeFeatureModal(): void {
-    this.modalMessage.set(null);
+  protected showLogin(): void {
+    this.isRegisterOpen.set(false);
+    this.isResetOpen.set(false);
+    this.isLoginFailed.set(false);
+  }
+
+  protected closeRegister(): void {
+    this.isRegisterOpen.set(false);
+  }
+
+  protected openReset(): void {
+    this.resetForm.patchValue({ email: this.form.controls.email.value });
+    this.isResetOpen.set(true);
+    this.isRegisterOpen.set(false);
+    this.isLoginFailed.set(false);
+  }
+
+  protected closeReset(): void {
+    this.isResetOpen.set(false);
   }
 
   protected submit(): void {
-    this.notice.set(null);
     this.isLoginFailed.set(false);
     this.isLoginSuccess.set(false);
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.notice.set('请先填写正确的邮箱和不少于 6 位的密码。');
+      this.toastService.warning('邮箱或密码还没写对。');
       this.flashFailure();
       return;
     }
 
     this.isSubmitting.set(true);
-    this.addTimer(
-      window.setTimeout(() => {
-        this.isSubmitting.set(false);
-        this.isLoginSuccess.set(true);
-        this.notice.set('表单校验已通过，后续可在这里接入后端登录 API。');
-        this.addTimer(window.setTimeout(() => this.isLoginSuccess.set(false), 5200));
-      }, 650),
-    );
+    this.authService
+      .login({
+        email: this.form.controls.email.value,
+        password: this.form.controls.password.value,
+        remember: this.form.controls.remember.value,
+      })
+      .pipe(finalize(() => this.isSubmitting.set(false)))
+      .subscribe({
+        next: () => {
+          this.isLoginSuccess.set(true);
+          this.toastService.success('进洞天了。');
+          this.addTimer(window.setTimeout(() => void this.router.navigate(['/home']), 520));
+        },
+        error: (error) => {
+          this.toastService.error(error?.error?.message ?? '邮箱或密码不对。');
+          this.flashFailure();
+        },
+      });
+  }
+
+  protected sendRegisterCaptcha(): void {
+    const emailControl = this.registerForm.controls.email;
+    emailControl.markAsTouched();
+    if (emailControl.invalid || this.isSendingRegisterCaptcha()) {
+      this.toastService.warning('请先填写有效邮箱。');
+      return;
+    }
+
+    this.isSendingRegisterCaptcha.set(true);
+    this.authService
+      .sendCaptcha({ email: emailControl.value, type: 'register' })
+      .pipe(finalize(() => this.isSendingRegisterCaptcha.set(false)))
+      .subscribe({
+        next: () => this.toastService.success('验证码已发送，请查看邮箱。'),
+        error: (error) => this.toastService.error(error?.error?.message ?? '验证码发送失败。'),
+      });
+  }
+
+  protected submitRegister(): void {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      this.toastService.warning('请把注册信息填写完整。');
+      return;
+    }
+
+    this.isRegisterSubmitting.set(true);
+    this.authService
+      .register({
+        username: this.registerForm.controls.username.value,
+        email: this.registerForm.controls.email.value,
+        password: this.registerForm.controls.password.value,
+        captcha: this.registerForm.controls.captcha.value,
+      })
+      .pipe(finalize(() => this.isRegisterSubmitting.set(false)))
+      .subscribe({
+        next: () => {
+          this.toastService.success('注册成功，欢迎进洞天。');
+          void this.router.navigate(['/home']);
+        },
+        error: (error) => this.toastService.error(error?.error?.message ?? '注册失败，请稍后再试。'),
+      });
+  }
+
+  protected sendResetCaptcha(): void {
+    const emailControl = this.resetForm.controls.email;
+    emailControl.markAsTouched();
+    if (emailControl.invalid || this.isSendingResetCaptcha()) {
+      this.toastService.warning('请先填写有效邮箱。');
+      return;
+    }
+
+    this.isSendingResetCaptcha.set(true);
+    this.authService
+      .sendCaptcha({ email: emailControl.value, type: 'reset' })
+      .pipe(finalize(() => this.isSendingResetCaptcha.set(false)))
+      .subscribe({
+        next: () => this.toastService.success('重置验证码已发送。'),
+        error: (error) => this.toastService.error(error?.error?.message ?? '验证码发送失败。'),
+      });
+  }
+
+  protected submitReset(): void {
+    if (this.resetForm.invalid) {
+      this.resetForm.markAllAsTouched();
+      this.toastService.warning('请填写邮箱、验证码和新密码。');
+      return;
+    }
+
+    this.isResetSubmitting.set(true);
+    this.authService
+      .resetPassword(this.resetForm.getRawValue())
+      .pipe(finalize(() => this.isResetSubmitting.set(false)))
+      .subscribe({
+        next: () => {
+          this.toastService.success('密码已重置，请登录。');
+          this.closeReset();
+          this.form.patchValue({
+            email: this.resetForm.controls.email.value,
+            password: '',
+          });
+        },
+        error: (error) => this.toastService.error(error?.error?.message ?? '密码重置失败。'),
+      });
   }
 
   protected purpleHeight(): number {
@@ -179,7 +333,7 @@ export class LoginPage {
     }
 
     if (this.isTypingOrPasswordHidden()) {
-      return `skewX(${this.bodySkew() - 12}deg) translateX(40px)`;
+      return `skewX(${this.bodySkew() - 7}deg) translateX(24px)`;
     }
 
     return `skewX(${this.bodySkew()}deg)`;
@@ -235,7 +389,7 @@ export class LoginPage {
 
   protected purpleMouthCounterSkew(): string {
     return this.isTypingOrPasswordHidden()
-      ? `skewX(${-1 * (this.bodySkew() - 12)}deg)`
+      ? `skewX(${-1 * (this.bodySkew() - 7)}deg)`
       : 'skewX(0deg)';
   }
 

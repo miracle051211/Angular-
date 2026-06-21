@@ -1,0 +1,50 @@
+<section class="announcement-admin admin-list-page">
+  <form class="announcement-editor" [formGroup]="form" (ngSubmit)="publishAnnouncement()">
+    <div>
+      <strong>通知公告</strong>
+      <span>发布后进入系统通知，并同步展示在首页洞天公告</span>
+    </div>
+    <textarea formControlName="content" maxlength="200" placeholder="输入公告内容，最多 200 字"></textarea>
+    <button class="ink-button" type="submit" [disabled]="form.invalid || isPublishing()">
+      {{ isPublishing() ? '发布中' : '发布公告' }}
+    </button>
+  </form>
+
+  <div class="admin-table-shell">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>公告内容</th>
+          <th>发布人</th>
+          <th>发送范围</th>
+          <th>发布时间</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of announcements(); track item.id) {
+          <tr>
+            <td>{{ item.content }}</td>
+            <td>{{ item.sender?.username || '系统' }}</td>
+            <td>{{ audienceText(item) }}</td>
+            <td>{{ formatDate(item.createdAt) }}</td>
+            <td>
+              <button
+                class="ghost-button danger-button"
+                type="button"
+                [disabled]="deletingId() === item.id"
+                (click)="deleteAnnouncement(item)"
+              >
+                {{ deletingId() === item.id ? '删除中' : '删除' }}
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="5">暂无公告。</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

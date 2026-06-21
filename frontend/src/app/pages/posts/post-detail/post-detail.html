@@ -1,8 +1,363 @@
-<article class="detail">
-  <a routerLink="/posts">返回列表</a>
-  <h1>帖子详情 #{{ postId }}</h1>
-  <p>
-    这里将展示后端返回的帖子正文、作者、板块、评论、点赞和举报等信息。
-  </p>
-  <a class="edit-link" [routerLink]="['/posts', postId, 'edit']">编辑帖子</a>
-</article>
+<section class="post-detail-page">
+  <a class="back-link" routerLink="/posts">返回帖子</a>
+
+  @if (isLoading()) {
+    <section class="loading-state" aria-live="polite">
+      <span></span>
+      <p>正在翻找洞天里的帖子</p>
+    </section>
+  } @else if (post(); as post) {
+    <article class="tieba-post" id="post-body">
+      <aside class="author-pane">
+        <div class="user-hover-card">
+          <a class="author-avatar" [routerLink]="['/profile', post.author.id]">
+            <img [src]="avatarSrc(post.author.avatar, post.author.username)" [alt]="post.author.username" />
+          </a>
+          <div class="user-popover" role="tooltip">
+            <img [src]="avatarSrc(post.author.avatar, post.author.username)" [alt]="post.author.username" />
+            <div>
+              <strong>{{ post.author.username }}</strong>
+              <div class="user-badge-row detail-card-badges">
+                @if (post.author.isStaff) {
+                  <span class="staff-badge">{{ post.author.roleName ?? '管理成员' }}</span>
+                }
+                <span class="user-title-badge title-level-{{ post.author.title?.level || 1 }}">{{ userLevel(post.author) }}</span>
+              </div>
+              <div class="level-popover__meter" aria-hidden="true">
+                <i [style.width.%]="userTitleProgress(post.author)"></i>
+              </div>
+              <small>{{ userTitleNeedText(post.author) }}</small>
+              <span>{{ post.author.signature || '这个成员还没有填写签名。' }}</span>
+              <small>粉丝 {{ post.author.followerCount ?? 0 }} · 关注 {{ post.author.followingCount ?? 0 }}</small>
+            </div>
+          </div>
+        </div>
+        <a class="author-name" [routerLink]="['/profile', post.author.id]">{{ post.author.username }}</a>
+        <div class="user-badge-row">
+          @if (post.author.isStaff) {
+            <span class="staff-badge">{{ post.author.roleName ?? '管理成员' }}</span>
+          }
+          <span class="user-title-badge title-level-{{ post.author.title?.level || 1 }}">{{ userLevel(post.author) }}</span>
+        </div>
+        <span class="author-badge">{{ post.board.name }}</span>
+        <p>{{ post.author.signature || '这个成员还没有填写签名。' }}</p>
+      </aside>
+
+      <div class="post-main">
+        <div class="post-kicker">
+          <span>{{ post.board.name }}</span>
+          <time>{{ formatTime(post.createdAt) }}</time>
+        </div>
+
+        <h1>{{ post.title }}</h1>
+
+        <div class="post-meta">
+          <span>{{ post.readCount }} 阅读</span>
+          <span>{{ post.commentCount }} 回声</span>
+          <span>{{ readingMinutes() }} 分钟读完</span>
+        </div>
+
+        <div class="post-content">
+          <p>{{ post.content }}</p>
+        </div>
+
+        @if ((post.images?.length ?? 0) > 0) {
+          <div class="post-image-grid" aria-label="帖子图片">
+            @for (image of post.images; track image.id) {
+              <figure>
+                <img [src]="mediaSrc(image.url)" [alt]="image.originalName || '帖子图片'" />
+              </figure>
+            }
+          </div>
+        }
+
+        <div class="post-actions" aria-label="帖子操作">
+          <button
+            class="text-action like-action"
+            type="button"
+            [class.is-active]="liked()"
+            [class.is-popping]="isLikePopping()"
+            (click)="toggleLike()"
+          >
+            <span class="like-heart" aria-hidden="true">♥</span>
+            <span>{{ liked() ? '已喜欢' : '喜欢' }}</span>
+            <b>{{ likeCount() }}</b>
+          </button>
+          <button class="text-action" type="button" [disabled]="reported()" (click)="openPostReport()">
+            {{ reported() ? '已举报' : '举报' }}
+          </button>
+          @if (canDeletePost()) {
+            <button class="text-action danger" type="button" (click)="deletePost()">删除</button>
+          }
+        </div>
+      </div>
+    </article>
+
+    <section class="reply-dock" id="reply-zone" aria-label="写评论">
+      <div class="reply-dock__head">
+        <span>留下回声</span>
+        <small>{{ comments().length }} 条讨论</small>
+      </div>
+      <textarea
+        [ngModel]="commentDraft()"
+        (ngModelChange)="updateCommentDraft($event)"
+        placeholder="写点真实的想法，短一点也很好。"
+        rows="3"
+      ></textarea>
+      <div class="comment-tools-row">
+        <div class="comment-tools" aria-label="评论工具">
+          <div class="comment-tool">
+            <button type="button" (click)="toggleCommentEmojiPanel()">
+              <span aria-hidden="true">☺</span>
+              表情
+            </button>
+            @if (isCommentEmojiPanelOpen()) {
+              <div class="comment-tool-panel comment-emoji-panel">
+                @for (emoji of emojis; track emoji) {
+                  <button type="button" (click)="insertCommentEmoji(emoji)">{{ emoji }}</button>
+                }
+              </div>
+            }
+          </div>
+          <label class="comment-tool comment-image-tool">
+            <span>
+              <span aria-hidden="true">▧</span>
+              图片
+            </span>
+            <input type="file" accept="image/*" multiple (change)="handleCommentImages($event)" />
+          </label>
+          <div class="comment-tool">
+            <button type="button" (click)="toggleCommentMentionPanel()">
+              <span aria-hidden="true">@</span>
+              好友
+            </button>
+            @if (isCommentMentionPanelOpen()) {
+              <div class="comment-tool-panel comment-mention-panel">
+                @for (user of followingUsers(); track user.id) {
+                  <button type="button" (click)="mentionCommentUser(user)">
+                    <img [src]="avatarSrc(user.avatar, user.username)" [alt]="user.username" />
+                    <span>{{ user.username }}</span>
+                  </button>
+                } @empty {
+                  <p>还没有关注的人</p>
+                }
+              </div>
+            }
+          </div>
+        </div>
+        <button class="send-button" type="button" [disabled]="(!commentDraft().trim() && selectedCommentImages().length === 0) || isSendingComment()" (click)="submitComment()">
+          {{ isSendingComment() ? '发送中' : '发送评论' }}
+        </button>
+      </div>
+      @if (selectedCommentImages().length > 0) {
+        <div class="comment-image-list" aria-label="已选择评论图片">
+          @for (image of selectedCommentImages(); track image.name; let index = $index) {
+            <button type="button" (click)="removeCommentImage(index)" [title]="'移除 ' + image.name">
+              <span>{{ image.name }}</span>
+              <b aria-hidden="true">×</b>
+            </button>
+          }
+        </div>
+      }
+    </section>
+
+    @if (notice()) {
+      <p class="notice-line">{{ notice() }}</p>
+    }
+
+    <section class="comment-river" id="discussion-zone" aria-label="评论列表">
+      @for (comment of comments(); track comment.id) {
+        <article class="comment-row">
+          <div class="user-hover-card user-hover-card--comment">
+            <a class="comment-avatar" [routerLink]="['/profile', comment.author.id]">
+              <img [src]="avatarSrc(comment.author.avatar, comment.author.username)" [alt]="comment.author.username" />
+            </a>
+            <div class="user-popover" role="tooltip">
+              <img [src]="avatarSrc(comment.author.avatar, comment.author.username)" [alt]="comment.author.username" />
+              <div>
+                <strong>{{ comment.author.username }}</strong>
+                <div class="user-badge-row detail-card-badges">
+                  @if (comment.author.isStaff) {
+                    <span class="staff-badge">{{ comment.author.roleName ?? '管理成员' }}</span>
+                  }
+                  <span class="user-title-badge title-level-{{ comment.author.title?.level || 1 }}">{{ userLevel(comment.author) }}</span>
+                </div>
+                <div class="level-popover__meter" aria-hidden="true">
+                  <i [style.width.%]="userTitleProgress(comment.author)"></i>
+                </div>
+                <small>{{ userTitleNeedText(comment.author) }}</small>
+                <span>{{ comment.author.signature || '这个成员还没有填写签名。' }}</span>
+                <small>粉丝 {{ comment.author.followerCount ?? 0 }} · 关注 {{ comment.author.followingCount ?? 0 }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="comment-body">
+            <header>
+                <a [routerLink]="['/profile', comment.author.id]">{{ comment.author.username }}</a>
+                @if (comment.author.isStaff) {
+                  <span class="staff-badge">{{ comment.author.roleName ?? '管理成员' }}</span>
+                }
+                <span class="user-title-badge title-level-{{ comment.author.title?.level || 1 }}">{{ userLevel(comment.author) }}</span>
+            </header>
+
+            <p>{{ comment.content }}</p>
+
+            <div class="comment-actions">
+              <time>{{ formatTime(comment.createdAt) }}</time>
+              <button
+                class="comment-icon-action"
+                type="button"
+                [class.is-active]="comment.isLiked"
+                [class.is-pending]="pendingCommentLikes()[comment.id]"
+                [attr.aria-label]="comment.isLiked ? '取消点赞' : '点赞'"
+                (click)="toggleCommentLike(comment.id)"
+              >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M7.8 20H5.2C4.5 20 4 19.5 4 18.8V10.9C4 10.2 4.5 9.7 5.2 9.7H7.8M7.8 20V9.7M7.8 20H17.6C18.7 20 19.4 19.2 19.6 18.2L20.8 12.5C21.1 11.1 20.1 9.8 18.7 9.8H15.1C14.7 9.8 14.4 9.4 14.5 9L15 6.8C15.2 5.7 14.4 4.6 13.3 4.4L12.7 4.3L8.6 9.8H7.8" />
+                </svg>
+                <span>{{ comment.likeCount || 0 }}</span>
+              </button>
+              <button
+                class="comment-icon-action"
+                type="button"
+                aria-label="举报"
+                title="举报"
+                (click)="openCommentReport(comment.id)"
+              >
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                  <path d="M16.2 4H6.4C5.3 4 4.6 4.8 4.4 5.8L3.2 11.5C2.9 12.9 3.9 14.2 5.3 14.2H8.9C9.3 14.2 9.6 14.6 9.5 15L9 17.2C8.8 18.3 9.6 19.4 10.7 19.6L11.3 19.7L15.4 14.2H16.2M16.2 4V14.2M16.2 4H18.8C19.5 4 20 4.5 20 5.2V13.1C20 13.8 19.5 14.3 18.8 14.3H16.2" />
+                </svg>
+              </button>
+              <button class="comment-reply-action" type="button" (click)="toggleReply(comment.id)">
+                {{ activeReplyId() === comment.id ? '收起' : '回复' }}
+              </button>
+            </div>
+
+            @if (activeReplyId() === comment.id) {
+              <div class="inline-reply">
+                <textarea
+                  [ngModel]="replyDrafts()[comment.id] || ''"
+                  (ngModelChange)="updateReplyDraft(comment.id, $event)"
+                  placeholder="回复这条评论"
+                  rows="2"
+                ></textarea>
+                <button type="button" [disabled]="!(replyDrafts()[comment.id] || '').trim()" (click)="submitReply(comment)">
+                  发送回复
+                </button>
+              </div>
+            }
+
+            @if (comment.replies.length > 0) {
+              <div class="reply-stream">
+                @for (reply of comment.replies; track reply.id) {
+                  <article class="reply-row">
+                    <div class="user-hover-card user-hover-card--reply">
+                      <a class="reply-avatar" [routerLink]="['/profile', reply.author.id]">
+                        <img [src]="avatarSrc(reply.author.avatar, reply.author.username)" [alt]="reply.author.username" />
+                      </a>
+                      <div class="user-popover" role="tooltip">
+                        <img [src]="avatarSrc(reply.author.avatar, reply.author.username)" [alt]="reply.author.username" />
+                        <div>
+                          <strong>{{ reply.author.username }}</strong>
+                          <div class="user-badge-row detail-card-badges">
+                            @if (reply.author.isStaff) {
+                              <span class="staff-badge">{{ reply.author.roleName ?? '管理成员' }}</span>
+                            }
+                            <span class="user-title-badge title-level-{{ reply.author.title?.level || 1 }}">{{ userLevel(reply.author) }}</span>
+                          </div>
+                          <div class="level-popover__meter" aria-hidden="true">
+                            <i [style.width.%]="userTitleProgress(reply.author)"></i>
+                          </div>
+                          <small>{{ userTitleNeedText(reply.author) }}</small>
+                          <span>{{ reply.author.signature || '这个成员还没有填写签名。' }}</span>
+                          <small>粉丝 {{ reply.author.followerCount ?? 0 }} · 关注 {{ reply.author.followingCount ?? 0 }}</small>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="reply-row__content">
+                      <header>
+                        <a [routerLink]="['/profile', reply.author.id]">{{ reply.author.username }}</a>
+                        @if (reply.author.isStaff) {
+                          <span class="staff-badge">{{ reply.author.roleName ?? '管理成员' }}</span>
+                        }
+                        <span class="user-title-badge title-level-{{ reply.author.title?.level || 1 }}">{{ userLevel(reply.author) }}</span>
+                      </header>
+                      <p>{{ reply.content }}</p>
+                      <div class="comment-actions">
+                        <time>{{ formatTime(reply.createdAt) }}</time>
+                        <button
+                          class="comment-icon-action"
+                          type="button"
+                          [class.is-active]="reply.isLiked"
+                          [class.is-pending]="pendingCommentLikes()[reply.id]"
+                          [attr.aria-label]="reply.isLiked ? '取消点赞' : '点赞'"
+                          (click)="toggleCommentLike(reply.id)"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                            <path d="M7.8 20H5.2C4.5 20 4 19.5 4 18.8V10.9C4 10.2 4.5 9.7 5.2 9.7H7.8M7.8 20V9.7M7.8 20H17.6C18.7 20 19.4 19.2 19.6 18.2L20.8 12.5C21.1 11.1 20.1 9.8 18.7 9.8H15.1C14.7 9.8 14.4 9.4 14.5 9L15 6.8C15.2 5.7 14.4 4.6 13.3 4.4L12.7 4.3L8.6 9.8H7.8" />
+                          </svg>
+                          <span>{{ reply.likeCount || 0 }}</span>
+                        </button>
+                        <button
+                          class="comment-icon-action"
+                          type="button"
+                          aria-label="举报"
+                          title="举报"
+                          (click)="openCommentReport(reply.id)"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+                            <path d="M16.2 4H6.4C5.3 4 4.6 4.8 4.4 5.8L3.2 11.5C2.9 12.9 3.9 14.2 5.3 14.2H8.9C9.3 14.2 9.6 14.6 9.5 15L9 17.2C8.8 18.3 9.6 19.4 10.7 19.6L11.3 19.7L15.4 14.2H16.2M16.2 4V14.2M16.2 4H18.8C19.5 4 20 4.5 20 5.2V13.1C20 13.8 19.5 14.3 18.8 14.3H16.2" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+          </div>
+        </article>
+      } @empty {
+        <p class="empty-line">这里还没有回声，第一句话可以很轻。</p>
+      }
+    </section>
+
+    @if (reportTarget(); as target) {
+      <div class="report-layer" role="presentation" (click)="closeReport()">
+        <section class="report-dialog" role="dialog" aria-modal="true" aria-label="提交举报" (click)="$event.stopPropagation()">
+          <div class="report-dialog__head">
+            <span>{{ target.kind === 'post' ? '举报帖子' : '举报评论' }}</span>
+            <button type="button" aria-label="关闭举报弹窗" (click)="closeReport()">×</button>
+          </div>
+
+          <label>
+            举报类别
+            <select [ngModel]="reportCategory()" (ngModelChange)="updateReportCategory($event)">
+              @for (category of reportCategories; track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+          </label>
+
+          <label>
+            补充理由
+            <textarea
+              [ngModel]="reportReason()"
+              (ngModelChange)="updateReportReason($event)"
+              placeholder="说清楚一点，值日生会更快判断。"
+              rows="4"
+            ></textarea>
+          </label>
+
+          <div class="report-dialog__actions">
+            <button type="button" class="quiet-button" (click)="closeReport()">取消</button>
+            <button type="button" class="send-button" (click)="submitReport()">提交举报</button>
+          </div>
+        </section>
+      </div>
+    }
+  } @else {
+    <p class="notice-line">{{ notice() || '帖子不存在' }}</p>
+  }
+</section>

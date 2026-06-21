@@ -1,0 +1,177 @@
+:host {
+  display: block;
+}
+
+.signature-writing {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.72fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 96px);
+  width: min(1180px, calc(100% - 60px));
+  margin: 0 auto;
+  padding: clamp(56px, 7.8vw, 104px) 0 clamp(52px, 7vw, 92px);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.signature-heading {
+  transform: translateY(clamp(-38px, -3.1vw, -22px));
+}
+
+.signature-heading,
+.signature-text {
+  color: var(--color-ink-dark);
+}
+
+.signature-kicker {
+  display: inline-block;
+  margin-bottom: 12px;
+  color: var(--color-orange);
+  font-size: clamp(13px, 0.95vw, 16px);
+  font-weight: 950;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.swap-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.02em;
+  margin: 0;
+  outline: none;
+  color: var(--color-ink-dark);
+  font-size: clamp(50px, 7.35vw, 108px);
+  font-weight: 950;
+  line-height: 0.94;
+  perspective: 760px;
+}
+
+.swap-letter,
+.copy-letter {
+  position: relative;
+  display: inline-block;
+  transform-style: preserve-3d;
+  transition: transform 0.58s cubic-bezier(0.19, 1, 0.22, 1);
+  transition-delay: var(--letter-delay, 0s);
+  will-change: transform;
+}
+
+.swap-letter {
+  width: 1em;
+  height: 1em;
+}
+
+.swap-face,
+.copy-face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  backface-visibility: hidden;
+  transform-origin: 50% 50% -0.52em;
+}
+
+.swap-face--front,
+.copy-face--front {
+  transform: rotateX(0deg);
+}
+
+.swap-face--back,
+.copy-face--back {
+  transform: rotateX(-90deg);
+}
+
+.swap-face--back {
+  color: var(--color-orange);
+}
+
+.is-swapped .swap-letter {
+  transform: rotateX(90deg) translateY(-0.02em);
+}
+
+.swap-title:hover .swap-letter,
+.swap-title:focus .swap-letter {
+  transform: rotateX(90deg) translateY(-0.02em);
+}
+
+.signature-text {
+  padding-bottom: 0;
+  perspective: 660px;
+}
+
+.signature-text p {
+  max-width: 34rem;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: clamp(15px, 1.25vw, 18px);
+  font-weight: 750;
+  line-height: 1.72;
+}
+
+.signature-text p + p {
+  margin-top: 12px;
+}
+
+.copy-letter {
+  width: 1em;
+  height: 1.72em;
+  vertical-align: top;
+  transition-duration: 0.48s;
+}
+
+.copy-face {
+  place-items: start center;
+  transform-origin: 50% 0.86em -0.5em;
+}
+
+.copy-face--back {
+  color: color-mix(in srgb, var(--color-ink-dark) 78%, var(--color-orange));
+}
+
+.is-swapped .copy-letter {
+  transform: rotateX(90deg);
+}
+
+.signature-writing:has(.swap-title:hover) .copy-letter,
+.signature-writing:has(.swap-title:focus) .copy-letter {
+  transform: rotateX(90deg);
+}
+
+@media (max-width: 980px) {
+  .signature-writing {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 22px;
+  }
+
+  .signature-heading {
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .signature-writing {
+    width: min(100% - 28px, 1180px);
+    padding-top: 48px;
+  }
+
+  .swap-title {
+    font-size: clamp(40px, 13vw, 62px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swap-letter,
+  .copy-letter {
+    transition: none;
+  }
+
+  .is-swapped .swap-letter,
+  .is-swapped .copy-letter,
+  .swap-title:hover .swap-letter,
+  .swap-title:focus .swap-letter,
+  .signature-writing:has(.swap-title:hover) .copy-letter,
+  .signature-writing:has(.swap-title:focus) .copy-letter {
+    transform: none;
+  }
+}

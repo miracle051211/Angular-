@@ -40,6 +40,24 @@ class PostModel(db.Model):
         """获取帖子的评论数量"""
         return CommentModel.query.filter_by(post_id=self.id, is_active=True).count()
 
+
+class PostImageModel(db.Model):
+    __tablename__ = "post_image"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    url = db.Column(db.String(255), nullable=False)
+    original_name = db.Column(db.String(255), nullable=True)
+    create_time = db.Column(db.DateTime, default=datetime.now)
+
+    post_id = db.Column(db.Integer, db.ForeignKey("post.id"), nullable=False)
+    uploader_id = db.Column(db.String(100), db.ForeignKey("user.id"), nullable=False)
+
+    post = db.relationship(
+        "PostModel",
+        backref=db.backref("images", order_by=create_time.asc(), lazy="dynamic"),
+    )
+    uploader = db.relationship("UserModel", backref="post_images")
+
 # 点赞模型
 class LikeModel(db.Model):
     __tablename__ = "likes"

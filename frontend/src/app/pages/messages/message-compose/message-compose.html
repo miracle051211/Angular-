@@ -1,0 +1,25 @@
+<section class="feature-page">
+  <header class="feature-hero">
+    <div>
+      <span class="feature-kicker">写站内信</span>
+      <h1>给社区里的某个人递一张纸条。</h1>
+      <p>这里是原项目 send_message 的前端壳，表单校验已就位，提交动作后续接 API。</p>
+    </div>
+  </header>
+
+  <form class="ink-panel form-grid compose-form" [formGroup]="form">
+    <label>
+      收件人
+      <input formControlName="receiver" placeholder="输入用户名或邮箱" />
+    </label>
+    <label>
+      主题
+      <input formControlName="subject" placeholder="例如：关于接口拆分的想法" />
+    </label>
+    <label>
+      内容
+      <textarea formControlName="body" placeholder="写下你想说的话"></textarea>
+    </label>
+    <button class="ink-button" type="button" [disabled]="form.invalid">发送预览</button>
+  </form>
+</section>

@@ -1,0 +1,198 @@
+<section class="feature-page profile-page">
+  @if (isLoading()) {
+    <div class="profile-state">
+      <strong>正在翻找这个洞天成员</strong>
+    </div>
+  } @else if (errorMessage()) {
+    <div class="profile-state">
+      <strong>{{ errorMessage() }}</strong>
+      <a class="ghost-button" routerLink="/home">回首页</a>
+    </div>
+  } @else if (user(); as profileUser) {
+    <header class="profile-hero">
+      <div class="profile-identity">
+        <div class="profile-avatar-box">
+          <img
+            [src]="avatarSrc(profileUser.avatar, profileUser.username)"
+            [alt]="profileUser.username"
+            width="116"
+            height="116"
+          />
+        </div>
+
+        <div class="profile-title">
+          <span class="feature-kicker">{{ profileUser.roleName ?? '洞天成员' }}</span>
+          <div class="profile-name-row">
+            <h1>{{ profileUser.username }}</h1>
+            <div class="user-badge-row">
+              @if (profileUser.isStaff) {
+                <span class="staff-badge">{{ profileUser.roleName ?? '管理成员' }}</span>
+              }
+              <span class="user-title-badge title-level-{{ profileUser.title?.level || 1 }}">{{ userLevel(profileUser) }}</span>
+            </div>
+          </div>
+          <div class="profile-level-line">
+            <div class="level-popover__meter" aria-hidden="true">
+              <i [style.width.%]="userTitleProgress(profileUser)"></i>
+            </div>
+            <small>{{ userTitleNeedText(profileUser) }}</small>
+          </div>
+          <p>{{ profileUser.signature || '这个成员还没有填写签名。' }}</p>
+          <div class="profile-counts">
+            <span>粉丝 {{ profileUser.followerCount ?? 0 }}</span>
+            <span>关注 {{ profileUser.followingCount ?? 0 }}</span>
+            <span>帖子 {{ stats()[0].value }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-hero__actions">
+        @if (canEditProfile(profileUser)) {
+          <button class="profile-edit-button" type="button" (click)="openProfileEditor(profileUser)">编辑资料</button>
+        }
+        @if (canFollow(profileUser)) {
+          <button
+            class="profile-follow-button"
+            type="button"
+            [class.is-following]="profileUser.isFollowing"
+            [disabled]="isFollowUpdating()"
+            (click)="toggleFollow(profileUser)"
+          >
+            {{ profileUser.isFollowing ? '已关注' : '关注' }}
+          </button>
+        }
+      </div>
+    </header>
+
+    <section class="profile-meta-strip">
+      <span>身份 {{ profileUser.isStaff ? '管理成员' : '普通成员' }}</span>
+      @if (profileUser.email) {
+        <span>邮箱 {{ profileUser.email }}</span>
+      } @else {
+        <span>邮箱 仅本人可见</span>
+      }
+      <span>收到评论 {{ stats()[3].value }}</span>
+    </section>
+
+    <section class="profile-feed">
+      <div class="section-line">
+        <h2>最近帖子</h2>
+      </div>
+
+      <div class="profile-post-stream">
+        @for (post of posts(); track post.id) {
+          <article class="profile-post">
+            <a class="profile-post__avatar" [routerLink]="['/profile', profileUser.id]">
+              <img [src]="avatarSrc(profileUser.avatar, profileUser.username)" [alt]="profileUser.username" />
+            </a>
+            <div class="profile-post__body">
+              <header>
+                <a [routerLink]="['/profile', profileUser.id]">{{ profileUser.username }}</a>
+                @if (profileUser.isStaff) {
+                  <span class="staff-badge">{{ profileUser.roleName ?? '管理成员' }}</span>
+                }
+                <span class="user-title-badge title-level-{{ profileUser.title?.level || 1 }}">{{ userLevel(profileUser) }}</span>
+                <span>{{ post.board.name }}</span>
+                <time>{{ post.createdAt }}</time>
+              </header>
+              <h3><a [routerLink]="['/posts', post.id]">{{ post.title }}</a></h3>
+              <p>{{ post.excerpt }}</p>
+              <footer>
+                <span>{{ post.readCount }} 阅读</span>
+                <span>{{ post.commentCount }} 回复</span>
+                <span>{{ post.likeCount ?? 0 }} 喜欢</span>
+              </footer>
+            </div>
+          </article>
+        } @empty {
+          <p class="muted">还没有发布内容。</p>
+        }
+      </div>
+    </section>
+
+    @if (isEditorOpen()) {
+      <div class="profile-editor-layer" role="presentation" (click)="closeProfileEditor()">
+        <section class="profile-editor-card" role="dialog" aria-modal="true" aria-label="编辑资料" (click)="$event.stopPropagation()">
+          <button class="profile-editor-close" type="button" aria-label="关闭编辑资料" (click)="closeProfileEditor()">×</button>
+          <div class="profile-editor-avatar">
+            <img [src]="avatarSrc(profileUser.avatar, profileUser.username)" [alt]="profileUser.username" />
+            <label>
+              更换头像
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                [disabled]="isUploadingAvatar()"
+                (change)="selectAvatar($event)"
+              />
+            </label>
+            @if (avatarMessage()) {
+              <small>{{ avatarMessage() }}</small>
+            }
+          </div>
+
+          <form class="profile-editor-form" [formGroup]="profileForm" (ngSubmit)="saveProfile()">
+            <label>
+              昵称
+              <input formControlName="username" maxlength="24" />
+            </label>
+
+            <fieldset>
+              <legend>性别</legend>
+              <label><input type="radio" formControlName="gender" value="male" /> 男</label>
+              <label><input type="radio" formControlName="gender" value="female" /> 女</label>
+              <label><input type="radio" formControlName="gender" value="secret" /> 保密</label>
+            </fieldset>
+
+            <label>
+              签名
+              <textarea formControlName="signature" maxlength="100" rows="4" placeholder="写一句会显示在头像卡片和个人主页里的话"></textarea>
+            </label>
+
+            <button class="profile-editor-save" type="submit" [disabled]="isSavingProfile()">
+              {{ isSavingProfile() ? '保存中...' : '保存资料' }}
+            </button>
+          </form>
+        </section>
+      </div>
+    }
+  }
+</section>
+
+@if (cropImageUrl()) {
+  <div class="avatar-cropper" role="dialog" aria-modal="true" aria-label="裁剪头像">
+    <div class="avatar-cropper__panel">
+      <div
+        #cropStage
+        class="avatar-cropper__stage"
+        [class.is-dragging]="isDraggingCrop()"
+        (pointerdown)="startCropDrag($event)"
+        (pointermove)="moveCropDrag($event)"
+        (pointerup)="endCropDrag($event)"
+        (pointercancel)="endCropDrag($event)"
+        (lostpointercapture)="endCropDrag($event)"
+      >
+        <img
+          [src]="cropImageUrl()"
+          alt="待裁剪头像"
+          draggable="false"
+          [style.transform]="'translate(' + cropOffsetX() + 'px, ' + cropOffsetY() + 'px) scale(' + cropScale() + ')'"
+        />
+        <span class="avatar-cropper__mask" aria-hidden="true"></span>
+      </div>
+
+      <div class="avatar-cropper__controls">
+        <label>
+          缩放
+          <input type="range" min="1" max="2.4" step="0.01" [value]="cropScale()" (input)="setCropScale($event)" />
+        </label>
+      </div>
+
+      <div class="avatar-cropper__actions">
+        <button type="button" class="ghost-button" (click)="closeCropper()">取消</button>
+        <button type="button" class="ink-link-button" [disabled]="isUploadingAvatar()" (click)="confirmAvatarCrop(cropStage)">
+          {{ isUploadingAvatar() ? '上传中...' : '确认头像' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,111 @@
+﻿<section class="feature-page admin-list-page">
+  <div class="admin-table-shell">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>对象</th>
+          <th>原因</th>
+          <th>举报人</th>
+          <th>时间</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (report of reports(); track report.id) {
+          <tr>
+            <td>
+              <strong>{{ report.targetTitle }}</strong>
+              <div class="muted">{{ report.targetType }}</div>
+            </td>
+            <td>{{ report.reason }}</td>
+            <td>{{ report.reporter }}</td>
+            <td>{{ formatDate(report.createdAt) }}</td>
+            <td>
+              <span
+                class="status-dot"
+                [class.is-warn]="report.status === 'pending'"
+                [class.is-muted]="report.status === 'dismissed'"
+              >
+                @switch (report.status) {
+                  @case ('pending') { 待处理 }
+                  @case ('resolved') { 已处理 }
+                  @case ('dismissed') { 已驳回 }
+                }
+              </span>
+            </td>
+            <td class="report-actions">
+              <button
+                class="ghost-button"
+                type="button"
+                [disabled]="processingReportId() === report.id"
+                (click)="openResolveOptions(report.id)"
+              >
+                通过
+              </button>
+              <button
+                class="ghost-button"
+                type="button"
+                [disabled]="processingReportId() === report.id"
+                (click)="setStatus(report.id, 'dismissed')"
+              >
+                驳回
+              </button>
+              @if (resolvingReportId() === report.id) {
+                <div class="report-resolve-panel">
+                  <span>通过后如何处理{{ report.targetType === 'post' ? '帖子' : '评论' }}？</span>
+                  <button
+                    class="ghost-button"
+                    type="button"
+                    [disabled]="processingReportId() === report.id"
+                    (click)="approveReport(report, 'hide')"
+                  >
+                    隐藏
+                  </button>
+                  <button
+                    class="ghost-button danger-button"
+                    type="button"
+                    [disabled]="processingReportId() === report.id"
+                    (click)="approveReport(report, 'delete')"
+                  >
+                    删除
+                  </button>
+                  <button
+                    class="ghost-button"
+                    type="button"
+                    [disabled]="processingReportId() === report.id"
+                    (click)="openResolveOptions(report.id)"
+                  >
+                    取消
+                  </button>
+                </div>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  @if (page(); as meta) {
+    <footer class="admin-pagination">
+      <span>共 {{ meta.total }} 条 · 第 {{ meta.page }} / {{ meta.pages || 1 }} 页</span>
+      <div>
+        <button class="ghost-button" type="button" [disabled]="meta.page <= 1" (click)="goPage(meta.page - 1)">上一页</button>
+        @for (item of pageNumbers(meta); track item) {
+          <button
+            class="ghost-button page-number"
+            type="button"
+            [class.is-active]="item === meta.page"
+            (click)="goPage(item)"
+          >
+            {{ item }}
+          </button>
+        }
+        <button class="ghost-button" type="button" [disabled]="meta.page >= meta.pages" (click)="goPage(meta.page + 1)">下一页</button>
+      </div>
+    </footer>
+  }
+</section>
+
+
+

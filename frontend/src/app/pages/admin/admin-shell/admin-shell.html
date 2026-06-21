@@ -1,0 +1,80 @@
+﻿<section class="admin-page">
+  <aside class="admin-side" aria-label="后台导航">
+    <a class="admin-brand" routerLink="/admin">
+      <span aria-hidden="true">学</span>
+      <strong>洞天后台</strong>
+    </a>
+
+    <nav class="admin-nav">
+      @for (link of links(); track link.path) {
+        <a
+          [routerLink]="link.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: link.path === '/admin' }"
+        >
+          <span class="admin-nav-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              @switch (link.icon) {
+                @case ('overview') {
+                  <path d="M4.8 13.4C6.6 9.7 9 7.8 12 7.8s5.4 1.9 7.2 5.6" />
+                  <path d="M8.1 13.5a3.9 3.9 0 0 0 7.8 0" />
+                  <path d="M12 13.2l2.4-2.9" />
+                }
+                @case ('users') {
+                  <path d="M8.2 11.1a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                  <path d="M3.8 18.9c.6-3.1 2.2-4.8 4.4-4.8s3.8 1.7 4.4 4.8" />
+                  <path d="M15.4 10.8a2.5 2.5 0 1 0-.1-5" />
+                  <path d="M14.2 14.2c2.4.2 3.9 1.8 4.5 4.5" />
+                }
+                @case ('staff') {
+                  <path d="M12 10.4a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                  <path d="M6.2 19c.8-3.7 2.7-5.4 5.8-5.4s5 1.7 5.8 5.4" />
+                  <path d="M9.2 14.2l2.8 2.5 2.8-2.5" />
+                  <path d="M12 16.7V20" />
+                }
+                @case ('posts') {
+                  <path d="M6 5.2h9.1l3 3v10.6H6Z" />
+                  <path d="M15 5.4v3h3" />
+                  <path d="M8.6 12h6.8" />
+                  <path d="M8.6 15.4h5" />
+                }
+                @case ('comments') {
+                  <path d="M5.2 6.6h13.6v8.8H10l-4.8 3.2Z" />
+                  <path d="M8.5 10.4h6.7" />
+                  <path d="M8.5 13h4.8" />
+                }
+                @case ('boards') {
+                  <path d="M4.8 5.2h6.1v6.1H4.8Z" />
+                  <path d="M13.1 5.2h6.1v6.1h-6.1Z" />
+                  <path d="M4.8 13.5h6.1v5.3H4.8Z" />
+                  <path d="M13.1 13.5h6.1v5.3h-6.1Z" />
+                }
+                @case ('reports') {
+                  <path d="M12 4.4 19.2 18H4.8Z" />
+                  <path d="M12 9.2v4.2" />
+                  <path d="M12 16.1h.1" />
+                }
+                @case ('announcements') {
+                  <path d="M5.2 6.2h13.6v9.2H9.8l-4.6 3Z" />
+                  <path d="M8.4 10h7.2" />
+                  <path d="M8.4 12.8h5.2" />
+                }
+              }
+            </svg>
+          </span>
+          <b>{{ link.label }}</b>
+        </a>
+      }
+    </nav>
+
+    <a class="admin-exit" routerLink="/home">返回前台</a>
+  </aside>
+
+  <main class="admin-main">
+    <section class="admin-surface">
+      <router-outlet />
+    </section>
+  </main>
+</section>
+
+

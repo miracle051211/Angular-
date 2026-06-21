@@ -1,0 +1,38 @@
+<section class="feature-page">
+  <header class="feature-hero">
+    <div>
+      <span class="feature-kicker">我的消息</span>
+      <h1>{{ unreadCount() }} 条未读消息</h1>
+    </div>
+    <div class="message-actions">
+      <a class="ink-link-button" routerLink="/messages/send">写新消息</a>
+      <button class="ghost-button" type="button" (click)="markAllRead()">全部已读</button>
+    </div>
+  </header>
+
+  <section class="ink-list">
+    @if (isLoading()) {
+      <article class="ink-panel muted">正在取出洞天里的消息...</article>
+    } @else {
+      @for (item of feedItems(); track item.id) {
+        <article
+          class="ink-list-item message-item"
+          [class.is-unread]="!item.isRead"
+          [class.is-comment-message]="item.source === 'notification'"
+        >
+          <a [routerLink]="item.targetUrl" (click)="openItem($event, item)">
+            <span class="feature-kicker">
+              {{ item.senderName }}
+              <small>{{ item.source === 'notification' ? '评论区消息' : '私信' }}</small>
+            </span>
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.body }}</p>
+          </a>
+          <time>{{ item.createdAt }}</time>
+        </article>
+      } @empty {
+        <article class="ink-panel muted">还没有收到消息。</article>
+      }
+    }
+  </section>
+</section>

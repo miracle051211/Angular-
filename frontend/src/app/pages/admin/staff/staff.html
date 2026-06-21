@@ -1,0 +1,80 @@
+﻿<section class="feature-page admin-list-page">
+  <section class="admin-list-toolbar">
+    <div>
+      <strong>员工</strong>
+      <span>{{ staff().length }} 人</span>
+    </div>
+    <button class="ink-button" type="button" (click)="toggleCreate()">
+      {{ isCreateOpen() ? '收起' : '新增员工' }}
+    </button>
+  </section>
+
+  @if (isCreateOpen()) {
+    <form class="staff-create-row" [formGroup]="form" (ngSubmit)="createStaff()">
+      <label>
+        <span>姓名</span>
+        <input formControlName="username" placeholder="例如：赵六" />
+      </label>
+      <label>
+        <span>邮箱</span>
+        <input formControlName="email" placeholder="name@example.com" />
+      </label>
+      <label>
+        <span>初始密码</span>
+        <input formControlName="password" type="password" />
+      </label>
+      <label>
+        <span>角色</span>
+        <select formControlName="roleName">
+          @for (role of roles; track role) {
+            <option [value]="role">{{ role }}</option>
+          }
+        </select>
+      </label>
+      <button class="ink-button" type="submit" [disabled]="form.invalid || isCreating()">
+        {{ isCreating() ? '保存中' : '保存' }}
+      </button>
+    </form>
+  }
+
+  <div class="admin-table-shell">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>姓名</th>
+          <th>邮箱</th>
+          <th>角色</th>
+          <th>权限</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of staff(); track user.id) {
+          <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.roleName ?? '未分配' }}</td>
+            <td>{{ user.permission }}</td>
+            <td><span class="status-dot" [class.is-muted]="!user.active">{{ user.active ? '启用' : '禁用' }}</span></td>
+            <td>
+              <div class="role-actions">
+                @for (role of roles; track role) {
+                  <button
+                    class="ghost-button"
+                    type="button"
+                    [class.is-active]="user.roleName === role"
+                    [disabled]="user.roleName === role || updatingId() === user.id"
+                    (click)="updateRole(user, role)"
+                  >
+                    {{ role }}
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

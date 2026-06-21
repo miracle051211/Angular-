@@ -1,0 +1,67 @@
+<section class="post-management-page">
+  <header class="manage-head">
+    <div>
+      <span>帖子管理</span>
+      <h1>我的帖子</h1>
+    </div>
+  </header>
+
+  <section class="manage-panel" aria-label="我的帖子列表">
+    <div class="manage-panel__summary">
+      <strong>{{ total() }}</strong>
+      <span>篇帖子</span>
+      <small>第 {{ page() }} / {{ pages() }} 页</small>
+    </div>
+
+    @if (isLoading()) {
+      <p class="manage-state">正在加载帖子...</p>
+    } @else if (notice()) {
+      <p class="manage-state manage-state--error">{{ notice() }}</p>
+    } @else {
+      <div class="manage-list">
+        @for (post of posts(); track post.id) {
+          <article class="manage-item">
+            <div>
+              <header>
+                <span>{{ post.board.name }}</span>
+                <time>{{ formatPostDate(post.createdAt) }}</time>
+              </header>
+              <h2>
+                <a [routerLink]="['/posts', post.id]">{{ post.title }}</a>
+              </h2>
+              <p>{{ post.excerpt }}</p>
+              <footer>
+                <span>{{ post.readCount }} 阅读</span>
+                <span>{{ post.commentCount }} 评论</span>
+                <span>{{ post.likeCount ?? 0 }} 喜欢</span>
+              </footer>
+            </div>
+            <nav aria-label="帖子操作">
+              <a [routerLink]="['/posts', post.id]">查看</a>
+            </nav>
+          </article>
+        } @empty {
+          <p class="manage-state">你还没有发布帖子。</p>
+        }
+      </div>
+    }
+  </section>
+
+  @if (hasPagination()) {
+    <nav class="manage-pager" aria-label="帖子管理分页">
+      <button type="button" [disabled]="page() <= 1 || isLoading()" (click)="previousPage()">上一页</button>
+      @for (item of pageNumbers(); track item) {
+        <button
+          type="button"
+          [class.is-active]="item === page()"
+          [attr.aria-current]="item === page() ? 'page' : null"
+          [disabled]="isLoading()"
+          (click)="goToPage(item)"
+        >
+          {{ item }}
+        </button>
+      }
+      <button type="button" [disabled]="page() >= pages() || isLoading()" (click)="nextPage()">下一页</button>
+    </nav>
+  }
+</section>

@@ -1,0 +1,39 @@
+﻿.staff-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+@media (max-width: 640px) {
+  .staff-head {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+.role-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid rgba(51, 43, 39, 0.34);
+  background: #fffaf0;
+}
+
+.role-actions .ghost-button {
+  min-width: 52px;
+  border: 0;
+  border-right: 1px solid rgba(51, 43, 39, 0.2);
+  background: transparent;
+}
+
+.role-actions .ghost-button:last-child {
+  border-right: 0;
+}
+
+.role-actions .ghost-button.is-active,
+.role-actions .ghost-button:disabled.is-active {
+  background: #332b27;
+  color: #fffaf0;
+  opacity: 1;
+}
+

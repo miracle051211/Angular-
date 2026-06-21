@@ -2,54 +2,203 @@
   <app-hero-visual />
 
   <div class="revealed-content">
-  <section class="portal-grid">
-    <div class="section-heading">
-      <h2>社区动态</h2>
-      <p>把高校门户的信息组织方式，转化成学习社区里的帖子、板块和公告。</p>
-    </div>
+    <app-signature-writing />
 
-    <div class="highlight-list">
-      @for (item of highlights(); track item.title) {
-        <a routerLink="/posts">
-          <strong>{{ item.title }}</strong>
-          <span>{{ item.meta }}</span>
-        </a>
-      }
-    </div>
-
-    <aside class="stats-panel" aria-label="社区概览">
-      @for (stat of stats(); track stat.label) {
-        <div>
-          <strong>{{ stat.value }}</strong>
-          <span>{{ stat.label }}</span>
+    <section
+      class="discussion-wall"
+      [class.is-visible]="isDiscussionWallVisible()"
+      aria-labelledby="discussion-wall-title"
+    >
+      <div class="featured-head">
+        <div class="hot-news__title pulse-section__title">
+          <span class="title-mark title-mark--notice" aria-hidden="true">学</span>
+          <h2 id="discussion-wall-title">洞天公告</h2>
         </div>
-      }
-    </aside>
-  </section>
 
-  <section class="feature-section">
-    @for (feature of features(); track feature.title) {
-      <article>
-        <h2>{{ feature.title }}</h2>
-        <p>{{ feature.description }}</p>
-      </article>
-    }
-  </section>
+        <a class="featured-submit" routerLink="/notifications" [queryParams]="{ tab: 'system' }">
+          <span aria-hidden="true"></span>
+          查看更多
+        </a>
+      </div>
 
-  <section class="workflow-section">
-    <div>
-      <h2>完整业务流程，一条线跑通</h2>
-      <p>课程作业要求的注册、登录、列表、详情、新增、编辑、删除和权限提示，都可以围绕这条主流程展开。</p>
-    </div>
+      <div class="discussion-stack">
+        @for (item of featuredDiscussions(); track item.title) {
+          <a
+            class="discussion-slip"
+            [routerLink]="item.path"
+            [style.--discussion-accent]="item.accent"
+          >
+            <span class="discussion-slip__tape" aria-hidden="true"></span>
+            <small>{{ item.meta }}</small>
+            <strong>{{ item.title }}</strong>
+            <p>{{ item.excerpt }}</p>
+          </a>
+        }
+      </div>
+    </section>
 
-    <ol>
-      @for (item of workflow(); track item; let index = $index) {
-        <li>
-          <span>{{ index + 1 }}</span>
-          {{ item }}
-        </li>
-      }
-    </ol>
-  </section>
+    <section
+      class="hot-news"
+      [class.is-visible]="isHotNewsVisible()"
+      aria-labelledby="hot-news-title"
+    >
+      <div class="hot-news__topline">
+        <div class="hot-news__title" id="hot-news-title">
+          <span class="title-mark title-mark--watch" aria-hidden="true">看</span>
+          <h2>最近洞天</h2>
+        </div>
+
+        <a class="more-link" routerLink="/posts">
+          <span aria-hidden="true"></span>
+          查看更多
+        </a>
+      </div>
+
+      <div class="hot-news__layout">
+        <div class="news-gallery">
+          <a
+            class="lead-card"
+            [class.lead-card--text]="!leadNews().hasImage"
+            [routerLink]="leadNews().path"
+            [style.--visual-accent]="leadNews().accent"
+          >
+            @if (leadNews().hasImage && leadNews().image) {
+              <img [src]="leadNews().image" [alt]="leadNews().imageAlt" />
+            } @else {
+              <div class="lead-card__paper" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <span class="visual-board">{{ leadNews().boardName }}</span>
+              <p class="visual-excerpt">{{ leadNews().excerpt }}</p>
+            }
+            <time class="lead-date" [attr.datetime]="leadNews().month + '-' + leadNews().day">
+              <strong>{{ leadNews().day }}</strong>
+              <span>{{ leadNews().month }}</span>
+            </time>
+            <strong class="lead-title">{{ leadNews().title }}</strong>
+          </a>
+
+          <div class="thumb-grid" aria-label="更多帖子视觉卡片">
+            @for (item of newsImages(); track item.title) {
+              <a
+                class="thumb-card"
+                [class.thumb-card--text]="!item.hasImage"
+                [routerLink]="item.path"
+                [style.--visual-accent]="item.accent"
+              >
+                @if (item.hasImage && item.image) {
+                  <img [src]="item.image" [alt]="item.imageAlt" />
+                } @else {
+                  <span class="thumb-card__paper" aria-hidden="true"></span>
+                  <small>{{ item.boardName }}</small>
+                  <p>{{ item.excerpt }}</p>
+                }
+                <strong>{{ item.title }}</strong>
+              </a>
+            }
+          </div>
+        </div>
+
+        <div class="news-list">
+          @for (item of hotNews(); track item.title) {
+            <a class="news-row sb__link" [routerLink]="item.path" [style.--course-color]="item.color">
+              <span class="sb__background" aria-hidden="true"></span>
+              <time class="news-date" [attr.datetime]="item.month + '-' + item.day">
+                <strong>{{ item.day }}</strong>
+                <span>{{ item.month }}</span>
+              </time>
+              <span class="news-row__line" aria-hidden="true"></span>
+              <strong class="news-row__title">{{ item.title }}</strong>
+              <span class="news-corner" aria-hidden="true"></span>
+            </a>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="community-pulse" aria-labelledby="topic-scents-title">
+      <section
+        class="topic-scents"
+        [class.is-visible]="isTopicScentsVisible()"
+        aria-labelledby="topic-scents-title"
+      >
+        <div class="hot-news__title pulse-section__title">
+          <span class="title-mark title-mark--boards" aria-hidden="true">板</span>
+          <h2 id="topic-scents-title">板块速查</h2>
+        </div>
+
+        <div class="scent-grid">
+          @for (item of topicScents(); track item.name) {
+            <a
+              class="scent-note"
+              [routerLink]="item.path"
+              [queryParams]="item.boardId ? { boardId: item.boardId } : null"
+              [style.--scent-accent]="item.accent"
+              [style.--scent-tilt]="item.tilt"
+            >
+              <span class="scent-note__pin" aria-hidden="true"></span>
+              <strong>{{ item.name }}</strong>
+              <p>{{ item.note }}</p>
+              <small>{{ item.count }}</small>
+            </a>
+          }
+        </div>
+      </section>
+    </section>
+
+    <section
+      class="forum-stats"
+      [class.is-visible]="isForumStatsVisible()"
+      aria-labelledby="forum-stats-title"
+    >
+      <div class="forum-stats__media" aria-hidden="true"></div>
+      <div class="forum-stats__wash" aria-hidden="true"></div>
+
+      <div class="forum-stats__heading hot-news__title">
+        <span class="title-mark title-mark--data" aria-hidden="true">数</span>
+        <h2 id="forum-stats-title">数据洞天</h2>
+      </div>
+
+      <div class="forum-stats__grid" aria-label="洞天论坛数据概况">
+        @for (item of forumStats(); track item.label) {
+          <article class="forum-stat">
+            <span class="forum-stat__ring" aria-hidden="true">
+              <span class="forum-stat__ring-inner"></span>
+              <svg viewBox="0 0 64 64" fill="none" focusable="false">
+                @if (isStatIcon(item, 'posts')) {
+                  <path d="M16 19.5C25 16.2 36.5 16.4 48 19.5V45C37.4 41.8 26.5 41.6 16 45V19.5Z" />
+                  <path d="M22 25.5C28.3 24.2 35 24.2 42 25.5" />
+                  <path d="M22 32C28.6 30.8 35.2 30.8 42 32" />
+                  <path d="M22 38.5C27.5 37.5 33 37.4 38.5 38.2" />
+                } @else if (isStatIcon(item, 'users')) {
+                  <path d="M23 29C27.7 28.6 30.5 25.8 30.4 21.8C30.3 18.2 27.4 15.9 23.8 16.2C20.1 16.5 17.8 19.4 18.1 23.1C18.3 26.4 20.1 28.5 23 29Z" />
+                  <path d="M13.5 47C16.1 38.2 21.3 34.7 30.2 36.2" />
+                  <path d="M41.5 29.5C45.5 29 48 26.6 47.8 23.2C47.6 20 45.1 18 42 18.2C38.9 18.5 36.8 20.9 37 24.1C37.2 27 38.8 28.9 41.5 29.5Z" />
+                  <path d="M34 47.2C36.3 40.8 40.6 38.1 48.5 39.2" />
+                } @else if (isStatIcon(item, 'comments')) {
+                  <path d="M13.5 19.5C22.4 16.5 38.1 16.4 50 19.2C52 27.8 51 36.5 48.2 42.5C39.3 44.8 25.6 44.8 15.2 42.4C12.7 35.6 12.1 27.5 13.5 19.5Z" />
+                  <path d="M22 26.5H42" />
+                  <path d="M22 33H37" />
+                  <path d="M25.5 43.2L20 51L35 44.5" />
+                } @else if (isStatIcon(item, 'boards')) {
+                  <path d="M16 16H31V31H16V16Z" />
+                  <path d="M35 16H48V31H35V16Z" />
+                  <path d="M16 35H31V48H16V35Z" />
+                  <path d="M35 35H48V48H35V35Z" />
+                  <path d="M21 23H27" />
+                  <path d="M39 23H44" />
+                  <path d="M21 41H27" />
+                  <path d="M39 41H44" />
+                }
+              </svg>
+            </span>
+            <strong>{{ item.value }}</strong>
+            <span>{{ item.label }}</span>
+          </article>
+        }
+      </div>
+    </section>
   </div>
 </section>

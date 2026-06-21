@@ -1,0 +1,44 @@
+.back-link {
+  justify-self: start;
+}
+
+.message-detail {
+  display: grid;
+  gap: 18px;
+}
+
+.message-detail h1,
+.message-detail p {
+  margin: 0;
+}
+
+.message-detail h1 {
+  font-size: clamp(34px, 5vw, 64px);
+  line-height: 1;
+}
+
+.message-detail p {
+  max-width: 760px;
+  color: var(--color-ink);
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.message-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.message-meta span {
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: var(--color-paper);
+  color: var(--color-muted);
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.ink-link-button {
+  justify-self: start;
+}

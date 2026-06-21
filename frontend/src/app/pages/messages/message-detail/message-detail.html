@@ -1,0 +1,21 @@
+<section class="feature-page">
+  <a class="ghost-button back-link" routerLink="/messages">返回收件箱</a>
+
+  @if (isLoading()) {
+    <article class="ink-panel muted">正在拆开这封私信...</article>
+  } @else if (message(); as item) {
+    <article class="ink-panel message-detail">
+      <span class="feature-kicker">站内信详情</span>
+      <h1>{{ item.subject }}</h1>
+      <div class="message-meta">
+        <span>发件人：{{ item.sender.username }}</span>
+        <span>收件人：{{ item.receiver.username }}</span>
+        <span>{{ item.sentAt }}</span>
+      </div>
+      <p>{{ item.body }}</p>
+      <a class="ink-link-button" routerLink="/messages/send">回复</a>
+    </article>
+  } @else {
+    <article class="ink-panel muted">{{ errorMessage() || '私信不存在。' }}</article>
+  }
+</section>

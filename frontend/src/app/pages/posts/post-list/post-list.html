@@ -1,23 +1,154 @@
-<section class="page-heading">
-  <div>
-    <h1>帖子列表</h1>
-    <p>后续这里会通过 HttpClient 调用 Flask `/api/posts`。</p>
-  </div>
-  <a routerLink="/posts/new">发布帖子</a>
-</section>
-
-<section class="post-list">
-  @for (post of posts(); track post.id) {
-    <article>
-      <div>
-        <span>{{ post.board }}</span>
-        <h2>
-          <a [routerLink]="['/posts', post.id]">{{ post.title }}</a>
-        </h2>
+<section class="post-list-page">
+  <div class="post-list-shell">
+    <section class="post-ridge" aria-label="帖子筛选工具">
+      <div class="post-ridge__boards" aria-label="板块筛选">
+        <button
+          type="button"
+          class="post-ridge__chip"
+          [class.is-active]="selectedBoardId() === null"
+          [attr.aria-pressed]="selectedBoardId() === null"
+          (click)="selectBoard(null)"
+        >
+          全部
+        </button>
+        @for (board of boardOptions(); track board.id) {
+          <button
+            type="button"
+            class="post-ridge__chip"
+            [class.is-active]="selectedBoardId() === board.id"
+            [attr.aria-pressed]="selectedBoardId() === board.id"
+            (click)="selectBoard(board.id)"
+          >
+            {{ board.name }}
+          </button>
+        }
       </div>
-      <strong>{{ post.comments }} 条评论</strong>
-    </article>
-  } @empty {
-    <p class="empty">暂无帖子</p>
-  }
+
+      <div class="post-ridge__sort" [class.is-hot]="sortMode() === 'hot'" aria-label="帖子排序">
+        <button
+          type="button"
+          class="post-ridge__sort-button"
+          [class.is-active]="sortMode() === 'latest'"
+          [attr.aria-pressed]="sortMode() === 'latest'"
+          (click)="setSortMode('latest')"
+        >
+          最新
+        </button>
+        <button
+          type="button"
+          class="post-ridge__sort-button"
+          [class.is-active]="sortMode() === 'hot'"
+          [attr.aria-pressed]="sortMode() === 'hot'"
+          (click)="setSortMode('hot')"
+        >
+          热门
+        </button>
+      </div>
+
+      <p class="post-ridge__note">
+        {{ activeBoardName() }} · 第 {{ page() }} / {{ pages() }} 页 · 共 {{ total() }} 篇 · 最新 {{ latestStamp() }}
+      </p>
+    </section>
+
+    <section class="post-stream" aria-label="帖子列表">
+      @if (isLoading()) {
+        <article class="post-loader" aria-live="polite">
+          <span class="post-loader__marks" aria-hidden="true">
+            <i></i>
+            <i></i>
+            <i></i>
+          </span>
+          <span class="post-loader__text">正在翻找洞天里的帖子</span>
+          <span class="post-loader__line" aria-hidden="true"></span>
+        </article>
+      } @else if (notice()) {
+        <article class="post-empty">{{ notice() }}</article>
+      } @else {
+        @for (post of displayPosts(); track post.id) {
+          <article class="post-feed-item">
+            <div class="post-author-hover">
+              <a class="post-author-avatar" [routerLink]="['/profile', post.author.id]">
+                <img [src]="avatarSrc(post.author.avatar, post.author.username)" [alt]="post.author.username" />
+              </a>
+              <div class="post-user-popover" role="tooltip">
+                <img [src]="avatarSrc(post.author.avatar, post.author.username)" [alt]="post.author.username" />
+                <div>
+                  <strong>{{ post.author.username }}</strong>
+                  <div class="user-badge-row post-card-badges">
+                    @if (post.author.isStaff) {
+                      <span class="staff-badge">{{ post.author.roleName ?? '管理成员' }}</span>
+                    }
+                    <span class="user-title-badge title-level-{{ post.author.title?.level || 1 }}">{{ userLevel(post.author) }}</span>
+                  </div>
+                  <div class="level-popover__meter" aria-hidden="true">
+                    <i [style.width.%]="userTitleProgress(post.author)"></i>
+                  </div>
+                  <span>{{ post.author.signature || '这个成员还没有填写签名。' }}</span>
+                  <small>粉丝 {{ post.author.followerCount ?? 0 }} · 关注 {{ post.author.followingCount ?? 0 }}</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="post-feed-main">
+              <header class="post-feed-head">
+                <a [routerLink]="['/profile', post.author.id]">{{ post.author.username }}</a>
+                @if (post.author.isStaff) {
+                  <span class="staff-badge">{{ post.author.roleName ?? '管理成员' }}</span>
+                }
+                <span class="user-title-badge title-level-{{ post.author.title?.level || 1 }}">{{ userLevel(post.author) }}</span>
+                <span>{{ post.board.name }}</span>
+                <time>{{ formatPostDate(post.createdAt) }}</time>
+              </header>
+
+              <h2>
+                <a [routerLink]="['/posts', post.id]">{{ post.title }}</a>
+              </h2>
+
+              <p>{{ post.excerpt }}</p>
+
+              <footer class="post-feed-foot">
+                <span>{{ post.readCount }} 阅读</span>
+                <span>{{ post.commentCount }} 评论</span>
+                <span>{{ post.likeCount ?? 0 }} 喜欢</span>
+                <a [routerLink]="['/posts', post.id]">进入</a>
+              </footer>
+            </div>
+          </article>
+        } @empty {
+          <article class="post-empty">这里还没有帖子。</article>
+        }
+      }
+    </section>
+
+    @if (hasPagination()) {
+      <nav class="post-pager" aria-label="帖子分页">
+        <button type="button" class="post-pager__turn" [disabled]="page() <= 1 || isLoading()" (click)="previousPage()">
+          <span aria-hidden="true">←</span>
+          上一页
+        </button>
+
+        <div class="post-pager__pages">
+          @for (item of pageNumbers(); track item) {
+            <button
+              type="button"
+              class="post-pager__page"
+              [class.is-active]="item === page()"
+              [attr.aria-current]="item === page() ? 'page' : null"
+              [disabled]="isLoading()"
+              (click)="goToPage(item)"
+            >
+              {{ item }}
+            </button>
+          }
+        </div>
+
+        <button type="button" class="post-pager__turn" [disabled]="page() >= pages() || isLoading()" (click)="nextPage()">
+          下一页
+          <span aria-hidden="true">→</span>
+        </button>
+
+        <span class="post-pager__note">第 {{ page() }} / {{ pages() }} 页，共 {{ total() }} 篇</span>
+      </nav>
+    }
+  </div>
 </section>

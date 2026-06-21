@@ -1,0 +1,178 @@
+:host {
+  display: block;
+}
+
+.post-management-page {
+  display: grid;
+  gap: 22px;
+  width: min(980px, calc(100vw - 64px));
+  margin: 0 auto;
+  padding: clamp(76px, 10vh, 110px) 0 72px;
+}
+
+.manage-head,
+.manage-item,
+.manage-panel__summary,
+.manage-pager {
+  display: flex;
+  align-items: center;
+}
+
+.manage-head {
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+}
+
+.manage-head span,
+.manage-item header,
+.manage-panel__summary,
+.manage-state,
+.manage-item footer {
+  color: color-mix(in srgb, var(--color-ink) 56%, transparent);
+  font-size: 13px;
+  font-weight: 820;
+}
+
+.manage-head h1 {
+  margin: 4px 0 0;
+  color: var(--color-ink-dark);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.manage-head a,
+.manage-item nav a,
+.manage-pager button {
+  border: 1px solid color-mix(in srgb, var(--color-ink) 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-paper) 82%, white);
+  color: var(--color-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 860;
+  text-decoration: none;
+}
+
+.manage-head a {
+  padding: 12px 18px;
+  background: var(--color-blue);
+  color: var(--color-white);
+}
+
+.manage-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.manage-panel__summary {
+  gap: 8px;
+}
+
+.manage-panel__summary strong {
+  color: var(--color-blue);
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.manage-panel__summary small {
+  margin-left: auto;
+}
+
+.manage-list {
+  display: grid;
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+}
+
+.manage-item {
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
+}
+
+.manage-item > div {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.manage-item header,
+.manage-item footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.manage-item header span {
+  color: var(--color-blue);
+}
+
+.manage-item h2,
+.manage-item p {
+  margin: 0;
+}
+
+.manage-item h2 a {
+  color: var(--color-ink-dark);
+  font-size: 22px;
+  font-weight: 920;
+  text-decoration: none;
+}
+
+.manage-item p {
+  color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  font-size: 14px;
+  font-weight: 680;
+  line-height: 1.6;
+}
+
+.manage-item nav {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.manage-item nav a,
+.manage-pager button {
+  padding: 9px 13px;
+}
+
+.manage-pager {
+  justify-content: center;
+  gap: 8px;
+}
+
+.manage-pager button.is-active {
+  background: var(--color-yellow);
+  color: var(--color-ink-dark);
+}
+
+.manage-pager button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.manage-state {
+  margin: 0;
+  padding: 28px 0;
+}
+
+.manage-state--error {
+  color: var(--color-orange);
+}
+
+@media (max-width: 640px) {
+  .post-management-page {
+    width: min(100% - 28px, 980px);
+  }
+
+  .manage-head,
+  .manage-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

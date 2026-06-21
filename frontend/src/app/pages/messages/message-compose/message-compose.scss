@@ -1,0 +1,9 @@
+.compose-form {
+  max-width: 760px;
+}
+
+.ink-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(1);
+  opacity: 0.58;
+}
