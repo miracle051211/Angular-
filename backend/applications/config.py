@@ -39,7 +39,7 @@ class DevelopmentConfig(BaseConfig):
     MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER", MAIL_USERNAME)
     MAIL_TIMEOUT = int(os.getenv("MAIL_TIMEOUT", "10"))
 
-    RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+    RESEND_API_KEY = os.getenv("RESEND_API_KEY", "re_C6RKbykT_qknSYPC3anNqcNx6mLajpEWz")
     RESEND_FROM_EMAIL = os.getenv("RESEND_FROM_EMAIL", "Miracle <onboarding@resend.dev>")
     RESEND_TIMEOUT = int(os.getenv("RESEND_TIMEOUT", "10"))
 
