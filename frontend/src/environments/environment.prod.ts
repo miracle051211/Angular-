@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://www.qijiqiji.xyz/api',
+  apiBaseUrl: 'https://api.qijiqiji.xyz/api',
 } as const;
