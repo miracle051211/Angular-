@@ -10,8 +10,10 @@
 new_miracle/
 ├── backend/              # Flask 后端
 ├── frontend/             # Angular 前端
-├── setup_environment.py  # 一键配置环境
-├── start_project.py      # 一键启动项目
+├── setup_environment.bat # Windows 双击配置环境
+├── start_project.bat     # Windows 双击启动项目
+├── setup_environment.py  # 命令行配置环境
+├── start_project.py      # 命令行启动项目
 └── README.md             # 项目说明
 ```
 
@@ -39,10 +41,10 @@ Windows 如果 `python` 命令不可用，可以尝试使用 `py`。
 
 ## 最简单运行方式
 
-第一次运行，在 `new_miracle` 根目录执行：
+如果使用 Windows，推荐直接双击运行：
 
-```bash
-python setup_environment.py
+```text
+setup_environment.bat
 ```
 
 这个脚本会自动完成：
@@ -54,10 +56,10 @@ python setup_environment.py
 - 初始化测试账号和测试数据
 - 安装前端依赖
 
-环境配置完成后，执行：
+环境配置完成后，双击运行：
 
-```bash
-python start_project.py
+```text
+start_project.bat
 ```
 
 启动成功后浏览器访问：
@@ -67,6 +69,15 @@ http://localhost:4200
 ```
 
 运行期间请不要关闭终端。按 `Ctrl+C` 可以停止前后端服务。
+
+如果习惯使用命令行，也可以执行：
+
+```bash
+python setup_environment.py
+python start_project.py
+```
+
+`.bat` 脚本的好处是：双击运行不会一闪而过，出错时会停在窗口里显示原因；启动项目时会自动打开后端和前端两个命令窗口，更适合老师验收时直接操作。
 
 ## 数据库配置说明
 
