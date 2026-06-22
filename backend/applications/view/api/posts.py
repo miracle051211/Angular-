@@ -1,4 +1,4 @@
-import os
+﻿import os
 import uuid
 
 from flask import Blueprint, current_app, request, url_for
@@ -50,7 +50,7 @@ def list_posts():
         query = query.filter(PostModel.board_id == board_id)
     if mine:
         if not current_user.is_authenticated:
-            return api_error("请先登录", 401)
+            return api_error("璇峰厛鐧诲綍", 401)
         query = query.filter(PostModel.author_id == current_user.id)
     if search:
         query = query.filter(or_(PostModel.title.contains(search), PostModel.content.contains(search)))
@@ -66,7 +66,7 @@ def list_posts():
             "total": pagination.total,
             "pages": pagination.pages,
         },
-        "获取帖子列表成功",
+        "鑾峰彇甯栧瓙鍒楄〃鎴愬姛",
     )
 
 
@@ -74,11 +74,11 @@ def list_posts():
 def get_post(post_id):
     post = _active_post_query().filter(PostModel.id == post_id).first()
     if not post:
-        return api_error("帖子不存在", 404)
+        return api_error("甯栧瓙涓嶅瓨鍦?, 404)
 
     post.read_count += 1
     db.session.commit()
-    return api_success(serialize_post_detail(post), "获取帖子详情成功")
+    return api_success(serialize_post_detail(post), "鑾峰彇甯栧瓙璇︽儏鎴愬姛")
 
 
 @bp.post("/ai-assist")
@@ -96,40 +96,50 @@ def ai_assist_post():
     )
 
     if mode not in AI_ASSIST_MODES:
-        return api_error("AI 辅助类型不正确", 400)
+        return api_error("Invalid AI assist mode.", 400)
     if mode != "inspiration" and not content:
-        return api_error("请先写一点正文，再使用 AI 辅助", 400)
+        return api_error("Please write some content before using this AI mode.", 400)
 
-    context = "\n".join(part for part in [f"标题：{title}" if title else "", f"正文：{content}" if content else ""] if part)
+    context = "\n".join(
+        part
+        for part in [
+            f"Title: {title}" if title else "",
+            f"Content: {content}" if content else "",
+        ]
+        if part
+    )
 
     if mode == "inspiration":
         result = ai_service.generate_inspiration(
-            "请为学习社区生成一个自然、有温度的帖子标题和一段开头。"
-            "输出格式：第一行是标题，第二行开始是正文。"
-            f"\n\n已有线索：{context or '暂无'}"
+            "Generate a natural Chinese forum post title and opening paragraph for a learning community. "
+            "Put the title on the first line and the body after it."
+            f"\n\nExisting clues:\n{context or 'None'}"
         )
-        message = "灵感已生成"
+        message = "AI inspiration generated."
     elif mode == "continue":
         result = ai_service.continue_content(
             content,
-            "请续写这篇学习社区帖子，保持原语气，不要重复已有内容，只输出续写段落。",
+            "Continue this Chinese learning community post. Keep the tone natural, "
+            "do not repeat existing content, and output only the continuation.",
         )
-        message = "正文已续写"
+        message = "AI continuation generated."
     elif mode == "structure":
         result = ai_service.optimize_structure(
             content,
-            "请优化这篇学习社区帖子的结构，让表达更清晰，有层次，但不要改成公文腔。",
+            "Improve the structure of this Chinese learning community post. "
+            "Make it clearer and more organized without making it formal or stiff.",
         )
-        message = "结构已优化"
+        message = "AI structure generated."
     else:
         result = ai_service.polish_content(
             content,
-            "请润色这篇学习社区帖子，让它更自然、更真诚、更容易被回应，不要过度正式。",
+            "Polish this Chinese learning community post. Make it natural, sincere, "
+            "clear, and easy to respond to without making it overly formal.",
         )
-        message = "表达已润色"
+        message = "AI polish generated."
 
     if result.startswith("AI service failed"):
-        return api_error(result, 502)
+        return api_error(result.text, 502)
 
     return api_success(
         {
@@ -140,7 +150,6 @@ def ai_assist_post():
         message,
     )
 
-
 @bp.post("")
 @api_login_required
 def create_post():
@@ -150,22 +159,22 @@ def create_post():
     board_id = data.get("boardId") or data.get("board_id")
 
     if not title:
-        return api_error("标题不能为空", 400)
+        return api_error("鏍囬涓嶈兘涓虹┖", 400)
     if not content:
-        return api_error("内容不能为空", 400)
+        return api_error("鍐呭涓嶈兘涓虹┖", 400)
     if not board_id:
-        return api_error("请选择板块", 400)
+        return api_error("璇烽€夋嫨鏉垮潡", 400)
 
     board = BoardModel.query.filter_by(id=board_id, is_active=True).first()
     if not board:
-        return api_error("板块不存在", 404)
+        return api_error("鏉垮潡涓嶅瓨鍦?, 404)
 
     post = PostModel(title=title, content=content, board=board, author_id=current_user.id)
     current_user.add_experience(1)
     db.session.add(post)
     db.session.commit()
     _create_mentions(content, post.id)
-    return api_success(serialize_post_detail(post), "发布帖子成功", 201)
+    return api_success(serialize_post_detail(post), "鍙戝竷甯栧瓙鎴愬姛", 201)
 
 
 @bp.post("/<int:post_id>/images")
@@ -173,16 +182,16 @@ def create_post():
 def upload_post_images(post_id):
     post = _active_post_query().filter(PostModel.id == post_id).first()
     if not post:
-        return api_error("帖子不存在", 404)
+        return api_error("甯栧瓙涓嶅瓨鍦?, 404)
     if not _can_manage_post(post):
-        return api_error("没有权限给该帖子上传图片", 403)
+        return api_error("娌℃湁鏉冮檺缁欒甯栧瓙涓婁紶鍥剧墖", 403)
 
     files = request.files.getlist("images")
     files = [file for file in files if file and file.filename]
     if not files:
-        return api_error("请选择图片文件", 400)
+        return api_error("璇烽€夋嫨鍥剧墖鏂囦欢", 400)
     if len(files) > MAX_POST_IMAGES_PER_UPLOAD:
-        return api_error(f"一次最多上传 {MAX_POST_IMAGES_PER_UPLOAD} 张图片", 400)
+        return api_error(f"涓€娆℃渶澶氫笂浼?{MAX_POST_IMAGES_PER_UPLOAD} 寮犲浘鐗?, 400)
 
     save_path = current_app.config.get("POST_IMAGES_SAVE_PATH")
     if not os.path.isabs(save_path):
@@ -194,13 +203,13 @@ def upload_post_images(post_id):
         filename = secure_filename(image.filename)
         extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
         if extension not in ALLOWED_POST_IMAGE_EXTENSIONS:
-            return api_error("图片只支持 jpg、png、webp、gif", 400)
+            return api_error("鍥剧墖鍙敮鎸?jpg銆乸ng銆亀ebp銆乬if", 400)
 
         image.stream.seek(0, os.SEEK_END)
         size = image.stream.tell()
         image.stream.seek(0)
         if size > MAX_POST_IMAGE_BYTES:
-            return api_error("单张图片不能超过 5MB", 400)
+            return api_error("鍗曞紶鍥剧墖涓嶈兘瓒呰繃 5MB", 400)
 
         saved_name = f"{uuid.uuid4().hex}.{extension}"
         image.save(os.path.join(save_path, saved_name))
@@ -224,7 +233,7 @@ def upload_post_images(post_id):
             }
             for image in saved_images
         ],
-        "图片上传成功",
+        "鍥剧墖涓婁紶鎴愬姛",
         201,
     )
 
@@ -234,9 +243,9 @@ def upload_post_images(post_id):
 def update_post(post_id):
     post = _active_post_query().filter(PostModel.id == post_id).first()
     if not post:
-        return api_error("帖子不存在", 404)
+        return api_error("甯栧瓙涓嶅瓨鍦?, 404)
     if not _can_manage_post(post):
-        return api_error("没有权限修改该帖子", 403)
+        return api_error("娌℃湁鏉冮檺淇敼璇ュ笘瀛?, 403)
 
     data = request.get_json(silent=True) or {}
     title = (data.get("title") or "").strip()
@@ -244,21 +253,21 @@ def update_post(post_id):
     board_id = data.get("boardId") or data.get("board_id")
 
     if not title:
-        return api_error("标题不能为空", 400)
+        return api_error("鏍囬涓嶈兘涓虹┖", 400)
     if not content:
-        return api_error("内容不能为空", 400)
+        return api_error("鍐呭涓嶈兘涓虹┖", 400)
 
     if board_id:
         board = BoardModel.query.filter_by(id=board_id, is_active=True).first()
         if not board:
-            return api_error("板块不存在", 404)
+            return api_error("鏉垮潡涓嶅瓨鍦?, 404)
         post.board = board
 
     post.title = title
     post.content = content
     db.session.commit()
 
-    return api_success(serialize_post_detail(post), "更新帖子成功")
+    return api_success(serialize_post_detail(post), "鏇存柊甯栧瓙鎴愬姛")
 
 
 @bp.delete("/<int:post_id>")
@@ -266,27 +275,27 @@ def update_post(post_id):
 def delete_post(post_id):
     post = _active_post_query().filter(PostModel.id == post_id).first()
     if not post:
-        return api_error("帖子不存在", 404)
+        return api_error("甯栧瓙涓嶅瓨鍦?, 404)
     if not _can_manage_post(post):
-        return api_error("没有权限删除该帖子", 403)
+        return api_error("娌℃湁鏉冮檺鍒犻櫎璇ュ笘瀛?, 403)
 
     _hard_delete_post(post)
     db.session.commit()
-    return api_success(None, "删除帖子成功")
+    return api_success(None, "鍒犻櫎甯栧瓙鎴愬姛")
 
 
 @bp.get("/<int:post_id>/comments")
 def list_comments(post_id):
     post = _active_post_query().filter(PostModel.id == post_id).first()
     if not post:
-        return api_error("帖子不存在", 404)
+        return api_error("甯栧瓙涓嶅瓨鍦?, 404)
 
     comments = CommentModel.query.filter_by(
         post_id=post.id,
         parent_id=None,
         is_active=True,
     ).order_by(CommentModel.create_time.desc()).all()
-    return api_success([serialize_comment(comment) for comment in comments], "获取评论成功")
+    return api_success([serialize_comment(comment) for comment in comments], "鑾峰彇璇勮鎴愬姛")
 
 
 @bp.post("/<int:post_id>/comments")
@@ -294,20 +303,20 @@ def list_comments(post_id):
 def create_comment(post_id):
     post = _active_post_query().filter(PostModel.id == post_id).first()
     if not post:
-        return api_error("帖子不存在", 404)
+        return api_error("甯栧瓙涓嶅瓨鍦?, 404)
 
     data = request.get_json(silent=True) or {}
     content = (data.get("content") or "").strip()
     parent_id = data.get("parentId") or data.get("parent_id")
 
     if not content:
-        return api_error("评论内容不能为空", 400)
+        return api_error("璇勮鍐呭涓嶈兘涓虹┖", 400)
 
     parent = None
     if parent_id:
         parent = CommentModel.query.filter_by(id=parent_id, post_id=post.id, is_active=True).first()
         if not parent:
-            return api_error("回复的评论不存在", 404)
+            return api_error("鍥炲鐨勮瘎璁轰笉瀛樺湪", 404)
 
     comment = CommentModel(
         content=content,
@@ -322,7 +331,7 @@ def create_comment(post_id):
             user_id=post.author_id,
             sender_id=current_user.id,
             notice_type=NotificationType.POST_COMMENT.value,
-            content=f"{current_user.username} 评论了你的帖子《{post.title}》",
+            content=f"{current_user.username} 璇勮浜嗕綘鐨勫笘瀛愩€妠post.title}銆?,
             related_id=comment.id,
             related_type="comment",
             related_post_id=post.id,
@@ -332,13 +341,13 @@ def create_comment(post_id):
             user_id=parent.author_id,
             sender_id=current_user.id,
             notice_type=NotificationType.COMMENT_REPLY.value,
-            content=f"{current_user.username} 回复了你的评论",
+            content=f"{current_user.username} 鍥炲浜嗕綘鐨勮瘎璁?,
             related_id=comment.id,
             related_type="comment",
             related_post_id=post.id,
         )
     _create_mentions(content, post.id)
-    return api_success(serialize_comment(comment), "评论成功", 201)
+    return api_success(serialize_comment(comment), "璇勮鎴愬姛", 201)
 
 
 @bp.post("/<int:post_id>/like")
@@ -346,7 +355,7 @@ def create_comment(post_id):
 def toggle_post_like(post_id):
     post = _active_post_query().filter(PostModel.id == post_id).first()
     if not post:
-        return api_error("帖子不存在", 404)
+        return api_error("甯栧瓙涓嶅瓨鍦?, 404)
 
     like = LikeModel.query.filter_by(user_id=current_user.id, post_id=post.id).first()
     if like:
@@ -361,14 +370,14 @@ def toggle_post_like(post_id):
                 user_id=post.author_id,
                 sender_id=current_user.id,
                 notice_type=NotificationType.POST_LIKE.value,
-                content=f"{current_user.username} 赞了你的帖子《{post.title}》",
+                content=f"{current_user.username} 璧炰簡浣犵殑甯栧瓙銆妠post.title}銆?,
                 related_id=post.id,
                 related_type="post",
                 related_post_id=post.id,
             )
 
     db.session.commit()
-    return api_success({"liked": liked, "count": post.like_count()}, "点赞状态已更新")
+    return api_success({"liked": liked, "count": post.like_count()}, "鐐硅禐鐘舵€佸凡鏇存柊")
 
 
 @bp.post("/<int:post_id>/report")
@@ -376,12 +385,12 @@ def toggle_post_like(post_id):
 def report_post(post_id):
     post = _active_post_query().filter(PostModel.id == post_id).first()
     if not post:
-        return api_error("帖子不存在", 404)
+        return api_error("甯栧瓙涓嶅瓨鍦?, 404)
 
     report = ReportModel(user_id=current_user.id, post_id=post.id, reason=_report_reason())
     db.session.add(report)
     db.session.commit()
-    return api_success({"reported": True}, "举报已提交", 201)
+    return api_success({"reported": True}, "涓炬姤宸叉彁浜?, 201)
 
 
 @bp.post("/<int:post_id>/comments/<int:comment_id>/like")
@@ -389,7 +398,7 @@ def report_post(post_id):
 def toggle_comment_like(post_id, comment_id):
     comment = _active_comment(post_id, comment_id)
     if not comment:
-        return api_error("评论不存在", 404)
+        return api_error("璇勮涓嶅瓨鍦?, 404)
 
     like = LikeModel.query.filter_by(user_id=current_user.id, comment_id=comment.id).first()
     if like:
@@ -404,14 +413,14 @@ def toggle_comment_like(post_id, comment_id):
                 user_id=comment.author_id,
                 sender_id=current_user.id,
                 notice_type=NotificationType.COMMENT_LIKE.value,
-                content=f"{current_user.username} 赞了你的评论",
+                content=f"{current_user.username} 璧炰簡浣犵殑璇勮",
                 related_id=comment.id,
                 related_type="comment",
                 related_post_id=post_id,
             )
 
     db.session.commit()
-    return api_success({"liked": liked, "count": comment.like_count()}, "点赞状态已更新")
+    return api_success({"liked": liked, "count": comment.like_count()}, "鐐硅禐鐘舵€佸凡鏇存柊")
 
 
 @bp.post("/<int:post_id>/comments/<int:comment_id>/report")
@@ -419,12 +428,12 @@ def toggle_comment_like(post_id, comment_id):
 def report_comment(post_id, comment_id):
     comment = _active_comment(post_id, comment_id)
     if not comment:
-        return api_error("评论不存在", 404)
+        return api_error("璇勮涓嶅瓨鍦?, 404)
 
     report = ReportModel(user_id=current_user.id, comment_id=comment.id, reason=_report_reason())
     db.session.add(report)
     db.session.commit()
-    return api_success({"reported": True}, "举报已提交", 201)
+    return api_success({"reported": True}, "涓炬姤宸叉彁浜?, 201)
 
 
 def _active_post_query():
@@ -449,7 +458,7 @@ def _active_comment(post_id, comment_id):
 def _report_reason():
     data = request.get_json(silent=True) or {}
     reason = (data.get("reason") or "").strip()
-    return (reason or "用户未填写具体原因")[:500]
+    return (reason or "鐢ㄦ埛鏈～鍐欏叿浣撳師鍥?)[:500]
 
 
 def _create_notification(user_id, sender_id, notice_type, content, related_id=None, related_type=None, related_post_id=None):
@@ -483,7 +492,7 @@ def _allows_notification(user, notice_type):
 
 
 def _create_mentions(content, post_id):
-    mentioned_names = {part.strip(" ，,。.!！?？；;：:") for part in content.split("@")[1:]}
+    mentioned_names = {part.strip(" 锛?銆?!锛?锛燂紱;锛?") for part in content.split("@")[1:]}
     for raw_name in mentioned_names:
         username = raw_name.split()[0] if raw_name else ""
         if not username:
@@ -495,7 +504,7 @@ def _create_mentions(content, post_id):
             user_id=user.id,
             sender_id=current_user.id,
             notice_type="MENTION",
-            content=f"{current_user.username} 在帖子里 @ 了你",
+            content=f"{current_user.username} 鍦ㄥ笘瀛愰噷 @ 浜嗕綘",
             related_id=post_id,
             related_type="post",
             related_post_id=post_id,
@@ -526,3 +535,4 @@ def _hard_delete_post(post):
             db.session.delete(comment)
 
     db.session.delete(post)
+

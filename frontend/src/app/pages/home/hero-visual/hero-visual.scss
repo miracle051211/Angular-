@@ -1,4 +1,4 @@
-:host {
+﻿:host {
   display: block;
 }
 
@@ -297,6 +297,10 @@
 }
 
 @media (max-width: 620px) {
+  .hero-visual {
+    display: none;
+  }
+
   .hero-stage {
     min-height: 100svh;
     padding-right: 14px;
@@ -351,3 +355,4 @@
     display: none;
   }
 }
+

@@ -86,6 +86,10 @@
             <div class="head-search-panel">
               @if (headerSearchDraft()) {
                 <div class="search-results-stack">
+                  <div class="search-result-tabs" aria-label="搜索结果分区">
+                    <span class="is-active">用户 <b>{{ userSearchSuggestions().length }}</b></span>
+                    <span>帖子 <b>{{ searchSuggestions().length }}</b></span>
+                  </div>
                   <section class="search-panel-section">
                     <div class="search-panel-title search-panel-title--compact">
                       <strong>用户</strong>
@@ -415,6 +419,10 @@
             <div class="head-search-panel">
               @if (headerSearchDraft()) {
                 <div class="search-results-stack">
+                  <div class="search-result-tabs" aria-label="搜索结果分区">
+                    <span class="is-active">用户 <b>{{ userSearchSuggestions().length }}</b></span>
+                    <span>帖子 <b>{{ searchSuggestions().length }}</b></span>
+                  </div>
                   <section class="search-panel-section">
                     <div class="search-panel-title search-panel-title--compact">
                       <strong>用户</strong>
@@ -878,6 +886,8 @@
       </article>}
   </div>
 </div>
+
+
 
 
 

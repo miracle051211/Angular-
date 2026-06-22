@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { NotificationKind, UserNotification } from '../../core/models/notification.model';
@@ -26,7 +26,7 @@ export class NotificationsPage {
   private readonly toastService = inject(ToastService);
 
   protected readonly tabs: readonly NoticeTab[] = [
-    { id: 'message', label: '我的消息', empty: '私信和评论回复会在这里提示。' },
+    { id: 'message', label: '我的消息', empty: '私信和消息提醒会在这里显示。' },
     { id: 'mention', label: '@我的', empty: '还没有人提到你。' },
     { id: 'like', label: '收到的赞', empty: '暂时还没有新的点赞。' },
     { id: 'system', label: '系统通知', empty: '系统通知很安静。' },
@@ -71,6 +71,23 @@ export class NotificationsPage {
     return this.tabs.find((tab) => tab.id === this.activeTab())?.empty ?? '这里暂时没有消息。';
   }
 
+
+  protected formatNoticeTime(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return new Intl.DateTimeFormat('zh-CN', {
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(date);
+  }
   protected markAllRead(): void {
     this.notificationService.markAllRead().subscribe({
       next: () => {
@@ -174,3 +191,4 @@ export class NotificationsPage {
     });
   }
 }
+

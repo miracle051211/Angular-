@@ -1,16 +1,16 @@
-<section class="chat-page" [class.chat-page--embedded]="embedded()">
+﻿<section class="chat-page" [class.chat-page--embedded]="embedded()">
   @if (!embedded()) {
     <header class="chat-hero">
       <div>
-        <span class="feature-kicker">DIRECT MESSAGE</span>
-        <h1>私信</h1>
-        <p>像一张摊开的便签桌：左边找人，右边聊天，学习搭子随时接上话。</p>
+        <span class="feature-kicker">消息中心</span>
+        <h1>我的消息</h1>
+        <p>左边找人和看提醒，右边专心聊天；面板固定得更稳，长消息也不会把页面挤乱。</p>
       </div>
       <button class="ghost-button" type="button" (click)="markAllRead()">全部已读 · {{ unreadCount() }}</button>
     </header>
   }
 
-  <section class="chat-shell" aria-label="私信聊天">
+  <section class="chat-shell" aria-label="消息中心">
     <aside class="chat-sidebar">
       <label class="chat-search">
         <span>找同学</span>
@@ -20,7 +20,7 @@
       @if (search.value.trim()) {
         <div class="search-popover">
           @if (isSearching()) {
-            <p>正在翻同学录...</p>
+            <p>正在查找同学...</p>
           } @else {
             @for (user of searchResults(); track user.id) {
               <button type="button" (click)="startConversation(user)">
@@ -31,7 +31,7 @@
                 </span>
               </button>
             } @empty {
-              <p>没有找到这个人</p>
+              <p>没有找到这个人。</p>
             }
           }
         </div>
@@ -60,7 +60,7 @@
                 <small>{{ messageBody(conversation.latestMessage) }}</small>
               </span>
               <span class="conversation-meta">
-                <time>{{ conversation.latestMessage.sentAt | slice:0:10 }}</time>
+                <time>{{ formatReadableTime(conversation.latestMessage.sentAt) }}</time>
                 @if (conversation.unreadCount > 0) {
                   <b>{{ conversation.unreadCount }}</b>
                 }
@@ -81,7 +81,7 @@
           @for (notice of notices(); track notice.id) {
             <a class="notice-card" [class.is-unread]="!notice.isRead" [routerLink]="notice.targetUrl" (click)="openNotice($event, notice)">
               <strong>{{ notice.title }}</strong>
-              <small>{{ notice.senderName }} · {{ notice.createdAt | slice:0:10 }}</small>
+              <small>{{ notice.senderName }} · {{ formatReadableTime(notice.createdAt) }}</small>
             </a>
           }
         </div>
@@ -93,7 +93,7 @@
         <header class="thread-head">
           <img [src]="avatarSrc(partner.avatar, partner.username)" [alt]="partner.username" />
           <div>
-            <span>正在私聊</span>
+            <span>正在聊天</span>
             <h2>{{ partner.username }}</h2>
           </div>
           <a [routerLink]="['/profile', partner.id]">主页</a>
@@ -101,7 +101,7 @@
 
         <section class="bubble-field" aria-live="polite">
           @if (isThreadLoading()) {
-            <p class="thread-muted">正在展开纸条...</p>
+            <p class="thread-muted">正在展开消息...</p>
           } @else {
             @for (message of activeMessages(); track trackMessage($index, message)) {
               <article class="bubble-row" [class.is-mine]="message.isMine">
@@ -110,11 +110,11 @@
                 }
                 <div class="bubble">
                   <p>{{ messageBody(message) }}</p>
-                  <time>{{ message.sentAt | slice:0:16 }}</time>
+                  <time>{{ formatReadableTime(message.sentAt) }}</time>
                 </div>
               </article>
             } @empty {
-              <p class="thread-muted">这里还没有聊天记录，给 TA 发第一张小纸条吧。</p>
+              <p class="thread-muted">这里还没有聊天记录，给 TA 发第一条消息吧。</p>
             }
           }
         </section>
@@ -130,9 +130,9 @@
         </footer>
       } @else {
         <section class="thread-empty">
-          <span aria-hidden="true">✉</span>
+          <span aria-hidden="true">✦</span>
           <h2>选一个人开始聊天</h2>
-          <p>搜索同学、查看最近会话，或从系统提醒里回到相关内容。</p>
+          <p>搜索同学、查看最近会话，或者从系统提醒回到相关内容。</p>
         </section>
       }
     </main>

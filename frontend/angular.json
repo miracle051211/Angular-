@@ -1,4 +1,4 @@
-{
+﻿{
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
@@ -50,8 +50,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "18kB",
-                  "maximumError": "32kB"
+                  "maximumWarning": "40kB",
+                  "maximumError": "48kB"
                 }
               ],
               "outputHashing": "all"
@@ -83,3 +83,5 @@
     }
   }
 }
+
+

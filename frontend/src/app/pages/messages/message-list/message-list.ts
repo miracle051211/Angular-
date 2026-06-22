@@ -1,5 +1,4 @@
-import { SlicePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, debounceTime, distinctUntilChanged, forkJoin, map, of, switchMap } from 'rxjs';
@@ -27,7 +26,7 @@ interface NoticeFeedItem {
 
 @Component({
   selector: 'app-message-list-page',
-  imports: [ReactiveFormsModule, RouterLink, SlicePipe],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './message-list.html',
   styleUrl: './message-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +40,23 @@ export class MessageListPage {
   private readonly notificationService = inject(NotificationService);
   private readonly userService = inject(UserService);
   private readonly toastService = inject(ToastService);
+  private readonly dateFormatter = new Intl.DateTimeFormat('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  private readonly fullDateFormatter = new Intl.DateTimeFormat('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
 
   readonly embedded = input(false);
 
@@ -82,12 +98,12 @@ export class MessageListPage {
     const content = this.composer.value.trim();
 
     if (!partner) {
-      this.toastService.warning('请先选择聊天对象');
+      this.toastService.warning('请先选择聊天对象。');
       return;
     }
 
     if (!content) {
-      this.toastService.warning('私信内容不能为空');
+      this.toastService.warning('消息内容不能为空。');
       return;
     }
 
@@ -102,7 +118,7 @@ export class MessageListPage {
       },
       error: (error) => {
         this.isSending.set(false);
-        this.toastService.error(error?.error?.message ?? '操作失败，请稍后再试');
+        this.toastService.error(error?.error?.message ?? '发送失败，请稍后再试。');
       },
     });
   }
@@ -116,9 +132,9 @@ export class MessageListPage {
         this.conversations.update((items) => items.map((item) => ({ ...item, unreadCount: 0 })));
         this.notices.update((items) => items.map((item) => ({ ...item, isRead: true })));
         window.dispatchEvent(new Event('miracle-notifications-read'));
-        this.toastService.success('已把私信和消息提醒标记为已读');
+        this.toastService.success('已把私信和消息提醒标记为已读。');
       },
-      error: (error) => this.toastService.error(error?.error?.message ?? '操作失败，请稍后再试'),
+      error: (error) => this.toastService.error(error?.error?.message ?? '操作失败，请稍后再试。'),
     });
   }
 
@@ -135,7 +151,7 @@ export class MessageListPage {
       next: goTarget,
       error: (error) => {
         this.notices.update((items) => items.map((candidate) => (candidate.id === item.id ? { ...candidate, isRead: false } : candidate)));
-        this.toastService.error(error?.error?.message ?? '操作失败，请稍后再试');
+        this.toastService.error(error?.error?.message ?? '操作失败，请稍后再试。');
       },
     });
   }
@@ -149,6 +165,34 @@ export class MessageListPage {
 
   protected messageBody(message: Message): string {
     return message.content ?? message.body;
+  }
+
+  protected formatReadableTime(value: string): string {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    const now = new Date();
+    const today = this.dayKey(now);
+    const target = this.dayKey(date);
+    const yesterday = this.dayKey(new Date(now.getTime() - 24 * 60 * 60 * 1000));
+    const time = this.timePart(date);
+
+    if (target === today) {
+      return `今天 ${time}`;
+    }
+
+    if (target === yesterday) {
+      return `昨天 ${time}`;
+    }
+
+    if (now.getFullYear() === date.getFullYear()) {
+      return this.dateFormatter.format(date).replace('/', '月').replace(' ', '日 ');
+    }
+
+    return this.fullDateFormatter.format(date).replace('/', '年').replace('/', '月').replace(' ', '日 ');
   }
 
   protected trackConversation(_: number, item: MessageConversation): string {
@@ -187,7 +231,7 @@ export class MessageListPage {
       },
       error: (error) => {
         this.isLoading.set(false);
-        this.toastService.error(error?.error?.message ?? '操作失败，请稍后再试');
+        this.toastService.error(error?.error?.message ?? '消息加载失败，请稍后再试。');
       },
     });
   }
@@ -221,7 +265,7 @@ export class MessageListPage {
       },
       error: (error) => {
         this.isThreadLoading.set(false);
-        this.toastService.error(error?.error?.message ?? '操作失败，请稍后再试');
+        this.toastService.error(error?.error?.message ?? '打开会话失败，请稍后再试。');
       },
     });
   }
@@ -261,5 +305,23 @@ export class MessageListPage {
       createdAt: notice.createdAt,
       isRead: notice.isRead,
     };
+  }
+
+  private dayKey(date: Date): string {
+    return new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(date);
+  }
+
+  private timePart(date: Date): string {
+    return new Intl.DateTimeFormat('zh-CN', {
+      timeZone: 'Asia/Shanghai',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(date);
   }
 }

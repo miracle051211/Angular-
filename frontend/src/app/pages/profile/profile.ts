@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
@@ -24,8 +24,7 @@ export class ProfilePage {
   private readonly userService = inject(UserService);
   private readonly destroyRef = inject(DestroyRef);
   private cropImage: HTMLImageElement | null = null;
-  private dragStart: { pointerId: number; x: number; y: number; offsetX: number; offsetY: number } | null =
-    null;
+  private dragStart: { pointerId: number; x: number; y: number; offsetX: number; offsetY: number } | null = null;
 
   protected readonly user = signal<User | null>(null);
   protected readonly posts = signal<readonly PostSummary[]>([]);
@@ -63,7 +62,6 @@ export class ProfilePage {
   constructor() {
     effect(() => {
       const profileUser = this.user();
-
       if (profileUser && !this.isEditorOpen()) {
         this.syncProfileForm(profileUser);
       }
@@ -71,13 +69,11 @@ export class ProfilePage {
 
     const subscription = this.route.paramMap.subscribe((params) => {
       const userId = params.get('id');
-
       if (!userId) {
-        this.errorMessage.set('没有找到这个用户');
+        this.errorMessage.set('没有找到这个用户。');
         this.isLoading.set(false);
         return;
       }
-
       this.loadProfile(userId);
     });
 
@@ -87,12 +83,28 @@ export class ProfilePage {
     });
   }
 
+  protected formatProfileTime(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return new Intl.DateTimeFormat('zh-CN', {
+      timeZone: 'Asia/Shanghai',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(date);
+  }
+
   protected avatarSrc(avatar: string | null | undefined, username: string): string {
     if (avatar) {
       if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
         return avatar;
       }
-
       return `${this.apiOrigin}${avatar.startsWith('/') ? '' : '/'}${avatar}`;
     }
 
@@ -138,7 +150,6 @@ export class ProfilePage {
     if (this.isSavingProfile() || this.isUploadingAvatar()) {
       return;
     }
-
     this.isEditorOpen.set(false);
     this.closeCropper();
   }
@@ -187,7 +198,7 @@ export class ProfilePage {
         this.isFollowUpdating.set(false);
       },
       error: (error) => {
-        const message = error?.error?.message ?? '关注操作失败';
+        const message = error?.error?.message ?? '关注操作失败。';
         this.errorMessage.set(message);
         this.toastService.error(message);
         this.isFollowUpdating.set(false);
@@ -198,20 +209,19 @@ export class ProfilePage {
   protected selectAvatar(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-
     if (!file) {
       return;
     }
 
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      this.avatarMessage.set('头像只支持 jpg、png、webp');
+      this.avatarMessage.set('头像只支持 jpg、png、webp。');
       this.toastService.warning('头像只支持 jpg、png、webp。');
       input.value = '';
       return;
     }
 
     if (file.size > 3 * 1024 * 1024) {
-      this.avatarMessage.set('头像不能超过 3MB');
+      this.avatarMessage.set('头像不能超过 3MB。');
       this.toastService.warning('头像不能超过 3MB。');
       input.value = '';
       return;
@@ -246,7 +256,6 @@ export class ProfilePage {
     if (!this.dragStart || this.dragStart.pointerId !== event.pointerId) {
       return;
     }
-
     this.cropOffsetX.set(this.dragStart.offsetX + event.clientX - this.dragStart.x);
     this.cropOffsetY.set(this.dragStart.offsetY + event.clientY - this.dragStart.y);
   }
@@ -270,7 +279,7 @@ export class ProfilePage {
 
   protected confirmAvatarCrop(stage: HTMLElement): void {
     if (!this.cropImage) {
-      this.avatarMessage.set('图片还没有准备好');
+      this.avatarMessage.set('图片还没有准备好。');
       return;
     }
 
@@ -279,9 +288,8 @@ export class ProfilePage {
     canvas.width = outputSize;
     canvas.height = outputSize;
     const context = canvas.getContext('2d');
-
     if (!context) {
-      this.avatarMessage.set('浏览器暂时不能裁剪图片');
+      this.avatarMessage.set('浏览器暂时不能裁剪图片。');
       return;
     }
 
@@ -301,10 +309,9 @@ export class ProfilePage {
 
     canvas.toBlob((blob) => {
       if (!blob) {
-        this.avatarMessage.set('头像生成失败');
+        this.avatarMessage.set('头像生成失败。');
         return;
       }
-
       this.uploadCroppedAvatar(new File([blob], 'avatar.jpg', { type: 'image/jpeg' }));
     }, 'image/jpeg', 0.9);
   }
@@ -324,7 +331,7 @@ export class ProfilePage {
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      this.avatarMessage.set('图片读取失败');
+      this.avatarMessage.set('图片读取失败。');
     };
     image.src = url;
   }
@@ -338,13 +345,13 @@ export class ProfilePage {
         this.authService.setCurrentUser(response.data);
         this.user.set(response.data);
         this.syncProfileForm(response.data);
-        this.avatarMessage.set('头像已换好');
+        this.avatarMessage.set('头像已换好。');
         this.toastService.success('头像已更新。');
         this.isUploadingAvatar.set(false);
         this.closeCropper();
       },
       error: (error) => {
-        const message = error?.error?.message ?? '头像上传失败';
+        const message = error?.error?.message ?? '头像上传失败。';
         this.avatarMessage.set(message);
         this.toastService.error(message);
         this.isUploadingAvatar.set(false);
@@ -366,7 +373,7 @@ export class ProfilePage {
       error: (error) => {
         this.user.set(null);
         this.posts.set([]);
-        this.errorMessage.set(error?.error?.message ?? '资料加载失败');
+        this.errorMessage.set(error?.error?.message ?? '资料加载失败。');
         this.isLoading.set(false);
       },
     });

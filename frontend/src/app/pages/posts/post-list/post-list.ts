@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+﻿import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Board } from '../../../core/models/board.model';
@@ -39,12 +39,10 @@ export class PostListPage {
   protected readonly displayPosts = computed(() => this.sortedPosts());
   protected readonly latestStamp = computed(() => {
     const [latest] = this.posts();
-
     return latest ? this.toListDate(latest.createdAt) : '等待帖子抵达';
   });
   protected readonly activeBoardName = computed(() => {
     const boardId = this.selectedBoardId();
-
     return boardId ? (this.boards().find((board) => board.id === boardId)?.name ?? '当前板块') : '全部板块';
   });
   protected readonly hasPagination = computed(() => this.pages() > 1);
@@ -53,7 +51,6 @@ export class PostListPage {
     const totalPages = this.pages();
     const start = Math.max(1, Math.min(current - 2, totalPages - 4));
     const end = Math.min(totalPages, start + 4);
-
     return Array.from({ length: end - start + 1 }, (_, index) => start + index);
   });
 
@@ -73,7 +70,6 @@ export class PostListPage {
     if (this.selectedBoardId() === boardId) {
       return;
     }
-
     this.selectedBoardId.set(boardId);
     this.loadPosts(1);
   }
@@ -82,18 +78,15 @@ export class PostListPage {
     if (this.sortMode() === mode) {
       return;
     }
-
     this.sortMode.set(mode);
     this.loadPosts(1);
   }
 
   protected goToPage(page: number): void {
     const target = Math.min(Math.max(1, page), this.pages());
-
     if (target === this.page() || this.isLoading()) {
       return;
     }
-
     this.loadPosts(target);
   }
 
@@ -110,10 +103,8 @@ export class PostListPage {
       if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
         return avatar;
       }
-
       return `${this.apiOrigin}${avatar.startsWith('/') ? '' : '/'}${avatar}`;
     }
-
     return this.fallbackAvatar(username);
   }
 
@@ -180,21 +171,31 @@ export class PostListPage {
 
   private sortedPosts(): readonly PostSummary[] {
     const posts = [...this.posts()];
-
     if (this.sortMode() === 'hot') {
       return posts.sort((left, right) => right.readCount - left.readCount);
     }
-
     return posts.sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime());
   }
 
   private toListDate(value: string): string {
-    const [date = value, time = ''] = value.replace('T', ' ').split(' ');
-    const [, month = '', day = ''] = date.split('-');
-    const [hour = '', minute = ''] = time.split(':');
-    const displayTime = hour && minute ? `${hour}:${minute}` : '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
 
-    return `${Number(month)} 月 ${Number(day)} 日${displayTime ? ` · ${displayTime}` : ''}`;
+    const now = new Date();
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'Asia/Shanghai',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    };
+    if (now.getFullYear() !== date.getFullYear()) {
+      options.year = 'numeric';
+    }
+    return new Intl.DateTimeFormat('zh-CN', options).format(date);
   }
 
   private fallbackAvatar(username: string): string {

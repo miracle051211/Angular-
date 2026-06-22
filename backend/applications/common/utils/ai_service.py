@@ -23,12 +23,9 @@ class AIResult(dict):
 
 class AIService:
     def __init__(self):
-        self.api_key = os.getenv(
-            "DEEPSEEK_API_KEY",
-            "sk-63f78555f9204123b0454d3785654c09",
-        )
+        self.api_key = os.getenv("DEEPSEEK_API_KEY", "")
         self.endpoint = "https://api.deepseek.com/chat/completions"
-        self.model = os.getenv("DEEPSEEK_MODEL", "deepseek-v4-pro")
+        self.model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
 
     def generate_inspiration(self, prompt=None):
         prompt = prompt or (
@@ -90,6 +87,9 @@ class AIService:
         return self._call_api(messages)
 
     def _call_api(self, messages):
+        if not self.api_key:
+            return AIResult(text="AI service failed: DEEPSEEK_API_KEY is not configured")
+
         try:
             logger.info("Calling DeepSeek model=%s endpoint=%s", self.model, self.endpoint)
             response = requests.post(
@@ -103,8 +103,6 @@ class AIService:
                         "model": self.model,
                         "messages": messages,
                         "stream": False,
-                        "reasoning_effort": "high",
-                        "thinking": {"type": "enabled"},
                     },
                     ensure_ascii=False,
                 ),

@@ -1,4 +1,4 @@
-<section class="notice-center-page">
+﻿<section class="notice-center-page">
   <aside class="notice-rail" aria-label="消息分类">
     <a class="notice-rail__brand" routerLink="/home" aria-label="返回首页">
       <span aria-hidden="true">IN</span>
@@ -42,7 +42,7 @@
     } @else {
       <section class="ink-list notice-list">
         @if (isLoading()) {
-          <article class="ink-panel muted">正在翻找消息。</article>
+          <article class="ink-panel muted">正在翻找消息...</article>
         } @else {
           @for (notice of filteredNotifications(); track notice.id) {
             <article class="ink-list-item notice-item" [class.is-unread]="!notice.isRead">
@@ -62,7 +62,7 @@
                   {{ deletingIds()[notice.id] ? '删除中...' : '删除' }}
                 </button>
               </div>
-              <small>{{ notice.createdAt }}</small>
+              <small>{{ formatNoticeTime(notice.createdAt) }}</small>
             </article>
           } @empty {
             <article class="ink-panel muted">{{ activeEmptyText() }}</article>
@@ -72,3 +72,5 @@
     }
   </main>
 </section>
+
+

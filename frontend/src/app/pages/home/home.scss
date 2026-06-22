@@ -1879,3 +1879,56 @@
   }
 }
 
+
+@media (max-width: 640px) {
+  .home-content {
+    padding-top: 86px;
+  }
+
+  .revealed-content {
+    --home-first-section-gap: 18px;
+    --home-section-gap: 34px;
+    margin-top: 0;
+  }
+
+  .community-pulse,
+  .discussion-wall,
+  .hot-news {
+    width: min(100% - 28px, 720px);
+  }
+
+  .featured-head,
+  .hot-news__topline {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .hot-news__title,
+  .pulse-section__title {
+    justify-content: center;
+    justify-self: center;
+    text-align: center;
+  }
+
+  .more-link,
+  .featured-submit {
+    justify-self: center;
+    text-align: center;
+  }
+
+  .discussion-slip,
+  .scent-note,
+  .news-row,
+  .forum-stat {
+    text-align: center;
+  }
+
+  .forum-stat {
+    justify-items: center;
+    grid-template-columns: 1fr;
+  }
+
+  .forum-stat__ring {
+    grid-row: auto;
+  }
+}

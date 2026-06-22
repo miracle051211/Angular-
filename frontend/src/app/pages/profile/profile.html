@@ -1,7 +1,7 @@
-<section class="feature-page profile-page">
+﻿<section class="feature-page profile-page">
   @if (isLoading()) {
     <div class="profile-state">
-      <strong>正在翻找这个洞天成员</strong>
+      <strong>正在加载这个成员</strong>
     </div>
   } @else if (errorMessage()) {
     <div class="profile-state">
@@ -51,7 +51,7 @@
         }
         @if (canFollow(profileUser)) {
           @if (profileUser.isFollowing) {
-            <a class="profile-message-button" [routerLink]="['/notifications']" [queryParams]="{ tab: 'message', userId: profileUser.id }">私信</a>
+            <a class="profile-message-button" [routerLink]="['/messages']" [queryParams]="{ userId: profileUser.id }">私信</a>
           }
           <button
             class="profile-follow-button"
@@ -95,7 +95,7 @@
                 }
                 <span class="user-title-badge title-level-{{ profileUser.title?.level || 1 }}">{{ userLevel(profileUser) }}</span>
                 <span>{{ post.board.name }}</span>
-                <time>{{ post.createdAt }}</time>
+                <time>{{ formatProfileTime(post.createdAt) }}</time>
               </header>
               <h3><a [routerLink]="['/posts', post.id]">{{ post.title }}</a></h3>
               <p>{{ post.excerpt }}</p>

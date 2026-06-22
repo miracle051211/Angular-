@@ -41,16 +41,13 @@ export const routes: Routes = [
   {
     path: 'messages/send',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/messages/message-compose/message-compose').then(
-        (m) => m.MessageComposePage,
-      ),
+    redirectTo: 'messages',
+    pathMatch: 'full',
   },
   {
     path: 'messages/:id',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/messages/message-detail/message-detail').then((m) => m.MessageDetailPage),
+    redirectTo: 'messages',
   },
   {
     path: 'posts',
@@ -125,5 +122,7 @@ export const routes: Routes = [
     redirectTo: 'home',
   },
 ];
+
+
 
 
