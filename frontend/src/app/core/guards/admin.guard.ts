@@ -7,6 +7,11 @@ import { AuthService } from '../services/auth.service';
 export const adminGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
+  const currentUser = authService.currentUser();
+
+  if (currentUser) {
+    return currentUser.isStaff ? true : router.createUrlTree(['/home']);
+  }
 
   return authService.me().pipe(
     map((response) => {

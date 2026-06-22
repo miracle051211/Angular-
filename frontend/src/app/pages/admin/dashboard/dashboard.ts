@@ -10,7 +10,7 @@
   inject,
   signal,
 } from '@angular/core';
-import { ECharts, EChartsOption, init } from 'echarts';
+import type { ECharts, EChartsOption } from 'echarts';
 
 import { AdminPost, AdminService } from '../../../core/services/admin.service';
 
@@ -54,6 +54,7 @@ export class AdminDashboardPage implements AfterViewInit, OnDestroy {
 
   private readonly adminService = inject(AdminService);
   private readonly charts: ECharts[] = [];
+  private chartLoader?: Promise<typeof import('echarts')>;
   private resizeObserver?: ResizeObserver;
 
   protected readonly stats = signal<readonly DashboardStat[]>([
@@ -223,12 +224,26 @@ export class AdminDashboardPage implements AfterViewInit, OnDestroy {
     if (elements.some((element) => !element)) {
       return;
     }
-    this.charts.push(...elements.map((element) => init(element)));
+    void this.loadCharts(elements as HTMLElement[]);
+  }
+
+  private async loadCharts(elements: HTMLElement[]): Promise<void> {
+    if (this.charts.length > 0) {
+      return;
+    }
+
+    const echarts = await (this.chartLoader ??= import('echarts'));
+    if (this.charts.length > 0) {
+      return;
+    }
+
+    this.charts.push(...elements.map((element) => echarts.init(element)));
     this.charts[1].on('click', (event) => {
       if (typeof event.name === 'string') {
         this.selectMetric(event.name);
       }
     });
+    this.renderCharts();
   }
 
   private renderCharts(): void {

@@ -67,6 +67,7 @@ export class App {
   private footerLogoFrame = 0;
   private messageSummaryTimer = 0;
   private lastSummaryUserId: string | number | null = null;
+  private hasPrefetchedAdminArea = false;
   private readonly currentUrl = signal(this.router.url);
   private readonly isNavSolid = signal(false);
   private readonly isNavHidden = signal(false);
@@ -540,6 +541,10 @@ export class App {
         return;
       }
 
+      if (user?.isStaff) {
+        this.prefetchAdminArea();
+      }
+
       if (this.lastSummaryUserId !== userId) {
         this.lastSummaryUserId = userId;
         this.loadMessageSummary();
@@ -569,6 +574,26 @@ export class App {
     });
 
     this.destroyRef.onDestroy(() => this.stopMessageSummaryPolling());
+  }
+
+  private prefetchAdminArea(): void {
+    if (this.hasPrefetchedAdminArea) {
+      return;
+    }
+
+    this.hasPrefetchedAdminArea = true;
+    const prefetch = () => {
+      void import('./pages/admin/admin-shell/admin-shell');
+      void import('./pages/admin/dashboard/dashboard');
+    };
+
+    const idleCallback = window.requestIdleCallback;
+    if (idleCallback) {
+      idleCallback(prefetch, { timeout: 2200 });
+      return;
+    }
+
+    window.setTimeout(prefetch, 700);
   }
 
   private loadMessageSummary(): void {
