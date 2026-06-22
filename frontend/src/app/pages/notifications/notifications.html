@@ -50,6 +50,14 @@
                 <span class="feature-kicker">{{ notice.title }}</span>
                 <h2>{{ notice.sender?.username || '学习小洞天' }}</h2>
                 <p>{{ notice.body }}</p>
+                @if (notice.imageUrl) {
+                  <img
+                    class="notice-image"
+                    [src]="notice.imageUrl"
+                    [alt]="notice.body || notice.title || '系统通知图片'"
+                    loading="lazy"
+                  />
+                }
               </div>
               <div class="notice-actions">
                 <a class="ghost-button" [routerLink]="notice.targetUrl" (click)="openNotification($event, notice)">查看</a>

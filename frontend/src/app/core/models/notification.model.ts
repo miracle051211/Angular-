@@ -7,6 +7,7 @@ export interface UserNotification {
   readonly kind: NotificationKind;
   readonly title: string;
   readonly body: string;
+  readonly imageUrl?: string | null;
   readonly createdAt: string;
   readonly isRead: boolean;
   readonly targetUrl: string;
@@ -26,6 +27,7 @@ export interface Announcement {
   readonly id: number;
   readonly title: string;
   readonly body: string;
+  readonly imageUrl?: string | null;
   readonly createdAt: string;
   readonly sender?: User | null;
 }

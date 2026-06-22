@@ -195,6 +195,17 @@
   margin: 0;
 }
 
+.notice-image {
+  display: block;
+  width: min(100%, 560px);
+  max-height: 360px;
+  margin-top: 14px;
+  border: 1px solid rgba(56, 48, 48, 0.14);
+  border-radius: 8px;
+  background: #fff;
+  object-fit: contain;
+}
+
 .notice-item small {
   grid-column: 1 / -1;
   color: var(--color-muted);
@@ -288,6 +299,10 @@
 
   .notice-list {
     padding: 18px;
+  }
+
+  .notice-image {
+    margin-inline: auto;
   }
 }
 

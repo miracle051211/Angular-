@@ -1,6 +1,6 @@
 ﻿from flask import Blueprint, request
 from flask_login import current_user
-from datetime import timedelta
+from datetime import datetime, timedelta
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 
@@ -294,13 +294,20 @@ def announcements():
 def create_announcement():
     data = request.get_json(silent=True) or {}
     content = (data.get("content") or "").strip()
+    image_url = (data.get("imageUrl") or "").strip() or None
+    registered_after = _parse_datetime(data.get("registeredAfter"))
 
-    if not content:
-        return api_error("公告内容不能为空", 400)
+    if not content and not image_url:
+        return api_error("公告内容或图片不能为空", 400)
     if len(content) > 200:
         return api_error("公告内容不能超过 200 字", 400)
+    if image_url and len(image_url) > 500:
+        return api_error("图片地址不能超过 500 字", 400)
 
-    users = UserModel.query.filter_by(is_active=True).all()
+    query = UserModel.query.filter_by(is_active=True)
+    if registered_after:
+        query = query.filter(UserModel.join_time >= registered_after)
+    users = query.all()
     if not users:
         return api_error("暂无可接收公告的用户", 400)
 
@@ -310,6 +317,7 @@ def create_announcement():
             sender_id=current_user.id,
             type=NotificationType.SYSTEM_NOTICE.value,
             content=content,
+            image_url=image_url,
             is_read=False,
         )
         for user in users
@@ -334,6 +342,7 @@ def delete_announcement(notice_id):
     NotificationModel.query.filter(
         NotificationModel.type == NotificationType.SYSTEM_NOTICE.value,
         NotificationModel.content == notice.content,
+        NotificationModel.image_url == notice.image_url,
         NotificationModel.create_time >= start_time,
         NotificationModel.create_time < end_time,
     ).delete(synchronize_session=False)
@@ -399,6 +408,7 @@ def serialize_admin_announcement(notice, receiver_count=1):
     return {
         "id": notice.id,
         "content": notice.content,
+        "imageUrl": notice.image_url,
         "createdAt": notice.create_time.isoformat(),
         "sender": serialize_user(notice.sender),
         "receiverCount": receiver_count,
@@ -409,7 +419,7 @@ def _group_announcements(notices):
     grouped = {}
     order = []
     for notice in notices:
-        key = (notice.content, notice.create_time.replace(microsecond=0))
+        key = (notice.content, notice.image_url, notice.create_time.replace(microsecond=0))
         if key not in grouped:
             grouped[key] = serialize_admin_announcement(notice, 0)
             order.append(key)
@@ -469,6 +479,20 @@ def _read_bool(key):
     return bool(data[key])
 
 
+def _parse_datetime(value):
+    if not value:
+        return None
+
+    try:
+        parsed = datetime.fromisoformat(str(value).strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+    if parsed.tzinfo:
+        parsed = parsed.astimezone().replace(tzinfo=None)
+    return parsed
+
+
 def _hard_delete_post(post):
     comments = CommentModel.query.filter_by(post_id=post.id).all()
     comment_ids = [comment.id for comment in comments]
@@ -507,6 +531,5 @@ def _hard_delete_comment(comment):
 
     for item in sorted(comments, key=lambda candidate: candidate.parent_id is not None, reverse=True):
         db.session.delete(item)
-
 
 

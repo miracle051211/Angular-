@@ -55,7 +55,7 @@ def list_announcements():
     seen = set()
     announcements = []
     for notice in notices:
-        key = (notice.content, notice.create_time.replace(microsecond=0))
+        key = (notice.content, notice.image_url, notice.create_time.replace(microsecond=0))
         if key in seen:
             continue
         seen.add(key)
@@ -129,6 +129,7 @@ def _serialize_notification(notice):
         "type": notice.type,
         "title": _notification_title(notice.type),
         "body": notice.content,
+        "imageUrl": notice.image_url,
         "createdAt": notice.create_time.isoformat(),
         "isRead": notice.is_read,
         "targetUrl": _notification_target(notice),
@@ -141,6 +142,7 @@ def _serialize_announcement(notice):
         "id": notice.id,
         "title": "洞天公告",
         "body": notice.content,
+        "imageUrl": notice.image_url,
         "createdAt": notice.create_time.isoformat(),
         "sender": serialize_user(notice.sender),
     }

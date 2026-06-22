@@ -70,9 +70,16 @@ export interface AdminReport {
 export interface AdminAnnouncement {
   readonly id: number;
   readonly content: string;
+  readonly imageUrl?: string | null;
   readonly createdAt: string;
   readonly receiverCount: number;
   readonly sender: User | null;
+}
+
+export interface CreateAnnouncementPayload {
+  readonly content?: string;
+  readonly imageUrl?: string;
+  readonly registeredAfter?: string;
 }
 
 @Injectable({
@@ -196,10 +203,11 @@ export class AdminService {
     );
   }
 
-  createAnnouncement(content: string): Observable<ApiResponse<AdminAnnouncement>> {
+  createAnnouncement(content: string | CreateAnnouncementPayload): Observable<ApiResponse<AdminAnnouncement>> {
+    const payload = typeof content === 'string' ? { content } : content;
     return this.http.post<ApiResponse<AdminAnnouncement>>(
       `${API_BASE_URL}/admin/announcements`,
-      { content },
+      payload,
       API_HTTP_OPTIONS,
     );
   }

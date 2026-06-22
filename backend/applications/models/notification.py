@@ -33,6 +33,7 @@ class NotificationModel(db.Model):
     sender_id = db.Column(db.String(100), db.ForeignKey("user.id"), nullable=True)
     type = db.Column(db.String(50), nullable=False)
     content = db.Column(db.String(200), nullable=False)
+    image_url = db.Column(db.String(500), nullable=True)
     is_read = db.Column(db.Boolean, default=False, nullable=False)
     create_time = db.Column(db.DateTime, default=datetime.now)
     related_id = db.Column(db.Integer, nullable=True)
