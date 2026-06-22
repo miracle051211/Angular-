@@ -3,7 +3,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { Board } from '../../../core/models/board.model';
 import { PostSummary } from '../../../core/models/post.model';
-import { API_ORIGIN } from '../../../core/services/api.config';
+import { avatarUrl } from '../../../core/utils/media-url';
 import { PaginatedPosts, PostService } from '../../../core/services/post.service';
 
 @Component({
@@ -14,7 +14,6 @@ import { PaginatedPosts, PostService } from '../../../core/services/post.service
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostListPage {
-  private readonly apiOrigin = API_ORIGIN;
   private readonly postService = inject(PostService);
   private readonly route = inject(ActivatedRoute);
   private readonly perPage = 18;
@@ -99,13 +98,7 @@ export class PostListPage {
   }
 
   protected avatarSrc(avatar: string | null | undefined, username: string): string {
-    if (avatar) {
-      if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
-        return avatar;
-      }
-      return `${this.apiOrigin}${avatar.startsWith('/') ? '' : '/'}${avatar}`;
-    }
-    return this.fallbackAvatar(username);
+    return avatarUrl(avatar, username);
   }
 
   protected userLevel(user: PostSummary['author']): string {

@@ -45,13 +45,14 @@ class DevelopmentConfig(BaseConfig):
 
     PER_PAGE_COUNT = 10
 
-    AVATARS_SAVE_PATH = os.path.join(BaseConfig.UPLOAD_IMAGE_PATH, "avatars")
-    POST_IMAGES_SAVE_PATH = os.path.join(BaseConfig.UPLOAD_IMAGE_PATH, "posts")
-
-    if not os.path.isabs(AVATARS_SAVE_PATH):
-        AVATARS_SAVE_PATH = os.path.abspath(AVATARS_SAVE_PATH)
-    if not os.path.isabs(POST_IMAGES_SAVE_PATH):
-        POST_IMAGES_SAVE_PATH = os.path.abspath(POST_IMAGES_SAVE_PATH)
+    AVATARS_SAVE_PATH = os.getenv(
+        "AVATARS_SAVE_PATH",
+        os.path.join(BaseConfig.UPLOAD_IMAGE_PATH, "avatars"),
+    )
+    POST_IMAGES_SAVE_PATH = os.getenv(
+        "POST_IMAGES_SAVE_PATH",
+        os.path.join(BaseConfig.UPLOAD_IMAGE_PATH, "posts"),
+    )
 
 
 class TestingConfig(BaseConfig):

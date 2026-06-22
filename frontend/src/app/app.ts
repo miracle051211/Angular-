@@ -18,7 +18,7 @@ import { NotificationSummary } from './core/models/notification.model';
 import { PostSummary } from './core/models/post.model';
 import { User } from './core/models/user.model';
 import { AuthService } from './core/services/auth.service';
-import { API_ORIGIN } from './core/services/api.config';
+import { avatarUrl } from './core/utils/media-url';
 import { MessageService } from './core/services/message.service';
 import { NotificationService } from './core/services/notification.service';
 import { PostAiAssistMode, PostService } from './core/services/post.service';
@@ -51,7 +51,6 @@ interface HotSearch {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  private readonly apiOrigin = API_ORIGIN;
   private readonly maxPostImageBytes = 5 * 1024 * 1024;
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -458,15 +457,7 @@ export class App {
   }
 
   protected avatarSrc(avatar: string | null | undefined, username: string): string {
-    if (avatar) {
-      if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
-        return avatar;
-      }
-
-      return `${this.apiOrigin}${avatar.startsWith('/') ? '' : '/'}${avatar}`;
-    }
-
-    return this.fallbackAvatar(username);
+    return avatarUrl(avatar, username);
   }
 
   protected userLevel(user: User): string {

@@ -5,7 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CommentReply, CommentThread } from '../../../core/models/comment.model';
 import { PostDetail, PostSummary } from '../../../core/models/post.model';
 import { User } from '../../../core/models/user.model';
-import { API_ORIGIN } from '../../../core/services/api.config';
+import { avatarUrl, mediaUrl } from '../../../core/utils/media-url';
 import { AuthService } from '../../../core/services/auth.service';
 import { PostService } from '../../../core/services/post.service';
 import { ToastService } from '../../../core/services/toast.service';
@@ -29,7 +29,6 @@ export class PostDetailPage {
   private readonly postService = inject(PostService);
   private readonly toastService = inject(ToastService);
   private readonly userService = inject(UserService);
-  private readonly apiOrigin = API_ORIGIN;
   protected readonly postIdNumber = Number(this.route.snapshot.paramMap.get('id') ?? 1);
 
   protected readonly currentUser = this.authService.currentUser;
@@ -321,11 +320,7 @@ export class PostDetailPage {
   }
 
   protected mediaSrc(url: string): string {
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-      return url;
-    }
-
-    return `${this.apiOrigin}${url.startsWith('/') ? '' : '/'}${url}`;
+    return mediaUrl(url) ?? '';
   }
 
   protected userLevel(user: User): string {
@@ -349,11 +344,7 @@ export class PostDetailPage {
   }
 
   protected avatarSrc(avatar: string | null | undefined, username: string): string {
-    if (avatar) {
-      return this.mediaSrc(avatar);
-    }
-
-    return `https://api.dicebear.com/9.x/notionists/svg?seed=${encodeURIComponent(username || 'dongtian')}`;
+    return avatarUrl(avatar, username);
   }
 
   private loadRelatedPosts(post: PostDetail): void {

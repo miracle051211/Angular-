@@ -6,7 +6,7 @@ import { catchError, debounceTime, distinctUntilChanged, forkJoin, map, of, swit
 import { Message, MessageConversation } from '../../../core/models/message.model';
 import { UserNotification } from '../../../core/models/notification.model';
 import { User } from '../../../core/models/user.model';
-import { API_ORIGIN } from '../../../core/services/api.config';
+import { avatarUrl } from '../../../core/utils/media-url';
 import { AuthService } from '../../../core/services/auth.service';
 import { MessageService } from '../../../core/services/message.service';
 import { NotificationService } from '../../../core/services/notification.service';
@@ -32,7 +32,6 @@ interface NoticeFeedItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MessageListPage {
-  private readonly apiOrigin = API_ORIGIN;
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
@@ -156,11 +155,8 @@ export class MessageListPage {
     });
   }
 
-  protected avatarSrc(value: string | null | undefined, username = '同学'): string {
-    if (value) {
-      return value.startsWith('http') ? value : `${this.apiOrigin}${value}`;
-    }
-    return `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(username)}`;
+  protected avatarSrc(value: string | null | undefined, username = '\u540c\u5b66'): string {
+    return avatarUrl(value, username);
   }
 
   protected messageBody(message: Message): string {

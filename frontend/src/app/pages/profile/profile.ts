@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { PostSummary } from '../../core/models/post.model';
 import { User } from '../../core/models/user.model';
-import { API_ORIGIN } from '../../core/services/api.config';
+import { avatarUrl } from '../../core/utils/media-url';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { UserProfileStats, UserService } from '../../core/services/user.service';
@@ -17,7 +17,6 @@ import { UserProfileStats, UserService } from '../../core/services/user.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfilePage {
-  private readonly apiOrigin = API_ORIGIN;
   private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
@@ -101,14 +100,7 @@ export class ProfilePage {
   }
 
   protected avatarSrc(avatar: string | null | undefined, username: string): string {
-    if (avatar) {
-      if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
-        return avatar;
-      }
-      return `${this.apiOrigin}${avatar.startsWith('/') ? '' : '/'}${avatar}`;
-    }
-
-    return this.fallbackAvatar(username);
+    return avatarUrl(avatar, username);
   }
 
   protected canEditProfile(profileUser: User): boolean {

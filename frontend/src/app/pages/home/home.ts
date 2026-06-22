@@ -11,7 +11,7 @@ import { RouterLink } from '@angular/router';
 
 import { Board } from '../../core/models/board.model';
 import { PostSummary } from '../../core/models/post.model';
-import { API_ORIGIN } from '../../core/services/api.config';
+import { mediaUrl } from '../../core/utils/media-url';
 import { NotificationService } from '../../core/services/notification.service';
 import { PostService } from '../../core/services/post.service';
 import { HeroVisualComponent } from './hero-visual/hero-visual';
@@ -74,7 +74,6 @@ export class HomePage {
   private readonly destroyRef = inject(DestroyRef);
   private readonly notificationService = inject(NotificationService);
   private readonly postService = inject(PostService);
-  private readonly apiOrigin = API_ORIGIN;
   private readonly newsAccents = [
     'var(--color-mint)',
     'var(--color-yellow)',
@@ -327,11 +326,7 @@ export class HomePage {
   }
 
   private mediaSrc(url: string): string {
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
-      return url;
-    }
-
-    return `${this.apiOrigin}${url.startsWith('/') ? '' : '/'}${url}`;
+    return mediaUrl(url) ?? '';
   }
 
   private splitDate(value: string): { day: string; month: string } {
