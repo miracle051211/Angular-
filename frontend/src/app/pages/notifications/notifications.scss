@@ -1,19 +1,20 @@
 .notice-center-page {
   display: grid;
-  grid-template-columns: 230px minmax(0, 1fr);
-  width: min(1880px, calc(100% - 16px));
-  height: calc(100dvh - 78px);
-  min-height: 860px;
-  margin: 0 auto;
-  padding: 68px 0 10px;
+  grid-template-columns: 260px minmax(0, 1fr);
+  width: min(1880px, calc(100vw - 16px));
+  height: calc(100dvh - 56px);
+  min-height: 900px;
+  margin: 0 0 0 50%;
+  padding: 52px 0 8px;
   color: var(--color-ink-dark);
+  transform: translateX(-50%);
 }
 
 .notice-rail {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 24px;
-  padding: 26px 18px;
+  padding: 28px 20px;
   border: 1.5px solid rgba(56, 48, 48, 0.14);
   border-right: 0;
   border-radius: 28px 0 0 28px;
@@ -175,7 +176,7 @@
 .notice-list {
   align-content: start;
   min-height: 0;
-  padding: 24px;
+  padding: 28px;
   overflow: auto;
 }
 
@@ -218,10 +219,13 @@
 @media (max-width: 860px) {
   .notice-center-page {
     grid-template-columns: 1fr;
-    width: min(100% - 24px, 760px);
+    width: min(100% - 20px, 760px);
     height: auto;
     min-height: calc(100dvh - 90px);
+    margin: 0 auto;
     padding-top: 90px;
+    text-align: center;
+    transform: none;
   }
 
   .notice-rail,
@@ -232,10 +236,44 @@
 
   .notice-rail {
     grid-template-rows: auto auto;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .notice-rail__brand,
+  .notice-tabs,
+  .notice-rail__tools,
+  .notice-workbench__bar,
+  .notice-list {
+    width: 100%;
+  }
+
+  .notice-rail__brand {
+    justify-content: center;
+  }
+
+  .notice-tabs button {
+    justify-content: center;
+    gap: 10px;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  .notice-tabs button::before {
+    position: static;
+    flex: 0 0 6px;
   }
 
   .notice-rail__tools {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .notice-workbench__bar {
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    min-height: 78px;
+    padding: 12px 18px;
   }
 
   .notice-item,
@@ -243,6 +281,13 @@
     align-items: stretch;
     grid-template-columns: 1fr;
     flex-direction: column;
+    justify-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .notice-list {
+    padding: 18px;
   }
 }
 

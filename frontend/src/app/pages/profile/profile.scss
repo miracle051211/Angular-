@@ -604,8 +604,40 @@
 @media (max-width: 700px) {
   .profile-hero,
   .profile-identity {
-    align-items: flex-start;
+    align-items: center;
     flex-direction: column;
+    width: 100%;
+    text-align: center;
+  }
+
+  .profile-title,
+  .profile-title p,
+  .profile-post__body {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .profile-name-row,
+  .profile-level-line,
+  .profile-counts,
+  .profile-meta-strip,
+  .profile-post header,
+  .profile-post footer,
+  .section-line {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .profile-title h1 {
+    max-width: 100%;
+    font-size: clamp(34px, 12vw, 46px);
+    line-height: 1.02;
+    overflow-wrap: anywhere;
+  }
+
+  .profile-name-row .user-badge-row {
+    justify-content: center;
+    padding-bottom: 0;
   }
 
   .profile-avatar-box img {
@@ -614,7 +646,8 @@
   }
 
   .profile-hero__actions {
-    justify-content: flex-start;
+    justify-content: center;
+    width: 100%;
   }
 
   .profile-editor-card {
@@ -624,12 +657,19 @@
   }
 
   .profile-post {
-    grid-template-columns: 44px minmax(0, 1fr);
-    gap: 12px;
+    grid-template-columns: 1fr;
+    justify-items: center;
+    gap: 10px;
+    text-align: center;
   }
 
   .profile-post__avatar {
     width: 40px;
     height: 40px;
+  }
+
+  .profile-post p {
+    margin-right: auto;
+    margin-left: auto;
   }
 }

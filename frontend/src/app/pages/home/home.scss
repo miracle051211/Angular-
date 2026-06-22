@@ -1883,6 +1883,7 @@
 @media (max-width: 640px) {
   .home-content {
     padding-top: 86px;
+    text-align: center;
   }
 
   .revealed-content {
@@ -1898,9 +1899,24 @@
   }
 
   .featured-head,
-  .hot-news__topline {
+  .hot-news__topline,
+  .pulse-strip,
+  .pulse-strip__heading,
+  .scent-note,
+  .discussion-slip,
+  .lead-card--text,
+  .thumb-card,
+  .news-row {
     justify-items: center;
     text-align: center;
+  }
+
+  .pulse-strip::after,
+  .community-pulse::before,
+  .hot-news::before,
+  .news-row__line,
+  .news-corner {
+    display: none;
   }
 
   .hot-news__title,
@@ -1921,6 +1937,46 @@
   .news-row,
   .forum-stat {
     text-align: center;
+  }
+
+  .pulse-strip__heading strong,
+  .scent-note strong,
+  .lead-card--text .lead-title,
+  .news-row__title {
+    max-width: 100%;
+  }
+
+  .lead-card--text .lead-title {
+    right: 18px;
+    left: 18px;
+    margin: 0 auto;
+  }
+
+  .scent-note {
+    padding-right: 0;
+  }
+
+  .scent-note small,
+  .news-pill {
+    justify-self: center;
+  }
+
+  .discussion-slip {
+    padding-left: 0;
+  }
+
+  .discussion-slip__tape {
+    display: none;
+  }
+
+  .news-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 14px 0;
+  }
+
+  .news-row__title {
+    padding-right: 0;
   }
 
   .forum-stat {
