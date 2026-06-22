@@ -33,6 +33,8 @@
             <strong>{{ item.title }}</strong>
             <p>{{ item.excerpt }}</p>
           </a>
+        } @empty {
+          <div class="home-empty-note">暂无系统公告。</div>
         }
       </div>
     </section>
@@ -55,29 +57,30 @@
       </div>
 
       <div class="hot-news__layout">
+        @if (leadNews(); as lead) {
         <div class="news-gallery">
           <a
             class="lead-card"
-            [class.lead-card--text]="!leadNews().hasImage"
-            [routerLink]="leadNews().path"
-            [style.--visual-accent]="leadNews().accent"
+            [class.lead-card--text]="!lead.hasImage"
+            [routerLink]="lead.path"
+            [style.--visual-accent]="lead.accent"
           >
-            @if (leadNews().hasImage && leadNews().image) {
-              <img [src]="leadNews().image" [alt]="leadNews().imageAlt" />
+            @if (lead.hasImage && lead.image) {
+              <img [src]="lead.image" [alt]="lead.imageAlt" />
             } @else {
               <div class="lead-card__paper" aria-hidden="true">
                 <span></span>
                 <span></span>
                 <span></span>
               </div>
-              <span class="visual-board">{{ leadNews().boardName }}</span>
-              <p class="visual-excerpt">{{ leadNews().excerpt }}</p>
+              <span class="visual-board">{{ lead.boardName }}</span>
+              <p class="visual-excerpt">{{ lead.excerpt }}</p>
             }
-            <time class="lead-date" [attr.datetime]="leadNews().month + '-' + leadNews().day">
-              <strong>{{ leadNews().day }}</strong>
-              <span>{{ leadNews().month }}</span>
+            <time class="lead-date" [attr.datetime]="lead.month + '-' + lead.day">
+              <strong>{{ lead.day }}</strong>
+              <span>{{ lead.month }}</span>
             </time>
-            <strong class="lead-title">{{ leadNews().title }}</strong>
+            <strong class="lead-title">{{ lead.title }}</strong>
           </a>
 
           <div class="thumb-grid" aria-label="更多帖子视觉卡片">
@@ -100,6 +103,9 @@
             }
           </div>
         </div>
+        } @else {
+          <div class="home-empty-note">暂无帖子内容。</div>
+        }
 
         <div class="news-list">
           @for (item of hotNews(); track item.title) {
@@ -113,6 +119,8 @@
               <strong class="news-row__title">{{ item.title }}</strong>
               <span class="news-corner" aria-hidden="true"></span>
             </a>
+          } @empty {
+            <div class="home-empty-note">暂无最近帖子。</div>
           }
         </div>
       </div>
@@ -143,6 +151,8 @@
               <p>{{ item.note }}</p>
               <small>{{ item.count }}</small>
             </a>
+          } @empty {
+            <div class="home-empty-note">暂无板块数据。</div>
           }
         </div>
       </section>
@@ -196,6 +206,11 @@
             </span>
             <strong>{{ item.value }}</strong>
             <span>{{ item.label }}</span>
+          </article>
+        } @empty {
+          <article class="forum-stat forum-stat--empty">
+            <strong>0</strong>
+            <span>暂无真实数据</span>
           </article>
         }
       </div>

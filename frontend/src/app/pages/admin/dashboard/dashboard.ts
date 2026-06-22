@@ -96,19 +96,11 @@ export class AdminDashboardPage implements AfterViewInit, OnDestroy {
   protected readonly trend = computed<readonly TrendPoint[]>(() => {
     const posts = this.recentPosts().slice(0, 7).reverse();
     if (!posts.length) {
-      return [
-        { label: '一', posts: 12, comments: 24, reads: 180 },
-        { label: '二', posts: 18, comments: 18, reads: 220 },
-        { label: '三', posts: 14, comments: 31, reads: 260 },
-        { label: '四', posts: 22, comments: 35, reads: 330 },
-        { label: '五', posts: 20, comments: 29, reads: 310 },
-        { label: '六', posts: 26, comments: 42, reads: 380 },
-        { label: '日', posts: 30, comments: 37, reads: 420 },
-      ];
+      return [];
     }
     return posts.map((post, index) => ({
       label: `T${index + 1}`,
-      posts: 8 + index * 3,
+      posts: 1,
       comments: post.commentCount,
       reads: post.readCount,
     }));
@@ -127,7 +119,10 @@ export class AdminDashboardPage implements AfterViewInit, OnDestroy {
   protected readonly heatCells = computed(() =>
     Array.from({ length: 42 }, (_, index) => {
       const post = this.recentPosts()[index % Math.max(this.recentPosts().length, 1)];
-      const seed = post ? post.readCount + post.commentCount * 7 + index * 11 : index * 17;
+      if (!post) {
+        return 0;
+      }
+      const seed = post.readCount + post.commentCount * 7 + index * 11;
       return Math.min(100, 18 + (seed % 82));
     }),
   );

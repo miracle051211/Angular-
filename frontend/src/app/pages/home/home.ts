@@ -87,88 +87,12 @@ export class HomePage {
   protected readonly isTopicScentsVisible = signal(false);
   protected readonly isDiscussionWallVisible = signal(false);
 
-  protected readonly topicScents = signal<readonly TopicScent[]>([
-    {
-      name: '项目碎片',
-      note: '截图、报错、阶段进展都可以先贴在这里。',
-      path: '/posts',
-      count: '26 篇',
-      accent: 'var(--color-yellow)',
-      tilt: '-2.4deg',
-    },
-    {
-      name: '前端手记',
-      note: 'Angular 路由、动效和页面壳的现场笔记。',
-      path: '/posts',
-      count: '18 篇',
-      accent: 'var(--color-mint)',
-      tilt: '1.6deg',
-    },
-    {
-      name: '后端工坊',
-      note: 'Flask API、权限边界和数据表的小修小补。',
-      path: '/posts',
-      count: '14 篇',
-      accent: 'var(--color-peach)',
-      tilt: '-1.2deg',
-    },
-    {
-      name: '随便问问',
-      note: '不够正式的问题，也值得被好好回答。',
-      path: '/posts',
-      count: '31 篇',
-      accent: 'var(--color-sky)',
-      tilt: '2.2deg',
-    },
-  ]);
-
-  protected readonly featuredDiscussions = signal<readonly FeaturedDiscussion[]>([
-    {
-      title: '暂无公告',
-      excerpt: '新的洞天公告会出现在这里。',
-      meta: '洞天公告',
-      path: '/notifications?tab=system',
-      accent: 'var(--color-mint)',
-    },
-  ]);
-
-  protected readonly leadNews = signal<NewsVisual>(this.emptyVisual('等待后端帖子'));
-  protected readonly newsImages = signal<readonly NewsVisual[]>([
-    this.emptyVisual('没有图片时，排版就是第一张图', 1),
-    this.emptyVisual('真实图片会从后端帖子里来', 2),
-    this.emptyVisual('留白、纸感和标题也能撑起版面', 3),
-  ]);
-
-  protected readonly hotNews = signal<readonly NewsItem[]>([
-    {
-      day: '16',
-      month: '2026-06',
-      title: '今天的首页动画终于不再僵硬',
-      path: '/posts/3',
-      color: 'var(--color-mint)',
-    },
-    {
-      day: '13',
-      month: '2026-06',
-      title: 'Flask API 拆分思路',
-      path: '/posts/2',
-      color: 'var(--color-yellow)',
-    },
-    {
-      day: '12',
-      month: '2026-06',
-      title: 'Angular Service 封装接口的写法',
-      path: '/posts',
-      color: 'var(--color-peach)',
-    },
-  ]);
-
-  protected readonly forumStats = signal<readonly ForumStat[]>([
-    { value: '1286', label: '洞天帖子', icon: 'posts' },
-    { value: '348', label: '活跃同学', icon: 'users' },
-    { value: '5240+', label: '评论互动', icon: 'comments' },
-    { value: '16', label: '讨论板块', icon: 'boards' },
-  ]);
+  protected readonly topicScents = signal<readonly TopicScent[]>([]);
+  protected readonly featuredDiscussions = signal<readonly FeaturedDiscussion[]>([]);
+  protected readonly leadNews = signal<NewsVisual | null>(null);
+  protected readonly newsImages = signal<readonly NewsVisual[]>([]);
+  protected readonly hotNews = signal<readonly NewsItem[]>([]);
+  protected readonly forumStats = signal<readonly ForumStat[]>([]);
 
   constructor() {
     this.loadForumData();
@@ -186,6 +110,7 @@ export class HomePage {
     this.notificationService.listAnnouncements(3).subscribe({
       next: (response) => {
         if (response.data.length === 0) {
+          this.featuredDiscussions.set([]);
           return;
         }
 
@@ -199,21 +124,21 @@ export class HomePage {
           })),
         );
       },
-      error: () => undefined,
+      error: () => this.featuredDiscussions.set([]),
     });
 
     this.postService.listPosts({ perPage: 7 }).subscribe({
       next: (response) => {
         this.applyPostsToNews(response.data.items);
       },
-      error: () => undefined,
+      error: () => this.applyPostsToNews([]),
     });
 
     this.postService.listBoards().subscribe({
       next: (response) => {
         this.applyBoardsToTopicScents(response.data);
       },
-      error: () => undefined,
+      error: () => this.topicScents.set([]),
     });
 
     this.postService.getStats().subscribe({
@@ -225,13 +150,14 @@ export class HomePage {
           { value: this.formatStat(response.data.boards), label: '讨论板块', icon: 'boards' },
         ]);
       },
-      error: () => undefined,
+      error: () => this.forumStats.set([]),
     });
   }
 
   private applyBoardsToTopicScents(boards: readonly Board[]): void {
     const visibleBoards = boards.slice(0, 4);
     if (visibleBoards.length === 0) {
+      this.topicScents.set([]);
       return;
     }
 
@@ -250,6 +176,9 @@ export class HomePage {
 
   private applyPostsToNews(posts: readonly PostSummary[]): void {
     if (posts.length === 0) {
+      this.leadNews.set(null);
+      this.newsImages.set([]);
+      this.hotNews.set([]);
       return;
     }
 

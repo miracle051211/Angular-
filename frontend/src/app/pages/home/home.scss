@@ -422,6 +422,19 @@
   padding-top: 6px;
 }
 
+.home-empty-note {
+  display: grid;
+  min-height: 140px;
+  place-items: center;
+  border: 1.5px dashed rgba(56, 48, 48, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 248, 236, 0.62);
+  color: var(--color-muted);
+  font-size: 15px;
+  font-weight: 850;
+  text-align: center;
+}
+
 .discussion-slip {
   position: relative;
   display: grid;
@@ -1295,6 +1308,10 @@
   text-align: center;
   opacity: 0;
   transform: translate3d(0, 42px, 0);
+}
+
+.forum-stat--empty {
+  grid-column: 1 / -1;
 }
 
 .forum-stat + .forum-stat {
