@@ -56,6 +56,19 @@ class FollowModel(db.Model):
         db.UniqueConstraint("follower_id", "followed_id", name="_follower_followed_uc"),
     )
 
+
+class AvatarImageModel(db.Model):
+    __tablename__ = "avatar_image"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    filename = db.Column(db.String(160), nullable=False, unique=True)
+    user_id = db.Column(db.String(100), db.ForeignKey("user.id"), nullable=False, index=True)
+    mime_type = db.Column(db.String(80), nullable=False, default="image/jpeg")
+    data = db.Column(db.LargeBinary(length=16 * 1024 * 1024), nullable=False)
+    create_time = db.Column(db.DateTime, default=datetime.now, nullable=False)
+
+    user = db.relationship("UserModel", backref=db.backref("avatar_images", lazy="dynamic"))
+
 class UserModel(UserMixin, db.Model):
     __tablename__ = "user"
     id = db.Column(db.String(100), primary_key = True, default = uuid)

@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 
 from applications.extentions.init_sqlalchemy import db
 from applications.models.post import CommentModel, PostModel
-from applications.models.user import FollowModel, UserModel
+from applications.models.user import AvatarImageModel, FollowModel, UserModel
 
 from .decorators import api_login_required
 from .responses import api_error, api_success
@@ -95,13 +95,14 @@ def update_my_avatar():
     if not avatar or not avatar.filename:
         return api_error("请选择头像文件", 400)
 
-    if request.content_length and request.content_length > MAX_AVATAR_BYTES:
-        return api_error("头像不能超过 3MB", 400)
-
     filename = secure_filename(avatar.filename)
     extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
     if extension not in ALLOWED_AVATAR_EXTENSIONS:
         return api_error("头像只支持 jpg、png、webp", 400)
+
+    avatar_data = avatar.read()
+    if len(avatar_data) > MAX_AVATAR_BYTES:
+        return api_error("头像不能超过 3MB", 400)
 
     avatars_save_path = current_app.config.get("AVATARS_SAVE_PATH")
     if not os.path.isabs(avatars_save_path):
@@ -109,7 +110,22 @@ def update_my_avatar():
     os.makedirs(avatars_save_path, exist_ok=True)
 
     saved_name = f"{uuid.uuid4().hex}.{extension}"
-    avatar.save(os.path.join(avatars_save_path, saved_name))
+    with open(os.path.join(avatars_save_path, saved_name), "wb") as avatar_file:
+        avatar_file.write(avatar_data)
+
+    old_avatar = current_user.avatar or ""
+    if old_avatar.startswith("/media/avatars/"):
+        old_filename = old_avatar.rsplit("/", 1)[-1]
+        AvatarImageModel.query.filter_by(filename=old_filename, user_id=current_user.id).delete()
+
+    db.session.add(
+        AvatarImageModel(
+            filename=saved_name,
+            user_id=current_user.id,
+            mime_type=avatar.mimetype or f"image/{'jpeg' if extension == 'jpg' else extension}",
+            data=avatar_data,
+        )
+    )
 
     current_user.avatar = url_for("media.media_file", filename=f"avatars/{saved_name}")
     db.session.commit()
