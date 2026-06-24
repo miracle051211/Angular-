@@ -7,7 +7,9 @@
     "build": "ng build",
     "download:nod-assets": "node scripts/download-nodcoding-assets.mjs https://nodcoding.com/ downloads/nodcoding-application-assets",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy": "npm run build && wrangler deploy",
+    "preview": "npm run build && wrangler dev"
   },
   "private": true,
   "packageManager": "npm@11.9.0",
@@ -32,6 +34,7 @@
     "playwright": "^1.61.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "wrangler": "^4.103.0"
   }
 }
